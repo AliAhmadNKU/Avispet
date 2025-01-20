@@ -1,0 +1,86 @@
+{
+  "project_info": {
+    "project_number": "110517972384",
+    "project_id": "avispetsapp",
+    "storage_bucket": "avispetsapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:110517972384:android:d451f61ea0b814f00848c5",
+        "android_client_info": {
+          "package_name": "com.jeanne.avispetsApp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "110517972384-2ei90vl1kv91jo3pj9vcvas0177q8eig.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jeanne.avispetsApp",
+            "certificate_hash": "7ef9dfd14d0f0548a784057bdb48f21a455edd14"
+          }
+        },
+        {
+          "client_id": "110517972384-6p4f6562e0sp6q48f0dc8ca1docchh7s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jeanne.avispetsApp",
+            "certificate_hash": "687e5a28756845a31f8fe46103f6e1265fd629e6"
+          }
+        },
+        {
+          "client_id": "110517972384-cibs9a24c62hqi1nprvqqps1m65c3o58.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jeanne.avispetsApp",
+            "certificate_hash": "3852c8d8beb40383b0705b9c055458268ee82cb7"
+          }
+        },
+        {
+          "client_id": "110517972384-g1i2pauks4aubh0g0l2pq4fi9tthik9p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jeanne.avispetsApp",
+            "certificate_hash": "eca9bf8c9db13f13dd2334c85570b65f677c96b4"
+          }
+        },
+        {
+          "client_id": "110517972384-gtt2ttslcntn23vre9kkpdpg45h6dn6n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jeanne.avispetsApp",
+            "certificate_hash": "e25408f69bcd33ad9c73be2dcbe214266e421833"
+          }
+        },
+        {
+          "client_id": "110517972384-dk5lrlabuh7alcnc10op15c39pgrmjhr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpVIfe-MXtJh4VbtxBc4_EjhFZC1ygaWQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "110517972384-dk5lrlabuh7alcnc10op15c39pgrmjhr.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "110517972384-sidr91d26hbnvns3quf9q1364u58s7pd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.avispets.jeanne"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
