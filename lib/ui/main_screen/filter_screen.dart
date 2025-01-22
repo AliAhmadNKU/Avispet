@@ -1,11 +1,10 @@
-import 'package:avispets/ui/main_screen/map/map_page.dart';
 import 'package:avispets/utils/apis/get_api.dart';
 import 'package:avispets/utils/common_function/header_widget.dart';
+import 'package:avispets/utils/common_function/my_string.dart';
+import 'package:avispets/utils/my_color.dart';
+import 'package:avispets/utils/my_routes/route_name.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../utils/my_color.dart';
-import '../../../utils/common_function/my_string.dart';
-import '../../../utils/my_routes/route_name.dart';
 
 class FiltersScreen extends StatefulWidget {
   const FiltersScreen({super.key});
@@ -20,19 +19,26 @@ class _FiltersScreenState extends State<FiltersScreen> {
   var searchBar = TextEditingController();
   String selectedCategory = '';
 
-  List<FilterModel> dataList=  [
-    FilterModel('assets/images/markers/Animalerie.png', 'Animalerie'.tr, 'petstore'),
-    FilterModel('assets/images/markers/Bars.png', 'Bars'.tr, 'bar'),
-    FilterModel('assets/images/markers/coffee.png', 'coffee'.tr, 'coffee'),
-    FilterModel('assets/images/markers/Evenement.png', 'Evenement'.tr, 'event'),
-    FilterModel('assets/images/markers/Exposition.png', 'Exposition'.tr, 'expo'),
-    FilterModel('assets/images/markers/Hotel.png', 'Hotel'.tr, 'hotel'),
-    FilterModel('assets/images/markers/localisation.png', 'localisation'.tr, 'loc'),
-    FilterModel('assets/images/markers/Parks.png', 'Parks'.tr, 'park'),
-    FilterModel('assets/images/markers/Restaurants.png', 'Restaurants'.tr, 'resto'),
-    FilterModel('assets/images/markers/supermarket.png', 'supermarket'.tr, 'market'),
-    FilterModel('assets/images/markers/Toilettage.png', 'Toilettage'.tr, 'toilet'),
-    FilterModel('assets/images/markers/Veterinaire.png', 'Veterinaire'.tr, 'vet'),
+  List<FilterModel> dataList = [
+    // FilterModel(
+    //     'assets/images/markers/Animalerie.png', 'Animalerie'.tr, 'petstore'),
+    // FilterModel('assets/images/markers/Bars.png', 'Bars'.tr, 'bar'),
+    // FilterModel('assets/images/markers/coffee.png', 'coffee'.tr, 'coffee'),
+    // FilterModel('assets/images/markers/Evenement.png', 'Evenement'.tr, 'event'),
+    // FilterModel(
+    //     'assets/images/markers/Exposition.png', 'Exposition'.tr, 'expo'),
+    // FilterModel('assets/images/markers/Hotel.png', 'Hotel'.tr, 'hotel'),
+    // FilterModel(
+    //     'assets/images/markers/localisation.png', 'localisation'.tr, 'loc'),
+    // FilterModel('assets/images/markers/Parks.png', 'Parks'.tr, 'park'),
+    // FilterModel(
+    //     'assets/images/markers/Restaurants.png', 'Restaurants'.tr, 'resto'),
+    // FilterModel(
+    //     'assets/images/markers/supermarket.png', 'supermarket'.tr, 'market'),
+    // FilterModel(
+    //     'assets/images/markers/Toilettage.png', 'Toilettage'.tr, 'toilet'),
+    // FilterModel(
+    //     'assets/images/markers/Veterinaire.png', 'Veterinaire'.tr, 'vet'),
   ];
 
   @override
@@ -53,8 +59,6 @@ class _FiltersScreenState extends State<FiltersScreen> {
         return false;
       },
       child: Scaffold(
-
-
           backgroundColor: MyColor.white,
           body: SafeArea(
             child: Container(
@@ -63,7 +67,6 @@ class _FiltersScreenState extends State<FiltersScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-
                   HeaderWidget(),
                   Padding(
                     padding: const EdgeInsets.symmetric(
@@ -140,10 +143,11 @@ class _FiltersScreenState extends State<FiltersScreen> {
                     ),
                   ),
 
-
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20),
-                    child: MyString.bold('Pet Friendly place',18,MyColor.title,TextAlign.start),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 15.0, vertical: 20),
+                    child: MyString.bold('Pet Friendly place', 18,
+                        MyColor.title, TextAlign.start),
                   ),
 
                   Container(
@@ -156,7 +160,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
                       itemBuilder: (context, index) {
                         return GestureDetector(
                             onTap: () async {
-                              selectedCategory = dataList[index].name;
+                              // selectedCategory = dataList[index].name;
                               //fetchAndAddPlaces();
                             },
                             child: Container(
@@ -164,13 +168,15 @@ class _FiltersScreenState extends State<FiltersScreen> {
                               child: Column(
                                 children: [
                                   Image.asset(
-                                    '${dataList[index].image}',
+                                    ' ',
                                     height: 30,
                                     width: 30,
                                   ),
-                                  SizedBox(height: 6,),
-                                  MyString.bold('${dataList[index].name}', 12, MyColor.title,
-                                      TextAlign.center)
+                                  SizedBox(
+                                    height: 6,
+                                  ),
+                                  MyString.bold(
+                                      ' ', 12, MyColor.title, TextAlign.center)
                                 ],
                               ),
                             ));
@@ -178,39 +184,36 @@ class _FiltersScreenState extends State<FiltersScreen> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(right: 15.0, left: 15, top: 20, bottom: 0),
-                    child: MyString.bold('Overall rating',18,MyColor.title,TextAlign.start),
+                    padding: const EdgeInsets.only(
+                        right: 15.0, left: 15, top: 20, bottom: 0),
+                    child: MyString.bold(
+                        'Overall rating', 18, MyColor.title, TextAlign.start),
                   ),
 
-                      Flexible(
-                        child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 0.0, vertical: 40),
-                            height: 17,
-                            padding: EdgeInsets.zero,
-                            color: Colors.transparent,
-                            child: SliderTheme(
-                              child: Slider(
-                                value: 3,
-                                max: 5,
-                                min: 1,
-                                divisions: 5,
-                                activeColor:
-                                Color(0xffED8631),
-                                inactiveColor: MyColor.stroke,
-                                onChanged:
-                                    (double value) {},
-                              ),
-                              data: SliderTheme.of(context)
-                                  .copyWith(
-                                  trackHeight: 17,
-                                  thumbColor: Colors
-                                      .transparent,
-                                  thumbShape:
-                                  SliderComponentShape
-                                      .noThumb,
-                                 ),
-                            )),
-                      ),
+                  Flexible(
+                    child: Container(
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 0.0, vertical: 40),
+                        height: 17,
+                        padding: EdgeInsets.zero,
+                        color: Colors.transparent,
+                        child: SliderTheme(
+                          child: Slider(
+                            value: 3,
+                            max: 5,
+                            min: 1,
+                            divisions: 5,
+                            activeColor: Color(0xffED8631),
+                            inactiveColor: MyColor.stroke,
+                            onChanged: (double value) {},
+                          ),
+                          data: SliderTheme.of(context).copyWith(
+                            trackHeight: 17,
+                            thumbColor: Colors.transparent,
+                            thumbShape: SliderComponentShape.noThumb,
+                          ),
+                        )),
+                  ),
                   GestureDetector(
                     onTap: () {
                       Navigator.pop(context);
@@ -224,7 +227,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
                         decoration: BoxDecoration(
                             color: MyColor.orange2,
                             borderRadius:
-                            const BorderRadius.all(Radius.circular(22))),
+                                const BorderRadius.all(Radius.circular(22))),
                         child: MyString.med('applyfilters'.tr, 18,
                             MyColor.white, TextAlign.center),
                       ),
@@ -237,3 +240,5 @@ class _FiltersScreenState extends State<FiltersScreen> {
     );
   }
 }
+
+class FilterModel {}

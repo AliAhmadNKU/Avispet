@@ -1,11 +1,10 @@
-import 'package:avispets/ui/main_screen/map/map_page.dart';
 import 'package:avispets/utils/apis/get_api.dart';
-import 'package:avispets/utils/common_function/header_widget.dart';
+import 'package:avispets/utils/my_color.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../utils/my_color.dart';
-import '../../../utils/common_function/my_string.dart';
-import '../../../utils/my_routes/route_name.dart';
+
+import '../../utils/common_function/header_widget.dart';
+import '../../utils/common_function/my_string.dart';
 
 class FilterReviews extends StatefulWidget {
   const FilterReviews({super.key});

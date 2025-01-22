@@ -33,10 +33,7 @@ class PostDetail extends StatefulWidget {
   State<PostDetail> createState() => _PostDetailState();
 }
 
-<<<<<<< HEAD
 //THIS CODE IS PUSHED IN PRODUCTION
-=======
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
 class _PostDetailState extends State<PostDetail> {
   bool showReviewsList = false;
   var searchBar = TextEditingController();

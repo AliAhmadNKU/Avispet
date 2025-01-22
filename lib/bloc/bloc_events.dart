@@ -95,7 +95,6 @@ class GetCreateAnimalEvent extends CreateAnimalEvent {
 
 //  --createPost
 class GetCreatePostEvent extends CreatePost {
-<<<<<<< HEAD
   int userId;
   int placeId;
   String email;
@@ -161,45 +160,6 @@ class PostRating {
       'rating': rating,
     };
   }
-=======
-  String? selectedCategory;
-  Map<String, dynamic>? currPos;
-  double? lat;
-  double? long;
-  int? cr1;
-  int? cr2;
-  int? cr3;
-  int? cr4;
-  int? cr5;
-  bool smallDogsAllowed;
-  bool bigDogsAllowed;
-  bool childPresence;
-  bool allDogsAllowed;
-  bool leashRequired;
-  bool greenSpacesNearby;
-  List<String> imageList;
-  String? thumbnail;
-
-  GetCreatePostEvent(
-    this.selectedCategory,
-    this.currPos,
-    this.lat,
-    this.long,
-    this.cr1,
-    this.cr2,
-    this.cr3,
-    this.cr4,
-    this.cr5,
-    this.smallDogsAllowed,
-    this.bigDogsAllowed,
-    this.childPresence,
-    this.allDogsAllowed,
-    this.leashRequired,
-    this.greenSpacesNearby,
-    this.imageList,
-    this.thumbnail,
-  );
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
 }
 
 //  --editAnimal

@@ -31,13 +31,9 @@ class GoogleMapsService {
       throw Exception('Failed to fetch address');
     }
   }
-<<<<<<< HEAD
 
   static Future<Map<String, dynamic>?> getLocationInfo(
       double latitude, double longitude) async {
-=======
-  static    Future<Map<String, dynamic>?> getLocationInfo(double latitude, double longitude) async {
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
     try {
       final geocodeUrl =
           'https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&key=$apiKey';
@@ -45,22 +41,14 @@ class GoogleMapsService {
 
       if (geocodeResponse.statusCode == 200) {
         final geocodeData = json.decode(geocodeResponse.body);
-<<<<<<< HEAD
         print(
             '============================$geocodeData=======================');
-=======
-
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
         if (geocodeData['results'].isNotEmpty) {
           final placeId = geocodeData['results'][0]['place_id'];
           final placeDetailsUrl =
               'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$apiKey';
           final placeDetailsResponse =
-<<<<<<< HEAD
               await http.get(Uri.parse(placeDetailsUrl));
-=======
-          await http.get(Uri.parse(placeDetailsUrl));
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
 
           if (placeDetailsResponse.statusCode == 200) {
             final placeDetailsData = json.decode(placeDetailsResponse.body);
@@ -68,7 +56,6 @@ class GoogleMapsService {
             if (placeDetailsData['status'] == 'OK') {
               final result = placeDetailsData['result'];
               return {
-<<<<<<< HEAD
                 'placeId': placeId,
                 'id': result['id'] ?? 'No id',
                 'name': result['name'],
@@ -87,38 +74,17 @@ class GoogleMapsService {
           } else {
             throw Exception(
                 'Failed to fetch place details: ${placeDetailsResponse.statusCode}');
-=======
-                'name': result['name'],
-                'address': result['formatted_address'],
-                'phone': result['formatted_phone_number'] ?? 'No phone number found',
-                'website': result['website'] ?? 'No website',
-                'openingHours': result['opening_hours']?['weekday_text'] ?? 'Not available',
-              };
-            } else {
-              throw Exception('Failed to fetch place details: ${placeDetailsData['status']}');
-            }
-          } else {
-            throw Exception('Failed to fetch place details: ${placeDetailsResponse.statusCode}');
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
           }
         } else {
           throw Exception('No results found for the given coordinates');
         }
       } else {
-<<<<<<< HEAD
         throw Exception(
             'Failed to fetch place ID: ${geocodeResponse.statusCode}');
-=======
-        throw Exception('Failed to fetch place ID: ${geocodeResponse.statusCode}');
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
       }
     } catch (e) {
       print('Error occurred: $e');
       return null;
     }
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b

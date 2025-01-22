@@ -68,10 +68,6 @@ class AllApi {
     debugPrint(
         'SHARED-PREF SAVE LANGUAGE (postApi => ${ApiStrings.baseURl}$endPoint) ${sharedPref.getString(SharedKey.languageValue).toString()}');
     var url = Uri.parse("${ApiStrings.baseURl}$endPoint");
-<<<<<<< HEAD
-=======
-    print('===============Upper response===============');
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
 
     var response = await http.post(url,
         headers: {
@@ -82,11 +78,6 @@ class AllApi {
           "x-access-token": sharedPref.getString(SharedKey.auth).toString()
         },
         body: mapData);
-<<<<<<< HEAD
-
-=======
-    print('===============$response===============');
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
     return response.body;
   }
 

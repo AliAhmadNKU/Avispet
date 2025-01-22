@@ -1,11 +1,10 @@
-import 'package:avispets/ui/main_screen/home/home_screen.dart';
-import 'package:avispets/ui/main_screen/home/post_detail.dart';
 import 'package:avispets/utils/common_function/header_widget.dart';
 import 'package:avispets/utils/common_function/my_string.dart';
 import 'package:avispets/utils/my_color.dart';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../home/home_screen.dart';
 
 class AddPostDetails extends StatefulWidget {
   const AddPostDetails({super.key});
@@ -15,11 +14,7 @@ class AddPostDetails extends StatefulWidget {
 }
 
 class _AddPostDetailsState extends State<AddPostDetails> {
-<<<<<<< HEAD
   final post = Postssss(
-=======
-  final post = Post(
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
     title: 'Hotel1',
     location: 'Berlin, Germany',
     category: 'hotel',

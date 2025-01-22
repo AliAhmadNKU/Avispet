@@ -112,13 +112,8 @@ class _MyProfileState extends State<MyProfile> {
     setState(() {});
   }
 
-<<<<<<< HEAD
   List<Postssss> posts = [
     Postssss(
-=======
-  List<Post> posts = [
-    Post(
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
       title: 'Bar1',
       location: 'Berlin, Germany',
       category: 'bar',
@@ -132,11 +127,7 @@ class _MyProfileState extends State<MyProfile> {
       timeAgo: '5 min ago',
       imageUrl: 'assets/images/place.png',
     ),
-<<<<<<< HEAD
     Postssss(
-=======
-    Post(
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
       title: 'Petstore1',
       location: 'Munich, Germany',
       category: 'petstore',
@@ -150,11 +141,7 @@ class _MyProfileState extends State<MyProfile> {
       timeAgo: '10 min ago',
       imageUrl: 'assets/images/place.png',
     ),
-<<<<<<< HEAD
     Postssss(
-=======
-    Post(
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
       title: 'Hotel1',
       location: 'Berlin, Germany',
       category: 'hotel',

@@ -1,30 +1,27 @@
 import 'dart:async';
 import 'dart:convert';
+
+import 'package:avispets/models/follower_following_model.dart';
+import 'package:avispets/models/forum/get_forum.dart';
+import 'package:avispets/models/get_all_categories_model.dart';
+
+import 'package:avispets/utils/apis/all_api.dart';
 import 'package:avispets/utils/apis/api_strings.dart';
 import 'package:avispets/utils/apis/connect_socket.dart';
+import 'package:avispets/utils/apis/get_api.dart';
 import 'package:avispets/utils/common_function/header_widget.dart';
+import 'package:avispets/utils/common_function/my_string.dart';
+import 'package:avispets/utils/common_function/search_delay.dart';
+import 'package:avispets/utils/common_function/toaster.dart';
+import 'package:avispets/utils/my_color.dart';
 import 'package:avispets/utils/my_routes/route_name.dart';
 import 'package:avispets/utils/shared_pref.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
-import '../../../models/follower_following_model.dart';
-import '../../../models/forum/get_forum.dart';
-import '../../../models/get_all_categories_model.dart';
-<<<<<<< HEAD
-import '../../../models/get_all_post_modle.dart' as model;
+
 import '../../../models/get_all_post_modle.dart';
-=======
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
-import '../../../utils/apis/all_api.dart';
-import '../../../utils/apis/get_api.dart';
-import '../../../utils/common_function/my_string.dart';
-import '../../../utils/common_function/search_delay.dart';
-import '../../../utils/common_function/toaster.dart';
-import '../../../utils/my_color.dart';
-import '../addPost/add_post.dart';
-import '../map/map_page.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -36,28 +33,28 @@ class HomeScreen extends StatefulWidget {
 enum SampleItem { report, delete }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<FilterModel> places = [];
+  List<Object> places = [];
 
-  List<FilterModel> dataList = [
-    FilterModel(
-        'assets/images/markers/Animalerie.png', 'Animalerie'.tr, 'petstore'),
-    FilterModel('assets/images/markers/Bars.png', 'Bars'.tr, 'bar'),
-    FilterModel('assets/images/markers/coffee.png', 'coffee'.tr, 'coffee'),
-    FilterModel('assets/images/markers/Evenement.png', 'Evenement'.tr, 'event'),
-    FilterModel(
-        'assets/images/markers/Exposition.png', 'Exposition'.tr, 'expo'),
-    FilterModel('assets/images/markers/Hotel.png', 'Hotel'.tr, 'hotel'),
-    FilterModel(
-        'assets/images/markers/localisation.png', 'localisation'.tr, 'loc'),
-    FilterModel('assets/images/markers/Parks.png', 'Parks'.tr, 'park'),
-    FilterModel(
-        'assets/images/markers/Restaurants.png', 'Restaurants'.tr, 'resto'),
-    FilterModel(
-        'assets/images/markers/supermarket.png', 'supermarket'.tr, 'market'),
-    FilterModel(
-        'assets/images/markers/Toilettage.png', 'Toilettage'.tr, 'toilet'),
-    FilterModel(
-        'assets/images/markers/Veterinaire.png', 'Veterinaire'.tr, 'vet'),
+  List<Object> dataList = [
+    // FilterModel(
+    //     'assets/images/markers/Animalerie.png', 'Animalerie'.tr, 'petstore'),
+    // FilterModel('assets/images/markers/Bars.png', 'Bars'.tr, 'bar'),
+    // FilterModel('assets/images/markers/coffee.png', 'coffee'.tr, 'coffee'),
+    // FilterModel('assets/images/markers/Evenement.png', 'Evenement'.tr, 'event'),
+    // FilterModel(
+    //     'assets/images/markers/Exposition.png', 'Exposition'.tr, 'expo'),
+    // FilterModel('assets/images/markers/Hotel.png', 'Hotel'.tr, 'hotel'),
+    // FilterModel(
+    //     'assets/images/markers/localisation.png', 'localisation'.tr, 'loc'),
+    // FilterModel('assets/images/markers/Parks.png', 'Parks'.tr, 'park'),
+    // FilterModel(
+    //     'assets/images/markers/Restaurants.png', 'Restaurants'.tr, 'resto'),
+    // FilterModel(
+    //     'assets/images/markers/supermarket.png', 'supermarket'.tr, 'market'),
+    // FilterModel(
+    //     'assets/images/markers/Toilettage.png', 'Toilettage'.tr, 'toilet'),
+    // FilterModel(
+    //     'assets/images/markers/Veterinaire.png', 'Veterinaire'.tr, 'vet'),
   ];
   //controllers
   var searchBar = TextEditingController();
@@ -147,21 +144,13 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
 
     getAllCategoriesApi();
-<<<<<<< HEAD
     getAllPostsApi();
-=======
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
     getForumApi(page, '', currentTabBreed);
     GetApi.getNotify(context, '');
   }
 
-<<<<<<< HEAD
   List<Postssss> postss = [
     Postssss(
-=======
-  List<Post> posts = [
-    Post(
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
       title: 'Bar1',
       location: 'Berlin, Germany',
       category: 'bar',
@@ -175,11 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
       timeAgo: '5 min ago',
       imageUrl: 'assets/images/place.png',
     ),
-<<<<<<< HEAD
     Postssss(
-=======
-    Post(
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
       title: 'Petstore1',
       location: 'Munich, Germany',
       category: 'petstore',
@@ -193,11 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
       timeAgo: '10 min ago',
       imageUrl: 'assets/images/place.png',
     ),
-<<<<<<< HEAD
     Postssss(
-=======
-    Post(
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
       title: 'Hotel1',
       location: 'Berlin, Germany',
       category: 'hotel',
@@ -229,11 +210,8 @@ class _HomeScreenState extends State<HomeScreen> {
         title: 'Highest rated', subtitle: 'From 5 to 1', conditionCheck: false),
   ];
   List<Data> categoriesList = [];
-<<<<<<< HEAD
   List<Post> posts = [];
   List<Post> postsList = [];
-=======
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
 
   @override
   Widget build(BuildContext context) {
@@ -473,15 +451,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 children: [
                                   Expanded(
                                     child: ListView.builder(
-<<<<<<< HEAD
                                       itemCount: postsList.length,
                                       itemBuilder: (context, index) {
                                         final post = postsList[index];
-=======
-                                      itemCount: posts.length,
-                                      itemBuilder: (context, index) {
-                                        final post = posts[index];
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                                         return GestureDetector(
                                           onTap: () async {
                                             Map<String, dynamic> mapData = {
@@ -505,7 +477,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 ClipRRect(
                                                   borderRadius:
                                                       BorderRadius.circular(15),
-<<<<<<< HEAD
                                                   child: Image.network(
                                                     post.images[
                                                         0], // URL of the image
@@ -550,13 +521,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       );
                                                     },
                                                   ),
-=======
-                                                  child: Image.asset(
-                                                      width: 130,
-                                                      height: 110,
-                                                      fit: BoxFit.cover,
-                                                      post.imageUrl),
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                                                 ),
                                                 SizedBox(
                                                   width: 15,
@@ -568,33 +532,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       CrossAxisAlignment.start,
                                                   children: [
                                                     MyString.reg(
-<<<<<<< HEAD
                                                         post.placeName,
-=======
-                                                        post.title,
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                                                         14,
                                                         MyColor.orange2,
                                                         TextAlign.start),
                                                     MyString.reg(
-<<<<<<< HEAD
-=======
-                                                        post.location,
-                                                        12,
-                                                        MyColor.textBlack0,
-                                                        TextAlign.start),
-                                                    MyString.reg(
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                                                         post.category,
                                                         12,
                                                         MyColor.textBlack0,
                                                         TextAlign.start),
                                                     MyString.reg(
-<<<<<<< HEAD
                                                         post.websiteName ?? "",
-=======
-                                                        post.distance,
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                                                         12,
                                                         MyColor.textBlack0,
                                                         TextAlign.start),
@@ -604,23 +552,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             color: Colors.amber,
                                                             size: 16),
                                                         MyString.reg(
-<<<<<<< HEAD
                                                             '${post.overallRating}  ',
-=======
-                                                            '${post.rating} (${post.reviews})',
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                                                             12,
                                                             MyColor.textBlack0,
                                                             TextAlign.start),
                                                       ],
                                                     ),
                                                     MyString.reg(
-<<<<<<< HEAD
                                                         post.openingClosingHour ??
                                                             "",
-=======
-                                                        post.timeAgo,
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                                                         8,
                                                         MyColor.textBlack0,
                                                         TextAlign.start),
@@ -670,7 +610,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-<<<<<<< HEAD
   Future<void> getAllPostsApi() async {
     try {
       // Make the API call
@@ -682,7 +621,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       if (result['status'] == 200) {
         // Parse the response into the GetAllPostModel
-        GetAllPostModel posts = GetAllPostModel.fromJson(result);
+        var posts = GetAllPostModel.fromJson(result);
         setState(() {
           // Update your local state with the data
           postsList = posts.data!.data!.post!
@@ -704,8 +643,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-=======
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
   getAllCategoriesApi() async {
     try {
       var res = await AllApi.getMethodApi("${ApiStrings.getAllCategories}");
@@ -1541,11 +1478,7 @@ class Item {
   });
 }
 
-<<<<<<< HEAD
 class Postssss {
-=======
-class Post {
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
   final String title;
   final String location;
   final String category;
@@ -1559,11 +1492,7 @@ class Post {
   final String timeAgo;
   final String imageUrl;
 
-<<<<<<< HEAD
   Postssss({
-=======
-  Post({
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
     required this.title,
     required this.location,
     required this.category,
@@ -1580,11 +1509,7 @@ class Post {
 }
 
 class PlaceDetailsScreen extends StatelessWidget {
-<<<<<<< HEAD
   final Postssss place;
-=======
-  final Post place;
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
 
   const PlaceDetailsScreen({required this.place, Key? key}) : super(key: key);
 

@@ -42,18 +42,11 @@ class LocationData {
   int? id;
   String? name;
   String? address;
-<<<<<<< HEAD
   num? longitude;
   num? latitude;
   num? rating;
   num? userRating;
   num? distance;
-=======
-  double? longitude;
-  double? latitude;
-  double? rating;
-  num? userRating;
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
   String? profile;
   String? createdAt;
   String? placeId;
@@ -68,10 +61,7 @@ class LocationData {
       this.latitude,
       this.rating,
       this.userRating,
-<<<<<<< HEAD
       this.distance,
-=======
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
       this.profile,
       this.createdAt,
       this.placeId,
@@ -85,11 +75,8 @@ class LocationData {
     longitude = json['longitude'];
     latitude = json['latitude'];
     rating = json['rating'];
-<<<<<<< HEAD
     distance = json['distance'];
 
-=======
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
     userRating = json['user_rating'];
     profile = json['profile'];
     createdAt = json['createdAt'];
@@ -103,10 +90,7 @@ class LocationData {
     data['id'] = this.id;
     data['name'] = this.name;
     data['address'] = this.address;
-<<<<<<< HEAD
     data['distance'] = this.distance;
-=======
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
     data['longitude'] = this.longitude;
     data['latitude'] = this.latitude;
     data['rating'] = this.rating;

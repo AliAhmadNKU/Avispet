@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
 import 'package:avispets/ui/main_screen/map/google_maps_service.dart';
 import 'package:flutter/material.dart';
 import '../../../utils/my_routes/route_name.dart';
@@ -23,14 +19,8 @@ class SearchingBar extends StatelessWidget {
       children: [
         Container(
           decoration: BoxDecoration(
-<<<<<<< HEAD
               border: Border.all(color: Color(0xffEBEBEB)),
               borderRadius: BorderRadius.circular(10)),
-=======
-            border: Border.all(color: Color(0xffEBEBEB)),
-              borderRadius: BorderRadius.circular(10)
-          ),
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
           child: IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
@@ -40,7 +30,6 @@ class SearchingBar extends StatelessWidget {
               );
             },
           ),
-<<<<<<< HEAD
         ),
         GestureDetector(
             onTap: () {
@@ -54,29 +43,11 @@ class SearchingBar extends StatelessWidget {
                     color: Color(0xff4F2020),
                     borderRadius: BorderRadius.circular(150)),
                 child: Image.asset('assets/images/icons/filter.png'))),
-=======
-        ),GestureDetector(
-          onTap: () {
-            Navigator.pushNamed(context, RoutesName.filterScreen);
-          },
-
-    child: Container(
-    width: 40,
-    height: 40,
-    padding: EdgeInsets.all(8),
-    decoration: BoxDecoration(
-    color: Color(0xff4F2020),
-    borderRadius: BorderRadius.circular(150)),
-    child: Image.asset('assets/images/icons/filter.png'))),
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
       ],
     );
   }
 }
-<<<<<<< HEAD
 
-=======
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
 class PlaceSearchDelegate extends SearchDelegate {
   final Function(String) onPlaceSelected;
 
@@ -89,10 +60,7 @@ class PlaceSearchDelegate extends SearchDelegate {
       return [];
     }
   }
-<<<<<<< HEAD
 
-=======
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
   @override
   List<Widget> buildActions(BuildContext context) {
     return [

@@ -134,13 +134,8 @@ class SignUpBlock extends Bloc<CreateProfileEvent, BlocStates> {
               'email': event.email!.trim(),
               'password': event.password!.trim(),
               'timezone': event.timeZone!,
-<<<<<<< HEAD
               'latitude': event.latitude.toString(),
               //// 'longitude': event.longitude.toString(),
-=======
-              // 'latitude': event.latitude.toString(),
-              // 'longitude': event.longitude.toString(),
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
               // 'deviceToken':
               //     sharedPref.getString(SharedKey.deviceToken).toString(),
               // 'deviceType': event.deviceType!,

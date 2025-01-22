@@ -21,10 +21,6 @@ class ApiStrings {
   static const String likefeedComment = 'like-feed-comment';
   static const String feeds = 'feeds';
   static const String feed = 'feed';
-<<<<<<< HEAD
-
-=======
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
   static const String feedComments = 'feed-comments';
   static const String feedLikes = 'feed-likes';
   static const String deleteFeed = 'delete-feed';
@@ -34,11 +30,8 @@ class ApiStrings {
   static const String postfeedV2 = 'post-feedV2';
   static const String feedsV2 = 'feedsV2';
   static const String feedV2 = 'feedV2';
-<<<<<<< HEAD
   static const String createPost = 'post';
   static const String getAllFeed = 'user/get-all-feed';
-=======
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
 
   // POST METHODS
   static const String signup = 'auth/signup';

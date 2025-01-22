@@ -1,26 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
-<<<<<<< HEAD
-=======
-
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
 import 'package:appinio_video_player/appinio_video_player.dart';
 import 'package:avispets/ui/main_screen/map/search_bar.dart';
 import 'package:avispets/utils/apis/all_api.dart';
 import 'package:avispets/utils/apis/api_strings.dart';
 import 'package:avispets/utils/common_function/header_widget.dart';
-<<<<<<< HEAD
 import 'package:avispets/utils/shared_pref.dart';
-=======
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-<<<<<<< HEAD
-=======
-import 'package:geocoding/geocoding.dart';
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -68,10 +57,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
   late CustomVideoPlayerController _customVideoPlayerController;
   late CreatePostBloc _postBloc;
   TextEditingController searchBar = TextEditingController();
-<<<<<<< HEAD
   TextEditingController additionalInfo = TextEditingController();
-=======
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
 
   //post fields
   String selectedCategory = 'petstore';
@@ -240,7 +226,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
   }
 
   String currentTimeZone = "";
-<<<<<<< HEAD
   num longitude = 0.0;
   num latitude = 0.0;
   _getLocation() async {
@@ -296,20 +281,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
       print("Error uploading image: $e");
       return null;
     }
-=======
-  String longitude = "";
-  String latitude = "";
-  _getLocation() async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.low);
-    longitude = position.longitude.toString();
-    latitude = position.latitude.toString();
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
   }
 
   getLocationByName() async {
     try {
-<<<<<<< HEAD
       Map<String, dynamic> data = {
         "latitude": latitude,
         "longitude": longitude,
@@ -321,18 +296,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
       var res = await AllApi.postMethodApii(
           ApiStrings.getLocationByNameAndAddress, data);
       print('========================$res');
-=======
-      print('==================');
-
-      Map<String, dynamic> data = {
-        "latitude": 40.7128,
-        "longitude": 74.0060,
-        "query": "KFC",
-        "radius": 500
-      };
-      var res = await AllApi.postMethodApii(
-          ApiStrings.getLocationByNameAndAddress, data);
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
 
       var result = res is String ? jsonDecode(res) : res;
 
@@ -355,20 +318,12 @@ class _AddPostScreenState extends State<AddPostScreen> {
   }
 
   getAllCatergoryandLocation() async {
-<<<<<<< HEAD
     await getAllCategoriesApi();
     await _getLocation();
   }
 
   List<String> imageUrlList = [];
 
-=======
-    // await getAllCategoriesApi();
-    // await _getLocation();
-    // await getLocationByName();
-  }
-
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
   @override
   void initState() {
     super.initState();
@@ -475,13 +430,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
           hintText: 'search'.tr,
           hintStyle: TextStyle(color: MyColor.textBlack0, fontSize: 14),
         ),
-<<<<<<< HEAD
         onChanged: (value) async {
           await getLocationByName();
         },
-=======
-        onChanged: (value) {},
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
       ),
     );
   }
@@ -552,7 +503,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-<<<<<<< HEAD
                                     Container(
                                       height: 50,
                                       margin: EdgeInsets.only(
@@ -630,90 +580,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                         },
                                       ),
                                     ),
-=======
-                                    // Container(
-                                    //   height: 50,
-                                    //   margin: EdgeInsets.only(
-                                    //       bottom: 25, right: 15, left: 15),
-                                    //   child: Row(
-                                    //     mainAxisAlignment:
-                                    //         MainAxisAlignment.center,
-                                    //     crossAxisAlignment:
-                                    //         CrossAxisAlignment.center,
-                                    //     children: [
-                                    //       Flexible(
-                                    //         child: Container(
-                                    //           child: SearchingBar(
-                                    //               onChanged: _updateSuggestions,
-                                    //               onPlaceSelected:
-                                    //                   _getLocation),
-                                    //         ),
-                                    //       ),
-                                    //     ],
-                                    //   ),
-                                    // ),
-                                    // Container(
-                                    //   height: 70,
-                                    //   child: ListView.builder(
-                                    //     padding: EdgeInsets.zero,
-                                    //     scrollDirection: Axis.horizontal,
-                                    //     shrinkWrap: true,
-                                    //     itemCount: dataList.length,
-                                    //     itemBuilder: (context, index) {
-                                    //       return GestureDetector(
-                                    //         onTap: () async {
-                                    //           setState(() {
-                                    //             selectedCategory =
-                                    //                 dataList[index].nickname;
-                                    //           });
-                                    //         },
-                                    //         child: Container(
-                                    //           width: 70,
-                                    //           child: Column(
-                                    //             children: [
-                                    //               Image.asset(
-                                    //                 '${dataList[index].image}',
-                                    //                 height: 30,
-                                    //                 width: 30,
-                                    //               ),
-                                    //               dataList[index].nickname ==
-                                    //                       selectedCategory
-                                    //                   ? MyString.bold(
-                                    //                       '${dataList[index].name}',
-                                    //                       10,
-                                    //                       MyColor.title,
-                                    //                       TextAlign.center)
-                                    //                   : MyString.reg(
-                                    //                       '${dataList[index].name}',
-                                    //                       10,
-                                    //                       MyColor.title,
-                                    //                       TextAlign.center),
-                                    //               if (dataList[index]
-                                    //                       .nickname ==
-                                    //                   selectedCategory)
-                                    //                 Divider(
-                                    //                   color: MyColor
-                                    //                       .orange2, // Color of the divider
-                                    //                   thickness:
-                                    //                       3, // Thickness of the line
-                                    //                   indent:
-                                    //                       5, // Start padding
-                                    //                   endIndent:
-                                    //                       5, // End padding
-                                    //                 ),
-                                    //             ],
-                                    //           ),
-                                    //         ),
-                                    //       );
-                                    //     },
-                                    //   ),
-                                    // ),
-                                    ElevatedButton(
-                                        onPressed: () async {
-                                          await getLocationByName();
-                                        },
-                                        child: Text('GET')),
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
 
                                     Container(
                                       height:
@@ -1327,7 +1193,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                               SizedBox(
                                                 height: 15,
                                               ),
-<<<<<<< HEAD
                                               Column(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.start,
@@ -1373,21 +1238,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                                   ),
                                                 ],
                                               ),
-=======
-                                              MyString.bold(
-                                                  '${'Additional information to share & specify : '.tr}',
-                                                  12,
-                                                  MyColor.title,
-                                                  TextAlign.start),
-                                              SizedBox(
-                                                height: 2,
-                                              ),
-                                              MyString.reg(
-                                                  '${currPos!['openingHours']}',
-                                                  12,
-                                                  MyColor.textBlack0,
-                                                  TextAlign.start),
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                                               SizedBox(
                                                 height: 25,
                                               ),
@@ -1420,21 +1270,14 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                                 // Add More Button
                                                 return GestureDetector(
                                                   onTap: () async {
-<<<<<<< HEAD
                                                     print(
                                                         '==============================');
 
-=======
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                                                     String? result =
                                                         await cameraPhoto(
                                                             context,
                                                             "add_post");
-<<<<<<< HEAD
                                                     File? returnImage;
-=======
-                                                    var returnImage;
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
 
                                                     // Pick image from Camera or Gallery
                                                     if (result == '0') {
@@ -1451,7 +1294,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                                                   .gallery);
                                                     }
 
-<<<<<<< HEAD
                                                     print(returnImage);
                                                     if (returnImage != null) {
                                                       fileImage = returnImage;
@@ -1475,13 +1317,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                                         print(
                                                             "Image upload failed.");
                                                       }
-=======
-                                                    // Add image to list after cropping
-                                                    if (returnImage != null) {
-                                                      fileImage = returnImage;
-                                                      imageList.add(File(
-                                                          fileImage!.path));
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                                                     }
 
                                                     setState(() {});
@@ -1880,7 +1715,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
       return;
     }
 
-<<<<<<< HEAD
     //   _postBloc.add(GetCreatePostEvent(
     //     userId: int.parse(sharedPref.getString(SharedKey.userId)!),
     //     placeId: 123,
@@ -1948,26 +1782,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
       additionalInfo: additionalInfo.text,
       isFavourite: false,
       postRatings: postRatings,
-=======
-    _postBloc.add(GetCreatePostEvent(
-      selectedCategory,
-      currPos,
-      lat,
-      long,
-      cr1,
-      cr2,
-      cr3,
-      cr4,
-      cr5,
-      smallDogsAllowed,
-      bigDogsAllowed,
-      childPresence,
-      allDogsAllowed,
-      leashRequired,
-      greenSpacesNearby,
-      imageArray,
-      thumbnail,
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
     ));
   }
 
@@ -1998,11 +1812,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
               await GoogleMapsService.getLocationInfo(lat, long);
           setState(() {
             currPos = curPos;
-<<<<<<< HEAD
             print(
                 '====================================$curPos===================================');
-=======
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
           });
           if (currPos != null) {
             loader = false;

@@ -15,12 +15,8 @@ import 'google_maps_service.dart';
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
 
-<<<<<<< HEAD
 Future<BitmapDescriptor> getResizedMarker(
     String assetPath, int width, int height) async {
-=======
-Future<BitmapDescriptor> getResizedMarker(String assetPath, int width, int height) async {
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
   final ByteData data = await rootBundle.load(assetPath);
   final ui.Codec codec = await ui.instantiateImageCodec(
     data.buffer.asUint8List(),
@@ -28,12 +24,8 @@ Future<BitmapDescriptor> getResizedMarker(String assetPath, int width, int heigh
     targetHeight: height,
   );
   final ui.FrameInfo frameInfo = await codec.getNextFrame();
-<<<<<<< HEAD
   final ByteData? resizedData =
       await frameInfo.image.toByteData(format: ui.ImageByteFormat.png);
-=======
-  final ByteData? resizedData = await frameInfo.image.toByteData(format: ui.ImageByteFormat.png);
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
   return BitmapDescriptor.fromBytes(resizedData!.buffer.asUint8List());
 }
 
@@ -76,19 +68,11 @@ class _MapScreenState extends State<MapScreen> {
   bool _shouldFollowUserLocation = true;
   LatLng? _selectedMarkerPosition;
   String? _selectedAddress;
-<<<<<<< HEAD
   String? _selectedPlace;
   String? _selectedRating;
   String? _selectedReviews;
   String? _selectedDistance;
   String _selectedImage = 'assets/images/place.png';
-=======
-  String? _selectedPlace ;
-  String? _selectedRating ;
-  String? _selectedReviews ;
-  String ?_selectedDistance ;
-  String _selectedImage ='assets/images/place.png';
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
 
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
@@ -106,7 +90,6 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _onMapTap(LatLng position) async {
-<<<<<<< HEAD
     final address = await GoogleMapsService.getAddressFromLatLng(
         position.latitude, position.longitude);
     setState(() {
@@ -115,16 +98,6 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-=======
-    final address =
-        await GoogleMapsService.getAddressFromLatLng(position.latitude, position.longitude);
-    setState(() {
-      _selectedMarkerPosition = position;
-      _selectedAddress = address;
-
-    });
-  }
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
   Future<void> _convertAddressToLatLng(String address) async {
     const apiKey = 'AIzaSyBANJJlDplrqmPbPM2CK6suomwcrRmI_sU';
     final url =
@@ -157,7 +130,6 @@ class _MapScreenState extends State<MapScreen> {
     setState(() {
       _selectedMarkerPosition = null;
       _selectedAddress = null;
-<<<<<<< HEAD
       _selectedPlace = null;
       _selectedRating = null;
       _selectedReviews = null;
@@ -165,20 +137,11 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-=======
-      _selectedPlace=null ;
-      _selectedRating=null ;
-      _selectedReviews=null ;
-      _selectedDistance=null ;
-    });
-  }
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
   bool loader = true;
   int page = 1;
   int currentTab = 1;
   String selectedCategory = '';
 
-<<<<<<< HEAD
   List<FilterModel> dataList = [
     FilterModel(
         'assets/images/markers/Animalerie.png', 'Animalerie'.tr, 'petstore'),
@@ -212,98 +175,40 @@ class _MapScreenState extends State<MapScreen> {
       rating: 4.5,
       reviews: 563,
       likes: 100,
-=======
-  List<FilterModel> dataList=  [
-    FilterModel('assets/images/markers/Animalerie.png', 'Animalerie'.tr, 'petstore'),
-    FilterModel('assets/images/markers/Bars.png', 'Bars'.tr, 'bar'),
-    FilterModel('assets/images/markers/coffee.png', 'coffee'.tr, 'coffee'),
-    FilterModel('assets/images/markers/Evenement.png', 'Evenement'.tr, 'event'),
-    FilterModel('assets/images/markers/Exposition.png', 'Exposition'.tr, 'expo'),
-    FilterModel('assets/images/markers/Hotel.png', 'Hotel'.tr, 'hotel'),
-    FilterModel('assets/images/markers/localisation.png', 'localisation'.tr, 'loc'),
-    FilterModel('assets/images/markers/Parks.png', 'Parks'.tr, 'park'),
-    FilterModel('assets/images/markers/Restaurants.png', 'Restaurants'.tr, 'resto'),
-    FilterModel('assets/images/markers/supermarket.png', 'supermarket'.tr, 'market'),
-    FilterModel('assets/images/markers/Toilettage.png', 'Toilettage'.tr, 'toilet'),
-    FilterModel('assets/images/markers/Veterinaire.png', 'Veterinaire'.tr, 'vet'),
-  ];
-
-  List<Post> posts = [
-    Post(
-      title: 'Bar1',
-      location: 'Berlin, Germany',
-      category: 'bar',
-      lat:37.7749,
-      long:-122.4194,
-      distance: '2 KM',
-      rating: 4.5,
-      reviews: 563,
-      likes:100,
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
       comments: 50,
       timeAgo: '5 min ago',
       imageUrl: 'assets/images/place.png',
     ),
-<<<<<<< HEAD
     Postssss(
-=======
-    Post(
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
       title: 'Petstore1',
       location: 'Munich, Germany',
       category: 'petstore',
       distance: '3 KM',
-<<<<<<< HEAD
       lat: 37,
       long: -122,
       rating: 4.2,
       reviews: 432,
       likes: 100,
-=======
-      lat:37,
-      long:-122,
-      rating: 4.2,
-      reviews: 432,
-      likes:100,
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
       comments: 50,
       timeAgo: '10 min ago',
       imageUrl: 'assets/images/place.png',
     ),
-<<<<<<< HEAD
     Postssss(
-=======
-    Post(
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
       title: 'Hotel1',
       location: 'Berlin, Germany',
       category: 'hotel',
       distance: '2 KM',
-<<<<<<< HEAD
       lat: 36,
       long: -122,
       rating: 4.5,
       reviews: 563,
       likes: 100,
-=======
-      lat:36,
-      long:-122,
-      rating: 4.5,
-      reviews: 563,
-      likes:100,
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
       comments: 50,
       timeAgo: '5 min ago',
       imageUrl: 'assets/images/place.png',
     ),
-<<<<<<< HEAD
   ];
   List<Postssss> filteredPosts = [];
-=======
-
-  ];
-  List<Post> filteredPosts = [];
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
   void filterPosts(String category) {
     setState(() {
       filteredPosts = posts.where((post) => post.category == category).toList();
@@ -313,7 +218,6 @@ class _MapScreenState extends State<MapScreen> {
   void _filterPostsAndAddMarkers(String category) async {
     _shouldFollowUserLocation = false;
     final List<Marker> newMarkers = [];
-<<<<<<< HEAD
     final filteredPosts =
         posts.where((post) => post.category == category).toList();
     for (var post in filteredPosts) {
@@ -327,19 +231,6 @@ class _MapScreenState extends State<MapScreen> {
         if (matchingFilter != null) {
           customIcon = await getResizedMarker(matchingFilter.image, 100,
               100); // Adjust width and height as needed
-=======
-    final filteredPosts = posts.where((post) => post.category == category).toList();
-    for (var post in filteredPosts) {
-      BitmapDescriptor customIcon = BitmapDescriptor.defaultMarker; // Fallback to default marker
-      try {
-        final matchingFilter = dataList.firstWhere(
-              (filter) => filter.nickname == post.category,
-        );
-
-        if (matchingFilter != null) {
-          customIcon = await getResizedMarker(matchingFilter.image, 100, 100); // Adjust width and height as needed
-
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
         }
       } catch (e) {
         debugPrint('Error loading marker icon: $e');
@@ -348,10 +239,6 @@ class _MapScreenState extends State<MapScreen> {
         Marker(
           markerId: MarkerId(post.title),
           position: LatLng(post.lat, post.long),
-<<<<<<< HEAD
-=======
-
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
           onTap: () {
             setState(() {
               _selectedMarkerPosition = LatLng(post.lat, post.long);
@@ -360,11 +247,7 @@ class _MapScreenState extends State<MapScreen> {
               _selectedRating = '${post.rating}';
               _selectedReviews = '${post.reviews}';
               _selectedDistance = '${post.distance}';
-<<<<<<< HEAD
               _selectedImage = '${post.imageUrl}';
-=======
-              _selectedImage='${post.imageUrl}';
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
             });
           },
           icon: customIcon,
@@ -385,10 +268,6 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
   @override
   void initState() {
     super.initState();
@@ -398,12 +277,7 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
     return NotificationListener(
-=======
-    return
-      NotificationListener(
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
       onNotification: (notification) {
         if (notification is ScrollEndNotification &&
             notification.metrics.extentAfter == 0) {
@@ -423,12 +297,8 @@ class _MapScreenState extends State<MapScreen> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Padding(
-<<<<<<< HEAD
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 12.0),
-=======
-                                padding: const EdgeInsets.symmetric(horizontal: 12.0),
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                                 child: HeaderWidget(),
                               ),
                               Padding(
@@ -468,10 +338,6 @@ class _MapScreenState extends State<MapScreen> {
                                   myLocationButtonEnabled: true,
                                 ),
                               ),
-<<<<<<< HEAD
-=======
-
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                             ],
                           )
                         : currentTab == 2
@@ -480,12 +346,8 @@ class _MapScreenState extends State<MapScreen> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Padding(
-<<<<<<< HEAD
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 12.0),
-=======
-                                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                                     child: HeaderWidget(),
                                   ),
                                   Padding(
@@ -526,22 +388,15 @@ class _MapScreenState extends State<MapScreen> {
                                   ),
                                   Expanded(
                                     child: ListView.builder(
-<<<<<<< HEAD
                                       itemCount: filteredPosts
                                           .length, // Or filteredPosts.length if filtering applied
                                       itemBuilder: (context, index) {
                                         final post = filteredPosts[
                                             index]; // Use filteredPosts if filtering applied
-=======
-                                      itemCount: filteredPosts.length, // Or filteredPosts.length if filtering applied
-                                      itemBuilder: (context, index) {
-                                        final post = filteredPosts[index]; // Use filteredPosts if filtering applied
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
 
                                         return Column(
                                           children: [
                                             GestureDetector(
-<<<<<<< HEAD
                                               onTap: () async {
                                                 Map<String, dynamic> mapData = {
                                                   'postId': '',
@@ -565,35 +420,13 @@ class _MapScreenState extends State<MapScreen> {
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           10), // Rounded corners
-=======
-                                              onTap:()async{
-                                                Map<String, dynamic> mapData = {
-                                                  'postId':'',
-                                                };
-                                                Navigator.pushNamed(
-                                                    context, RoutesName.postDetail,
-                                                    arguments: mapData);
-                                              },
-                                              child: Container(
-                                                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white, // Optional: Background color
-                                                  borderRadius: BorderRadius.circular(10), // Rounded corners
-
-
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                                                 ),
                                                 child: Row(
                                                   children: [
                                                     ClipRRect(
-<<<<<<< HEAD
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               15),
-=======
-                                                      borderRadius: BorderRadius.circular(15),
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                                                       child: Image.asset(
                                                         post.imageUrl, // Ensure this path is valid
                                                         width: 130,
@@ -604,7 +437,6 @@ class _MapScreenState extends State<MapScreen> {
                                                     const SizedBox(width: 15),
                                                     Expanded(
                                                       child: Column(
-<<<<<<< HEAD
                                                         crossAxisAlignment:
                                                             CrossAxisAlignment
                                                                 .start,
@@ -652,30 +484,6 @@ class _MapScreenState extends State<MapScreen> {
                                                                       .textBlack0,
                                                                   TextAlign
                                                                       .start),
-=======
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          MyString.reg(
-                                                              post.title, 14, MyColor.red, TextAlign.start),
-                                                          const SizedBox(height: 4),
-                                                          MyString.reg(post.location, 12, MyColor.textBlack0,
-                                                              TextAlign.start),
-                                                          MyString.reg(post.category, 12, MyColor.textBlack0,
-                                                              TextAlign.start),
-                                                          MyString.reg(post.distance, 12, MyColor.textBlack0,
-                                                              TextAlign.start),
-                                                          const SizedBox(height: 4),
-                                                          Row(
-                                                            children: [
-                                                              const Icon(Icons.star,
-                                                                  color: Colors.amber, size: 16),
-                                                              const SizedBox(width: 4),
-                                                              MyString.reg(
-                                                                  '${post.rating} (${post.reviews})',
-                                                                  15,
-                                                                  MyColor.textBlack0,
-                                                                  TextAlign.start),
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                                                             ],
                                                           ),
                                                         ],
@@ -686,15 +494,10 @@ class _MapScreenState extends State<MapScreen> {
                                               ),
                                             ),
                                             const Divider(
-<<<<<<< HEAD
                                               color: Color(
                                                   0xffEBEBEB), // Color of the divider
                                               thickness:
                                                   1, // Thickness of the line
-=======
-                                              color: Color(0xffEBEBEB), // Color of the divider
-                                              thickness: 1, // Thickness of the line
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                                               indent: 16, // Start padding
                                               endIndent: 16, // End padding
                                             ),
@@ -703,10 +506,6 @@ class _MapScreenState extends State<MapScreen> {
                                       },
                                     ),
                                   ),
-<<<<<<< HEAD
-=======
-
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                                 ],
                               )
                             : Column(
@@ -714,12 +513,8 @@ class _MapScreenState extends State<MapScreen> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Padding(
-<<<<<<< HEAD
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 12.0),
-=======
-                                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                                     child: HeaderWidget(),
                                   ),
                                   Padding(
@@ -748,15 +543,10 @@ class _MapScreenState extends State<MapScreen> {
                                   ),
                                 ],
                               )),
-<<<<<<< HEAD
-=======
-
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                 if (currentTab == 1 && _selectedMarkerPosition != null)
                   Positioned(
                     bottom: 25,
                     left: 30,
-<<<<<<< HEAD
                     right: 30, // Adjust based on your UI layout
                     child: Container(
                       padding: const EdgeInsets.only(
@@ -767,18 +557,6 @@ class _MapScreenState extends State<MapScreen> {
                           border: Border.all(color: MyColor.orange2)),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-=======
-                    right: 30,// Adjust based on your UI layout
-                    child: Container(
-                      padding: const EdgeInsets.only(right: 15, left: 15, bottom: 15, top: 5),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(22),
-border: Border.all(color: MyColor.orange2)
-                      ),
-                      child: Column(
-mainAxisAlignment: MainAxisAlignment.center,
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Align(
@@ -789,7 +567,6 @@ mainAxisAlignment: MainAxisAlignment.center,
                               },
                               child: Container(
                                   padding: EdgeInsets.all(5),
-<<<<<<< HEAD
                                   decoration: BoxDecoration(
                                     //color: MyColor.card,
                                     borderRadius: BorderRadius.circular(50),
@@ -800,15 +577,6 @@ mainAxisAlignment: MainAxisAlignment.center,
                                     color: MyColor.orange2,
                                     size: 20,
                                   )),
-=======
-                                    decoration: BoxDecoration(
-                                      //color: MyColor.card,
-                                borderRadius: BorderRadius.circular(50),
-                                       // border:Border.all(color: MyColor.orange2)
-                                    ),
-                                    child: Icon(Icons.close, color: MyColor.orange2,size: 20,)),
-
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                             ),
                           ),
                           Row(
@@ -822,34 +590,18 @@ mainAxisAlignment: MainAxisAlignment.center,
                                   fit: BoxFit.cover,
                                 ),
                               ),
-<<<<<<< HEAD
                               SizedBox(
                                 width: 15,
                               ),
-=======
-                              SizedBox(width: 15,),
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                               Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-<<<<<<< HEAD
                                   MyString.reg('${_selectedPlace}', 16,
                                       MyColor.red, TextAlign.start),
                                   MyString.reg('${_selectedDistance}', 12,
                                       MyColor.textBlack0, TextAlign.start),
-=======
-
-                                 MyString.reg(
-                                    '${_selectedPlace}',
-                                     16,MyColor.red,TextAlign.start
-                                  ),
-                                  MyString.reg(
-                                      '${_selectedDistance}',
-                                      12,MyColor.textBlack0,TextAlign.start
-                                  ),
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                                   Row(
                                     children: [
                                       const Icon(Icons.star,
@@ -862,10 +614,6 @@ mainAxisAlignment: MainAxisAlignment.center,
                                           TextAlign.start),
                                     ],
                                   ),
-<<<<<<< HEAD
-=======
-
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                                 ],
                               ),
                             ],
@@ -892,22 +640,14 @@ mainAxisAlignment: MainAxisAlignment.center,
                           decoration: BoxDecoration(
                               color: MyColor.orange2,
                               borderRadius:
-<<<<<<< HEAD
                                   const BorderRadius.all(Radius.circular(22))),
-=======
-                              const BorderRadius.all(Radius.circular(22))),
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                           child: MyString.med(
                               'useLoc'.tr, 13, MyColor.white, TextAlign.center),
                         ),
                       ),
                     ),
                   ),
-<<<<<<< HEAD
                 if (_selectedMarkerPosition == null && currentTab == 1)
-=======
-                if (_selectedMarkerPosition == null && currentTab == 1 )
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
                   Positioned(
                     bottom: 15,
                     right: 40,
@@ -938,11 +678,6 @@ mainAxisAlignment: MainAxisAlignment.center,
     );
   }
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
   Widget buildCategoryFilter() {
     return Container(
       height: 70,
@@ -953,7 +688,6 @@ mainAxisAlignment: MainAxisAlignment.center,
         itemCount: dataList.length,
         itemBuilder: (context, index) {
           return GestureDetector(
-<<<<<<< HEAD
             onTap: () async {
               selectedCategory = dataList[index].nickname;
               _filterPostsAndAddMarkers(selectedCategory);
@@ -984,52 +718,13 @@ mainAxisAlignment: MainAxisAlignment.center,
               ),
             ),
           );
-=======
-              onTap: () async {
-                selectedCategory = dataList[index].nickname;
-                _filterPostsAndAddMarkers(selectedCategory);
-                filterPosts(selectedCategory);
-              },
-              child:
-                  Container(
-                    width: 70,
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          '${dataList[index].image}',
-                          height: 30,
-                          width: 30,
-                        ),
-                        dataList[index].nickname==selectedCategory?
-                        MyString.bold('${dataList[index].name}', 10, MyColor.title,
-                            TextAlign.center): MyString.reg('${dataList[index].name}', 10, MyColor.title,
-                            TextAlign.center) ,
-                        if(dataList[index].nickname==selectedCategory)
-                          Divider(
-                            color: Colors.pink,     // Color of the divider
-                            thickness: 3,             // Thickness of the line
-                            indent: 5,               // Start padding
-                            endIndent: 5,            // End padding
-                          ),
-                      ],
-                    ),
-                  ),
-
-               );
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
         },
       ),
     );
   }
-<<<<<<< HEAD
 
   Widget buildSearchBar() {
     return Container(
-=======
-  Widget buildSearchBar() {
-    return Container(
-
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
       child: SearchingBar(
         onChanged: _updateSuggestions,
         onPlaceSelected: _convertAddressToLatLng,
@@ -1044,8 +739,4 @@ class FilterModel {
   String nickname;
 
   FilterModel(this.image, this.name, this.nickname);
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 12f1d64d5d39f144522a2fa26a7fd7de4635653b
