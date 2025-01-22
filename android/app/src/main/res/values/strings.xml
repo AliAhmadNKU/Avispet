@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <string name="facebook_app_id">1132161764534359</string>
-    <string name="fb_login_protocol_scheme">fb1132161764534359</string>
-    <string name="facebook_client_token">207e28f21a484d38ad6f5335c54fcc61</string>
-    <string name="mapbox_token">sk.eyJ1IjoiamVhbm5lZmJhMjYiLCJhIjoiY20zaGV3eGo3MGNraTJpcXo5Zjd4Y2ZldCJ9.kbGLOQ-jHHVNfwU7lZ4F_w</string>
-    <string name="app_name">avispets</string>
-</resources>
