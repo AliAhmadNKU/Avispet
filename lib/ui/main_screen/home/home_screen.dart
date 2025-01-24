@@ -456,12 +456,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                         final post = postsList[index];
                                         return GestureDetector(
                                           onTap: () async {
-                                            Map<String, dynamic> mapData = {
-                                              'postId': '',
-                                            };
                                             Navigator.pushNamed(
                                                 context, RoutesName.postDetail,
-                                                arguments: mapData);
+                                                arguments: {
+                                                  'post': post
+                                                });
                                           },
                                           child: Container(
                                             decoration: BoxDecoration(

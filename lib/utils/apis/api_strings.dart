@@ -91,6 +91,9 @@ class ApiStrings {
   static const String dogBreeds = 'breeds/dog-breeds';
   static const String catBreeds = 'breeds/cat-breeds';
   static const String getAllCategories = 'category';
+  static const String review = 'review/';
+  static const String getPostReviewsById = review + 'get-post-reviews-by-id/';
+  static const String getPostReviewsByPostId = review + 'get-post-reviews-by-postId/';
 
   //DELETE
   static const String deleteAccount = 'delete-account';

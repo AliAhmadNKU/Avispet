@@ -494,7 +494,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                             child: MyString.bold('${'addPost'.tr}', 27,
                                 MyColor.title, TextAlign.center),
                           ),
-                          buildSearchBar(),
+                          // buildSearchBar(),
                           SizedBox(
                             height: 20,
                           ),

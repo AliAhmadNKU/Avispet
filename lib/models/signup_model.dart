@@ -1,16 +1,16 @@
 class SignUpModel {
   int? status;
   bool? error;
-  String? msg;
+  String? message;
   Data? data;
   Metadata? metadata;
 
-  SignUpModel({this.status, this.error, this.msg, this.data, this.metadata});
+  SignUpModel({this.status, this.error, this.message, this.data, this.metadata});
 
   SignUpModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     error = json['error'];
-    msg = json['msg'];
+    message = json['message'];
     data = json['data'] != null ? new Data.fromJson(json['data']) : null;
     metadata = json['metadata'] != null
         ? new Metadata.fromJson(json['metadata'])
@@ -21,7 +21,7 @@ class SignUpModel {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['status'] = this.status;
     data['error'] = this.error;
-    data['msg'] = this.msg;
+    data['message'] = this.message;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
