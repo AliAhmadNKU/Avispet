@@ -81,7 +81,7 @@ class _MainPageState extends State<MainPage> {
   notificationCount() {
     Future.delayed(Duration.zero, () async {
       bool result = await getProfileApi();
-      getGlobalApi();
+      // getGlobalApi();
       setState(() {
         debugPrint('NOTIFICATION COUNT :$result');
         notificationLoader = false;

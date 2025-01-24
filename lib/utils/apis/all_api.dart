@@ -20,6 +20,7 @@ class AllApi {
 
     print(sharedPref.getString(SharedKey.auth).toString());
     var url = Uri.parse("${ApiStrings.baseURl}$endPoint");
+    print(url);
 
     var response = await http.get(url, headers: {
       'Authorization':
@@ -67,18 +68,29 @@ class AllApi {
       String endPoint, Map<String, dynamic> mapData) async {
     debugPrint(
         'SHARED-PREF SAVE LANGUAGE (postApi => ${ApiStrings.baseURl}$endPoint) ${sharedPref.getString(SharedKey.languageValue).toString()}');
+
+    debugPrint('Payload => ${jsonEncode(mapData)}');
     var url = Uri.parse("${ApiStrings.baseURl}$endPoint");
 
-    var response = await http.post(url,
-        headers: {
-          'Authorization':
-              "Bearer  ${sharedPref.getString(SharedKey.auth).toString()}",
-          'Accept-Language':
-              sharedPref.getString(SharedKey.languageValue).toString(),
-          "x-access-token": sharedPref.getString(SharedKey.auth).toString()
-        },
-        body: mapData);
-    return response.body;
+    try{
+      var response = await http.post(url,
+          headers: {
+            'Authorization':
+            "Bearer  ${sharedPref.getString(SharedKey.auth).toString()}",
+            'Content-Type': 'application/json',
+            'Accept-Language':
+            sharedPref.getString(SharedKey.languageValue).toString(),
+            "x-access-token": sharedPref.getString(SharedKey.auth).toString()
+          },
+          body: jsonEncode(mapData)
+      );
+      return response.body;
+    }
+    catch(e){
+      debugPrint(
+          'Exception response (postApi => ${e}');
+      throw e;
+    }
   }
 
   static Future<Object> postMethodApii(String endPoint, Map data) async {

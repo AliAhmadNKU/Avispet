@@ -146,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
     getAllCategoriesApi();
     getAllPostsApi();
     getForumApi(page, '', currentTabBreed);
-    GetApi.getNotify(context, '');
+    // GetApi.getNotify(context, '');
   }
 
   List<Postssss> postss = [
@@ -530,8 +530,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
                                                   children: [
-                                                    MyString.reg(
-                                                        post.placeName,
+                                                    if(post.placeName != null) MyString.reg(
+                                                        post.placeName!,
                                                         14,
                                                         MyColor.orange2,
                                                         TextAlign.start),
@@ -617,7 +617,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
       // Decode the response
       var result = jsonDecode(res.toString());
-
       if (result['status'] == 200) {
         // Parse the response into the GetAllPostModel
         var posts = GetAllPostModel.fromJson(result);

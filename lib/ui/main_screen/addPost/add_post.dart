@@ -1763,14 +1763,14 @@ class _AddPostScreenState extends State<AddPostScreen> {
     }
     _postBloc.add(GetCreatePostEvent(
       userId: int.parse(sharedPref.getString(SharedKey.userId)!),
-      placeId: 0,
+      placeId: currPos!['placeId'],
       // currPos!['placeId']
       email: currPos!['email'],
       phone: currPos!['phone'],
       images: imageUrlList,
       category: selectedCategory,
       overallRating: 0.0,
-      placeName: "Good Food Place",
+      placeName: currPos!['name'],
       description: additionalInfo.text,
       smallDogs: smallDogsAllowed,
       bigDogs: bigDogsAllowed,
@@ -1801,6 +1801,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       if (data['results'].isNotEmpty) {
+        print('google => $data');
         final location = data['results'][0]['geometry']['location'];
         setState(() {
           lat = location['lat'];
