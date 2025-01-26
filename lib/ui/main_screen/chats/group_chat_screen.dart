@@ -2824,6 +2824,9 @@ class _ChatScreenState extends State<GroupChatScreen> {
     });
     socket.on('group_message', (newMessage) {
       debugPrint("GROIP_CHAT_OBJECT_RECEIVE_EVENT ==> $newMessage");
+      setState(() {
+        _listChats.insert(0,GroupMessageModel.fromJson(newMessage));
+      });
     });
   }
 
