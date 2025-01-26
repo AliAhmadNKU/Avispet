@@ -352,6 +352,23 @@ class AllApi {
     return responded.body;
   }
 
+  static Future<String> uploadChatImage(String image) async {
+    var url = Uri.parse(ApiStrings.baseURl + ApiStrings.postChatImage);
+    print(url);
+    var request = http.MultipartRequest("POST", url);
+    request.headers.addAll({
+      // ApiStrings.headerKey: ApiStrings.headerValue,
+      'Accept-Language':
+      sharedPref.getString(SharedKey.languageValue).toString(),
+      "x-access-token": sharedPref.getString(SharedKey.auth).toString(),
+      "Authorization": "Bearer  ${sharedPref.getString(SharedKey.auth).toString()}",
+    });
+    request.files.add(await http.MultipartFile.fromPath('chat_image', image));
+    var response = await request.send();
+    var responded = await http.Response.fromStream(response);
+    return responded.body;
+  }
+
   /*static Future<bool> checkAndRequestStoragePermission() async {
     // Check if permission is already granted
     PermissionStatus status = await Permission.storage.status;

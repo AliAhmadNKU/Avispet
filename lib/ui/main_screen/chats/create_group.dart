@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:avispets/models/chats/all_users_discussion_model.dart';
+import 'package:avispets/ui/widgets/base_selection.dart';
 import 'package:avispets/utils/common_function/header_widget.dart';
 import 'package:avispets/utils/my_routes/route_name.dart';
 import 'package:flutter/material.dart';
@@ -27,10 +29,14 @@ class CreateGroup extends StatefulWidget {
 
 class _CreateGroupState extends State<CreateGroup> {
   FollowingFollowerModel _followerModel = FollowingFollowerModel();
+  AllUsersDiscussionModel _allUsersDiscussionModel = AllUsersDiscussionModel();
 
   List<FollowingFollowerBody> followList = [];
+  List<UserDiscussion> userDiscussionList = [];
   List<FollowingFollowerBody> saveList = [];
   List<String> saveList1 = [];
+
+  final Set<UserDiscussion> _selectedIndices = {};
 
   var searchBar = TextEditingController();
 
@@ -47,8 +53,9 @@ class _CreateGroupState extends State<CreateGroup> {
   @override
   void initState() {
     super.initState();
-    getFollowFollowingApi(page, 1, '');
-    GetApi.getNotify(context, '');
+    // getFollowFollowingApi(page, 1, '');
+    getAllUsersForDiscussion();
+    // GetApi.getNotify(context, '');
   }
 
   @override
@@ -60,48 +67,16 @@ class _CreateGroupState extends State<CreateGroup> {
           floatingActionButton: FloatingActionButton(
               onPressed: () async {
                 FocusManager.instance.primaryFocus!.unfocus();
-                if (saveList.length != 1 && saveList.isNotEmpty) {
-                  var data = await Navigator.pushNamed(
-                      context, RoutesName.createGroup2,
-                      arguments: saveList);
-                  if (data == true) {
-                    Navigator.pop(context, true);
-                  }
-                } else if (saveList.length == 1) {
-                  for (var j = 0; j < saveList.length; j++) {
-                    userId = saveList[j].followRef!.id.toString();
-                    userName = saveList[j].followRef!.name.toString();
-                    userImage = saveList[j].followRef!.profilePicture != null
-                        ? '${ApiStrings.mediaURl}${saveList[j].followRef!.profilePicture.toString()}'
-                        : '';
-                    isBlocked = int.parse(saveList[j].isBlocked.toString());
-                  }
-
-                  Map<String, dynamic> mapData = {
-                    'userId': userId,
-                    'userName': userName,
-                    'userImage': userImage,
-                    'myId': sharedPref.getString(SharedKey.userId).toString(),
-                    'myImage': sharedPref
-                            .getString(SharedKey.userprofilePic)
-                            .toString()
-                            .isEmpty
-                        ? ""
-                        : sharedPref
-                            .getString(SharedKey.userprofilePic)
-                            .toString(),
-                    'blockBy': '0',
-                    'isBlock': isBlocked,
-                    'online': 0,
-                    'groupId': '0',
-                    'totalMember': ''
-                  };
-
-                  await Navigator.pushReplacementNamed(
-                      context, RoutesName.chatScreen,
-                      arguments: mapData);
-                } else {
-                  toaster(context, 'atLeastOneUser'.tr);
+                // _createGroupOld();
+                if(_selectedIndices.isEmpty) return;
+                var data = await Navigator.pushNamed(
+                    context, RoutesName.createGroup2,
+                    arguments: {
+                      'user': _selectedIndices.toList()
+                    }
+                );
+                if(data == true){
+                  Navigator.pop(context, true);
                 }
               },
               shape: CircleBorder(),
@@ -170,8 +145,8 @@ class _CreateGroupState extends State<CreateGroup> {
                                               searchBar.text = '';
                                               stackLoader = false;
 
-                                              getFollowFollowingApi(
-                                                  page, 1, '');
+                                              // getFollowFollowingApi(
+                                              //     page, 1, '');
                                             });
                                           },
                                           child: Icon(
@@ -204,10 +179,10 @@ class _CreateGroupState extends State<CreateGroup> {
                                     stackLoader = true;
                                     searchDelay.run(() {
                                       if (value.isNotEmpty) {
-                                        getFollowFollowingApi(page, 1, value);
+                                        // getFollowFollowingApi(page, 1, value);
                                       }
                                       if (value.isEmpty) {
-                                        getFollowFollowingApi(page, 1, '');
+                                        // getFollowFollowingApi(page, 1, '');
                                       }
                                       FocusManager.instance.primaryFocus!
                                           .unfocus();
@@ -318,115 +293,9 @@ class _CreateGroupState extends State<CreateGroup> {
                               ? Container(
                                   child: progressBar(),
                                 )
-                              : ListView.builder(
-                                  itemCount: followList.length,
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  padding: EdgeInsets.zero,
-                                  itemBuilder: (context, index) {
-                                    return Container(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 15),
-                                      height: 74,
-                                      margin: EdgeInsets.only(bottom: 10),
-                                      decoration: BoxDecoration(
-                                        color: MyColor.card,
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                      child: ListTile(
-                                        visualDensity: const VisualDensity(
-                                            horizontal: 0, vertical: -4),
-                                        leading: ClipRRect(
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(50)),
-                                          child: followList[index]
-                                                      .followRef!
-                                                      .profilePicture !=
-                                                  null
-                                              ? Image.network(
-                                                  '${ApiStrings.mediaURl}${followList[index].followRef!.profilePicture.toString()}',
-                                                  height: 40,
-                                                  width: 40,
-                                                  fit: BoxFit.cover,
-                                                  loadingBuilder: (context,
-                                                          child,
-                                                          loadingProgress) =>
-                                                      (loadingProgress == null)
-                                                          ? child
-                                                          : Container(
-                                                              height: 40,
-                                                              width: 40,
-                                                              child:
-                                                                  customProgressBar()))
-                                              : Image.asset(
-                                                  'assets/images/onboard/placeholder_image.png',
-                                                  width: 40,
-                                                  height: 40,
-                                                ),
-                                        ),
-                                        title: MyString.med(
-                                            followList[index]
-                                                .followRef!
-                                                .name
-                                                .toString(),
-                                            14,
-                                            MyColor.redd,
-                                            TextAlign.start),
-                                        trailing: (followList[index]
-                                                .createGroupSelect)
-                                            ? Image.asset(
-                                                'assets/images/icons/check.png',
-                                              )
-                                            : const SizedBox(),
-                                        onTap: () {
-                                          setState(() {
-                                            debugPrint(
-                                                'click is ${followList[index].createGroupSelect}');
-
-                                            followList[index]
-                                                    .createGroupSelect =
-                                                !followList[index]
-                                                    .createGroupSelect;
-
-                                            if (followList[index]
-                                                .createGroupSelect) {
-                                              saveList1.add(followList[index]
-                                                  .id
-                                                  .toString());
-                                            } else {
-                                              saveList1.remove(followList[index]
-                                                  .id
-                                                  .toString());
-                                            }
-
-                                            debugPrint(
-                                                'save list 1 ${saveList1.toString()}');
-
-                                            if (saveList1.contains(
-                                                followList[index]
-                                                    .id
-                                                    .toString())) {
-                                              saveList.add(followList[index]);
-                                            } else {
-                                              for (var j = 0;
-                                                  j < saveList.length;
-                                                  j++) {
-                                                if (saveList[j].id.toString() ==
-                                                    followList[index]
-                                                        .id
-                                                        .toString()) {
-                                                  saveList.removeAt(j);
-                                                }
-                                              }
-                                            }
-                                            debugPrint(
-                                                'save list   ${saveList.toString()}');
-                                          });
-                                        },
-                                      ),
-                                    );
-                                  },
-                                ),
+                              :
+                          // _buildFollowersUI(),
+                          _buildUsersUI(),
                         ],
                       ),
                     ),
@@ -439,23 +308,272 @@ class _CreateGroupState extends State<CreateGroup> {
     );
   }
 
-  getFollowFollowingApi(int loadPage, int type, String searchValues) async {
+  // getFollowFollowingApi(int loadPage, int type, String searchValues) async {
+  //   var res = await AllApi.getMethodApi(
+  //       "${ApiStrings.followersFollowing}?page=${loadPage.toString()}&limit=200&search=$searchValues&type=${type.toString()}");
+  //   var result = jsonDecode(res.toString());
+  //   if (result['status'] == 200) {
+  //     loader = false;
+  //     stackLoader = false;
+  //     followList.clear();
+  //     _followerModel = FollowingFollowerModel.fromJson(result);
+  //     for (int i = 0; i < _followerModel.data!.length; i++) {
+  //       followList.add(_followerModel.data![i]);
+  //
+  //       if (saveList1.contains(_followerModel.data![i].id.toString())) {
+  //         followList[i].createGroupSelect = true;
+  //       }
+  //     }
+  //     setState(() {});
+  //   }
+  // }
+
+  getAllUsersForDiscussion() async {
     var res = await AllApi.getMethodApi(
-        "${ApiStrings.followersFollowing}?page=${loadPage.toString()}&limit=200&search=$searchValues&type=${type.toString()}");
+        "${ApiStrings.allUsersDiscussion}");
+    print(res);
     var result = jsonDecode(res.toString());
     if (result['status'] == 200) {
       loader = false;
       stackLoader = false;
-      followList.clear();
-      _followerModel = FollowingFollowerModel.fromJson(result);
-      for (int i = 0; i < _followerModel.data!.length; i++) {
-        followList.add(_followerModel.data![i]);
-
-        if (saveList1.contains(_followerModel.data![i].id.toString())) {
-          followList[i].createGroupSelect = true;
-        }
-      }
+      userDiscussionList.clear();
+      _allUsersDiscussionModel = AllUsersDiscussionModel.fromJson(result);
+      userDiscussionList.addAll(_allUsersDiscussionModel.data!);
       setState(() {});
+    }
+  }
+
+  Widget _buildFollowersUI() {
+    return ListView.builder(
+      itemCount: followList.length,
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.zero,
+      itemBuilder: (context, index) {
+        return Container(
+          padding:
+          EdgeInsets.symmetric(vertical: 15),
+          height: 74,
+          margin: EdgeInsets.only(bottom: 10),
+          decoration: BoxDecoration(
+            color: MyColor.card,
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: ListTile(
+            visualDensity: const VisualDensity(
+                horizontal: 0, vertical: -4),
+            leading: ClipRRect(
+              borderRadius: const BorderRadius.all(
+                  Radius.circular(50)),
+              child: followList[index]
+                  .followRef!
+                  .profilePicture !=
+                  null
+                  ? Image.network(
+                  '${ApiStrings.mediaURl}${followList[index].followRef!.profilePicture.toString()}',
+                  height: 40,
+                  width: 40,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context,
+                      child,
+                      loadingProgress) =>
+                  (loadingProgress == null)
+                      ? child
+                      : Container(
+                      height: 40,
+                      width: 40,
+                      child:
+                      customProgressBar()))
+                  : Image.asset(
+                'assets/images/onboard/placeholder_image.png',
+                width: 40,
+                height: 40,
+              ),
+            ),
+            title: MyString.med(
+                followList[index]
+                    .followRef!
+                    .name
+                    .toString(),
+                14,
+                MyColor.redd,
+                TextAlign.start),
+            trailing: (followList[index]
+                .createGroupSelect)
+                ? Image.asset(
+              'assets/images/icons/check.png',
+            )
+                : const SizedBox(),
+            onTap: () {
+              setState(() {
+                debugPrint(
+                    'click is ${followList[index].createGroupSelect}');
+
+                followList[index]
+                    .createGroupSelect =
+                !followList[index]
+                    .createGroupSelect;
+
+                if (followList[index]
+                    .createGroupSelect) {
+                  saveList1.add(followList[index]
+                      .id
+                      .toString());
+                } else {
+                  saveList1.remove(followList[index]
+                      .id
+                      .toString());
+                }
+
+                debugPrint(
+                    'save list 1 ${saveList1.toString()}');
+
+                if (saveList1.contains(
+                    followList[index]
+                        .id
+                        .toString())) {
+                  saveList.add(followList[index]);
+                } else {
+                  for (var j = 0;
+                  j < saveList.length;
+                  j++) {
+                    if (saveList[j].id.toString() ==
+                        followList[index]
+                            .id
+                            .toString()) {
+                      saveList.removeAt(j);
+                    }
+                  }
+                }
+                debugPrint(
+                    'save list   ${saveList.toString()}');
+              });
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildUsersUI() {
+    return ListView.builder(
+      itemCount: userDiscussionList.length,
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.zero,
+      itemBuilder: (context, index) {
+        final user = userDiscussionList[index];
+        return Container(
+          padding:
+          EdgeInsets.symmetric(vertical: 15),
+          height: 74,
+          margin: EdgeInsets.only(bottom: 10),
+          decoration: BoxDecoration(
+            color: MyColor.card,
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: ListTile(
+            visualDensity: const VisualDensity(
+                horizontal: 0, vertical: -4),
+            leading: ClipRRect(
+              borderRadius: const BorderRadius.all(
+                  Radius.circular(50)),
+              child: user.profilePicture !=
+                  null && user.profilePicture!.contains('http')
+                  ? Image.network(
+                  '${user.profilePicture.toString()}',
+                  height: 40,
+                  width: 40,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context,
+                      child,
+                      loadingProgress) =>
+                  (loadingProgress == null)
+                      ? child
+                      : Container(
+                      height: 40,
+                      width: 40,
+                      child:
+                      customProgressBar()))
+                  : Image.asset(
+                'assets/images/onboard/placeholder_image.png',
+                width: 40,
+                height: 40,
+              ),
+            ),
+            title: MyString.med(
+                user.name.toString(),
+                14,
+                MyColor.redd,
+                TextAlign.start),
+            onTap: () async {
+              await Navigator.pushNamed(
+                  context,
+                  RoutesName.chatScreen,
+                arguments: {
+                    'user': user
+                }
+              );
+            },
+            onLongPress: () {
+              setState(() {
+                if (_selectedIndices.contains(user)) {
+                  _selectedIndices.remove(user); // Deselect if already selected
+                } else {
+                  _selectedIndices.add(user); // Select item
+                }
+              });
+            },
+            trailing: _selectedIndices.contains(user) ? BaseSelection() : null,
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _createGroupOld() async {
+    if (saveList.length != 1 && saveList.isNotEmpty) {
+      var data = await Navigator.pushNamed(
+          context, RoutesName.createGroup2,
+          arguments: saveList);
+      if (data == true) {
+        Navigator.pop(context, true);
+      }
+    } else if (saveList.length == 1) {
+      for (var j = 0; j < saveList.length; j++) {
+        userId = saveList[j].followRef!.id.toString();
+        userName = saveList[j].followRef!.name.toString();
+        userImage = saveList[j].followRef!.profilePicture != null
+            ? '${ApiStrings.mediaURl}${saveList[j].followRef!.profilePicture.toString()}'
+            : '';
+        isBlocked = int.parse(saveList[j].isBlocked.toString());
+      }
+
+      Map<String, dynamic> mapData = {
+        'userId': userId,
+        'userName': userName,
+        'userImage': userImage,
+        'myId': sharedPref.getString(SharedKey.userId).toString(),
+        'myImage': sharedPref
+            .getString(SharedKey.userprofilePic)
+            .toString()
+            .isEmpty
+            ? ""
+            : sharedPref
+            .getString(SharedKey.userprofilePic)
+            .toString(),
+        'blockBy': '0',
+        'isBlock': isBlocked,
+        'online': 0,
+        'groupId': '0',
+        'totalMember': ''
+      };
+
+      await Navigator.pushReplacementNamed(
+          context, RoutesName.chatScreen,
+          arguments: mapData);
+    } else {
+      toaster(context, 'atLeastOneUser'.tr);
     }
   }
 }

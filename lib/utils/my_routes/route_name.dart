@@ -22,6 +22,7 @@ class RoutesName {
   static const String inboxScreen = 'inboxScreen';
   static const String messagesScreen = 'inboxScreen';
   static const String chatScreen = 'chatScreen';
+  static const String groupChatScreen = 'groupChatScreen';
   static const String reviewScreen = 'reviewScreen';
   static const String createGroup = 'createGroup';
   static const String createGroup2 = 'createGroup2';

@@ -13,6 +13,7 @@ import 'package:avispets/ui/main_screen/chats/all_messages.dart';
 import 'package:avispets/ui/main_screen/chats/chat_screen.dart';
 import 'package:avispets/ui/main_screen/chats/create_group.dart';
 import 'package:avispets/ui/main_screen/chats/create_group2.dart';
+import 'package:avispets/ui/main_screen/chats/group_chat_screen.dart';
 import 'package:avispets/ui/main_screen/chats/group_info.dart';
 import 'package:avispets/ui/main_screen/chats/review.dart';
 import 'package:avispets/ui/main_screen/filter_reviews.dart';
@@ -138,14 +139,23 @@ class Routes {
         return MaterialPageRoute(
             builder: (BuildContext context) => CreateAnimal(mapData: mapData));
       case RoutesName.messagesScreen:
+        print('APP-ROUTE(MESSAGE_SCREEN) ::  ${settings.arguments.toString()}');
+        Map<String, dynamic>? mapData =
+        settings.arguments as Map<String, dynamic>?;
         return MaterialPageRoute(
-            builder: (BuildContext context) => const MessagesScreen());
+            builder: (BuildContext context) => MessagesScreen(mapData: mapData,));
       case RoutesName.chatScreen:
         print('APP-ROUTE(CHAT_SCREEN) ::  ${settings.arguments.toString()}');
         Map<String, dynamic>? mapData =
             settings.arguments as Map<String, dynamic>?;
         return MaterialPageRoute(
             builder: (BuildContext context) => ChatScreen(mapData: mapData));
+      case RoutesName.groupChatScreen:
+        print('APP-ROUTE(GROUP_CHAT_SCREEN) ::  ${settings.arguments.toString()}');
+        Map<String, dynamic>? mapData =
+        settings.arguments as Map<String, dynamic>?;
+        return MaterialPageRoute(
+            builder: (BuildContext context) => GroupChatScreen(mapData: mapData));
 
       case RoutesName.reviewScreen:
         print('APP-ROUTE(CHAT_SCREEN) ::  ${settings.arguments.toString()}');
@@ -162,8 +172,10 @@ class Routes {
             builder: (BuildContext context) => CreateGroup(mapData: mapData));
 
       case RoutesName.createGroup2:
-        List<FollowingFollowerBody> mapData =
-            settings.arguments as List<FollowingFollowerBody>;
+        // List<FollowingFollowerBody> mapData =
+        //     settings.arguments as List<FollowingFollowerBody>;
+        Map<String, dynamic>? mapData =
+        settings.arguments as Map<String, dynamic>?;
         print('APP-ROUTE(CREATE-GROUP 2) ::  ${settings.arguments.toString()}');
         return MaterialPageRoute(
             builder: (BuildContext context) => CreateGroup2(mapData: mapData));
