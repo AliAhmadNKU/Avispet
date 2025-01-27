@@ -135,7 +135,7 @@ class SignUpBlock extends Bloc<CreateProfileEvent, BlocStates> {
               'password': event.password!.trim(),
               'timezone': event.timeZone!,
               'latitude': event.latitude.toString(),
-              //// 'longitude': event.longitude.toString(),
+              'longitude': event.longitude.toString(),
               // 'deviceToken':
               //     sharedPref.getString(SharedKey.deviceToken).toString(),
               // 'deviceType': event.deviceType!,
@@ -172,13 +172,14 @@ class SignUpBlock extends Bloc<CreateProfileEvent, BlocStates> {
                   'SIGNUP SUCCESS - DEVICE TOKEN: ${sharedPref.getString(SharedKey.deviceToken)}');
 
               emit(ValidationCheck(result['message'].toString()));
+              Navigator.pushNamed(context, RoutesName.otpScreen, arguments: mapData);
 
               // Navigate to OTP screen
-              Navigator.pushNamed(context, RoutesName.otpScreen, arguments: {
-                'phoneNumber': event.phoneNumber!.trim(),
-              });
+              // Navigator.pushNamed(context, RoutesName.otpScreen, arguments: {
+              //   'phoneNumber': event.phoneNumber!.trim(),
+              // });
 
-              emit(NextScreen());
+              // emit(NextScreen());
             } else if (result['status'] == 401) {
               // Clear shared preferences and navigate to login
               sharedPref.clear();

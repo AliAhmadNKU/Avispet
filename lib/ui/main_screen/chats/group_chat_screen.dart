@@ -3347,7 +3347,7 @@ class _ChatScreenState extends State<GroupChatScreen> {
 
   Future<void> getGroupChatMessages() async {
     var res = await AllApi.getMethodApi(
-        "${ApiStrings.groupMessages}/${_groupChatModel.id}/${ApiStrings.messages}");
+        "${ApiStrings.groupMessages}/${sharedPref.getString(SharedKey.userId)}/${_groupChatModel.id}/${ApiStrings.messages}");
     print(res);
     var result = jsonDecode(res.toString());
     if (result['status'] == 200) {

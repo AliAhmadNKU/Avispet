@@ -28,7 +28,7 @@ class CreateAnimalBloc extends Bloc<CreateAnimalEvent, BlocStates> {
               'weight': event.weight,
               'age': event.age,
               'breed': event.race.toString(),
-              'images': event.image.toString(),
+              'images': event.image,
               "user_id": await sharedPref.getString(SharedKey.userId)!,
               'gender': event.gender.toString(),
               'sterilized': event.sterilized.toString(),
@@ -39,6 +39,7 @@ class CreateAnimalBloc extends Bloc<CreateAnimalEvent, BlocStates> {
               mapData,
             );
             var result = jsonDecode(res.toString());
+            print(result);
             if (result['status'] == 201) {
               commonModel = CommonModel.fromJson(result);
               emit(ValidationCheck(result['message'].toString()));

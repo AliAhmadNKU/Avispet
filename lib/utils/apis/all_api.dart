@@ -272,6 +272,7 @@ class AllApi {
     var response = await http.post(url,
         headers: {
           ApiStrings.headerKey: "Bearer ${ApiStrings.headerValue}",
+          'Content-Type': 'application/json',
           'Accept-Language':
               sharedPref.getString(SharedKey.languageValue).toString(),
         },

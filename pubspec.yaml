@@ -59,6 +59,7 @@ dependencies:
   firebase_auth: ^5.3.3
   firebase_messaging: ^15.1.5
   firebase_crashlytics: ^4.1.5
+  country_code_picker: ^3.1.0
   get: ^4.6.6
   share_plus: ^10.1.2
   flutter_html: ^3.0.0-beta.2
