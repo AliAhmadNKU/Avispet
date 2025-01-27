@@ -2267,10 +2267,13 @@ class _ChatScreenState extends State<ChatScreen> {
                           onTap: () async {
                             FocusManager.instance.primaryFocus!.unfocus();
                             Navigator.pop(context);
-                            loader = true;
                             if (type == 1) {
-                              clearChatSocket();
-                              clearChatSocketListener();
+                              setState(() {
+                                loader = true;
+                              });
+                              clearIndividualChat();
+                              // clearChatSocket();
+                              // clearChatSocketListener();
                             } else {
                               // await moreOption(ApiStrings.blockUnblockUser, type);
                             }
@@ -3996,6 +3999,19 @@ class _ChatScreenState extends State<ChatScreen> {
       _listChats.addAll(_userIndividualChatsModel.data!);
       setState(() {});
     }
+  }
+
+  Future<void> clearIndividualChat() async {
+    var res = await AllApi.deleteMethodApi(
+        "${ApiStrings.chats}/details/${sharedPref.getString(SharedKey.userId)}/${user.id}/${ApiStrings.individual}", {});
+    print(res);
+    var result = jsonDecode(res.toString());
+    if (result['status'] == 200) {
+      _listChats.clear();
+    }
+    setState(() {
+      loader = false;
+    });
   }
 }
 

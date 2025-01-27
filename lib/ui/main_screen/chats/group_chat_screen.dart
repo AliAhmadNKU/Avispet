@@ -2290,10 +2290,13 @@ class _ChatScreenState extends State<GroupChatScreen> {
                           onTap: () async {
                             FocusManager.instance.primaryFocus!.unfocus();
                             Navigator.pop(context);
-                            loader = true;
                             if (type == 1) {
-                              clearChatSocket();
-                              clearChatSocketListener();
+                              setState(() {
+                                loader = true;
+                              });
+                              clearGroupChats();
+                              // clearChatSocket();
+                              // clearChatSocketListener();
                             } else {
                               // await moreOption(ApiStrings.blockUnblockUser, type);
                             }
@@ -3354,6 +3357,19 @@ class _ChatScreenState extends State<GroupChatScreen> {
       _listChats.addAll(_groupChatMessagesModel.data!);
       setState(() {});
     }
+  }
+
+  Future<void> clearGroupChats() async {
+    var res = await AllApi.deleteMethodApi(
+        "${ApiStrings.chats}/details/${sharedPref.getString(SharedKey.userId)}/${_groupChatModel.id}/${ApiStrings.group}", {});
+    print(res);
+    var result = jsonDecode(res.toString());
+    if (result['status'] == 200) {
+      _listChats.clear();
+    }
+    setState(() {
+      loader = false;
+    });
   }
 }
 

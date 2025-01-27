@@ -41,12 +41,13 @@ class AllApi {
     var url = Uri.parse("${ApiStrings.baseURl}$endPoint");
     var response = await http.delete(url,
         headers: {
-          ApiStrings.headerKey: ApiStrings.headerValue,
+          // ApiStrings.headerKey: ApiStrings.headerValue,
+          'Authorization':
+          "Bearer  ${sharedPref.getString(SharedKey.auth).toString()}",
           'Accept-Language':
               sharedPref.getString(SharedKey.languageValue).toString(),
           "x-access-token": sharedPref.getString(SharedKey.auth).toString()
-        },
-        body: mapData);
+        },);
     return response.body;
   }
 

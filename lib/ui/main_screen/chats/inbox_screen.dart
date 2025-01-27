@@ -453,7 +453,7 @@ class _InboxScreenState extends State<InboxScreen> {
     setState(() {});
   }
 
-  delete(int index) {
+  delete(int index, int type) {
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
@@ -510,37 +510,45 @@ class _InboxScreenState extends State<InboxScreen> {
                           onTap: () async {
                             FocusManager.instance.primaryFocus!.unfocus();
                             Navigator.pop(context);
-
-                            if (inboxList[index].groupId != 0) {
-                              Map<String, dynamic> mapData = {
-                                "userId": sharedPref
-                                    .getString(SharedKey.userId)
-                                    .toString(),
-                                "members": sharedPref
-                                    .getString(SharedKey.userId)
-                                    .toString(),
-                                "groupId": inboxList[index].groupId.toString()
-                              };
-                              socket.emit('leave_group', mapData);
-                              deleteUserGroupListener();
-                              deleteUserGroupListener1();
-                            } else {
-                              Map<String, dynamic> mapData = {
-                                "userId": sharedPref
-                                    .getString(SharedKey.userId)
-                                    .toString(),
-                                "user2Id": inboxList[index]
-                                            .senderId!
-                                            .toString() ==
-                                        sharedPref
-                                            .getString(SharedKey.userId)
-                                            .toString()
-                                    ? '${inboxList[index].receiverId!.toString()}'
-                                    : '${inboxList[index].senderId!.toString()}',
-                              };
-                              socket.emit('delete_chat_listing', mapData);
-                              deleteUserListListener();
+                            setState(() {
+                              loader = true;
+                            });
+                            if(type == 1){
+                              clearIndividualChat(index);
                             }
+                            else if(type == 2){
+                              clearGroupChat(index);
+                            }
+                            // if (inboxList[index].groupId != 0) {
+                            //   Map<String, dynamic> mapData = {
+                            //     "userId": sharedPref
+                            //         .getString(SharedKey.userId)
+                            //         .toString(),
+                            //     "members": sharedPref
+                            //         .getString(SharedKey.userId)
+                            //         .toString(),
+                            //     "groupId": inboxList[index].groupId.toString()
+                            //   };
+                            //   socket.emit('leave_group', mapData);
+                            //   deleteUserGroupListener();
+                            //   deleteUserGroupListener1();
+                            // } else {
+                            //   Map<String, dynamic> mapData = {
+                            //     "userId": sharedPref
+                            //         .getString(SharedKey.userId)
+                            //         .toString(),
+                            //     "user2Id": inboxList[index]
+                            //                 .senderId!
+                            //                 .toString() ==
+                            //             sharedPref
+                            //                 .getString(SharedKey.userId)
+                            //                 .toString()
+                            //         ? '${inboxList[index].receiverId!.toString()}'
+                            //         : '${inboxList[index].senderId!.toString()}',
+                            //   };
+                            //   socket.emit('delete_chat_listing', mapData);
+                            //   deleteUserListListener();
+                            // }
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -568,7 +576,7 @@ class _InboxScreenState extends State<InboxScreen> {
     );
   }
 
-  void _showCustomMenu(BuildContext context, Offset offset, int index) {
+  void _showCustomMenu(BuildContext context, Offset offset, int index, int type) {
     final RenderObject overlay =
         Overlay.of(context).context.findRenderObject()!;
     showMenu(
@@ -584,7 +592,7 @@ class _InboxScreenState extends State<InboxScreen> {
                   context: context,
                   barrierDismissible: true,
                   builder: (_) {
-                    return delete(index);
+                    return delete(index, type);
                   });
             },
             child:
@@ -799,7 +807,7 @@ class _InboxScreenState extends State<InboxScreen> {
                   return GestureDetector(
                     onLongPressStart: (value) {
                       _showCustomMenu(context,
-                          value.globalPosition, index);
+                          value.globalPosition, index, 1);
                     },
                     child: InkWell(
                       onTap: () async {
@@ -1167,8 +1175,7 @@ class _InboxScreenState extends State<InboxScreen> {
                       : '';
                   return GestureDetector(
                     onLongPressStart: (value) {
-                      _showCustomMenu(context,
-                          value.globalPosition, index);
+                      _showCustomMenu(context, value.globalPosition, index, 1);
                     },
                     child: InkWell(
                       onTap: () async {
@@ -1411,7 +1418,7 @@ class _InboxScreenState extends State<InboxScreen> {
                   return GestureDetector(
                     onLongPressStart: (value) {
                       _showCustomMenu(context,
-                          value.globalPosition, index);
+                          value.globalPosition, index, 2);
                     },
                     child: InkWell(
                       onTap: () async {
@@ -1611,5 +1618,31 @@ class _InboxScreenState extends State<InboxScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> clearIndividualChat(int index) async {
+    var res = await AllApi.deleteMethodApi(
+        "${ApiStrings.chats}/${sharedPref.getString(SharedKey.userId)}/${_listChats[index].id}/${ApiStrings.individual}", {});
+    print(res);
+    var result = jsonDecode(res.toString());
+    if (result['status'] == 200) {
+      _listChats.remove(_listChats[index]);
+    }
+    setState(() {
+      loader = false;
+    });
+  }
+
+  Future<void> clearGroupChat(int index) async {
+    var res = await AllApi.deleteMethodApi(
+        "${ApiStrings.chats}/${sharedPref.getString(SharedKey.userId)}/${_listGroupChats[index].id}/${ApiStrings.group}", {});
+    print(res);
+    var result = jsonDecode(res.toString());
+    if (result['status'] == 200) {
+      _listGroupChats.remove(_listGroupChats[index]);
+    }
+    setState(() {
+      loader = false;
+    });
   }
 }
