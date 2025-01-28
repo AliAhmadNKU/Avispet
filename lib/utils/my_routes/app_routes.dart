@@ -72,7 +72,7 @@ class Routes {
                 SignupScreen(languageFormat: value));
 
       case RoutesName.otpScreen:
-        Map<String, String> value = settings.arguments as Map<String, String>;
+        Map<String, dynamic> value = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
             builder: (BuildContext context) => OtpScreen(data: value));
 

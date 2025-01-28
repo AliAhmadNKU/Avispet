@@ -565,6 +565,8 @@ class Lang extends Translations {
               'Nous venons de vous envoyer un code de vérification à 6 chiffres à votre adresse courriel',
           'otp2Dec':
               'Nous venons de vous envoyer un code de vérification à 6 chiffres à votre numéro de téléphone',
+          'otpDec2':
+          'Nous venons de vous envoyer un code de vérification à 6 chiffres à votre numéro de téléphone',
           'otp2': 'Vérifier avec un numéro de téléphone?',
           'otp3': 'Vérifier avec un votre email?',
           'update': 'Mise à jour Avispets?',

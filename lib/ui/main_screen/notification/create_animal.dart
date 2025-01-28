@@ -312,6 +312,7 @@ class _CreateAnimalState extends State<CreateAnimal> {
                                         ),
                                       ],
                                       onChanged: (String? newValue) {
+                                        print(newValue);
                                         setState(() {
                                           if (newValue == 'female') {
                                             gender = 1;
@@ -661,7 +662,7 @@ class _CreateAnimalState extends State<CreateAnimal> {
                                   doNotKnowBreed ? 'N/A' : sendRace,
                                   int.parse(weight.text),
                                   int.parse(age.text),
-                                  gender == 1 ? 'Male' : 'Female',
+                                  gender == 1 ? 'Female' : 'Male',
                                   sterilized == 1 ? 'Yes' : 'No',
                                   imageUrlList));
                             });

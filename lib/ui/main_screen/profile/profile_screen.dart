@@ -81,7 +81,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    GetApi.getNotify(context, '');
+    // GetApi.getNotify(context, '');
     Future.delayed(Duration.zero, () async {
       await GetApi.getProfileApi(
           context, sharedPref.getString(SharedKey.userId).toString());
@@ -176,7 +176,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                   fit: BoxFit.cover)
                                               : GetApi.getProfileModel.data!
                                                           .profilePicture !=
-                                                      null
+                                                      null && GetApi.getProfileModel.data!
+                                              .profilePicture!.contains('http')
                                                   ? Image.network(
                                                       '${ApiStrings.mediaURl}${GetApi.getProfileModel.data!.profilePicture.toString()}',
                                                       width: 75,

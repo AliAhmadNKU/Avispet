@@ -29,7 +29,7 @@ class CreateAnimalBloc extends Bloc<CreateAnimalEvent, BlocStates> {
               'age': event.age,
               'breed': event.race.toString(),
               'images': event.image,
-              "user_id": await sharedPref.getString(SharedKey.userId)!,
+              "user_id": int.parse(await sharedPref.getString(SharedKey.userId)!),
               'gender': event.gender.toString(),
               'sterilized': event.sterilized.toString(),
             };

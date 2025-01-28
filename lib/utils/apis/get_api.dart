@@ -212,6 +212,31 @@ class GetApi {
     }
   }
 
+  static getMyAnimalNew(
+      BuildContext context,
+      ) async {
+    getAnimal.clear();
+    var res = await AllApi.getMethodApi(ApiStrings.myAnimalsNew);
+
+    var result = jsonDecode(res.toString());
+    print(result);
+    if (result['status'] == 200) {
+      animalModel = MyAnimalModel.fromJson(result);
+      getAnimal.addAll(animalModel.data!);
+      // for (int i = 0; i < animalModel.data!.length; i++) {
+      //   getAnimal.add(animalModel.data![i]);
+      // }
+    } else if (result['status'] == 401) {
+      sharedPref.clear();
+      sharedPref.setString(SharedKey.onboardScreen, 'OFF');
+      toaster(context, result['status'].toString());
+      Navigator.pushNamedAndRemoveUntil(
+          context, RoutesName.loginScreen, (route) => false);
+    } else {
+      // toaster(context, result['status'].toString());
+    }
+  }
+
   static getMyAnimalId(BuildContext context, int loaderPage, String id) async {
     var res = await AllApi.getMethodApi("${ApiStrings.animalById}/$id");
     var result = jsonDecode(res.toString());

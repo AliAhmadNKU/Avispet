@@ -36,9 +36,11 @@ class ApiStrings {
   // POST METHODS
   static const String signup = 'auth/signup';
   static const String emailOtp = 'request-email-otp';
+  static const String resendOTP = 'auth/resend-otp';
   static const String addAnimal = 'animal/add-animal';
   static const String updateAnimal = 'animal/update-animal';
   static const String login = 'auth/login';
+  static const String verifyOtp = 'auth/verify';
   static const String forgotPasswordOtp = 'auth/verify-forgot-password';
   static const String socialLogin = 'auth/social-login';
   static const String forgotPassword = 'auth/forgot-password';
@@ -74,6 +76,7 @@ class ApiStrings {
   static const String pointHistory = 'point-history';
   static const String ranking = 'leaderboards';
   static const String myAnimals = 'animal/get-all-animal';
+  static const String myAnimalsNew = 'animal/get-animals-by-user';
   static const String animalById = 'animal/get-animal';
 
   static const String departments = 'departments';

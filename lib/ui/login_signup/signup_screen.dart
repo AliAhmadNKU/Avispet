@@ -109,25 +109,25 @@ class _SignupScreenState extends State<SignupScreen> {
             LoadingDialog.hide(context);
           }
           if (state is NextScreen) {
-            Map<String, String> mapData2 = {
-              'firstName': firstName.text.toString(),
-              'lastName': lastName.text.toString(),
-              'email': email.text.toString(),
-              'password': password.text.toString(),
-              'timezone': currentTimeZone.toString(),
-              'latitude': latitude.toString(),
-              'longitude': longitude.toString(),
-              'deviceToken':
-                  sharedPref.getString(SharedKey.deviceToken).toString(),
-              'deviceType': deviceType.toString(),
-              'pseudo': pseudo.text.toString(),
-              'phoneNumber': phoneNumber.text.toString(),
-              'city': city.text.toString(),
-              'address': address.text.toString(),
-            };
-
-            Navigator.pushNamed(context, RoutesName.otpScreen,
-                arguments: mapData2);
+            // Map<String, String> mapData2 = {
+            //   'firstName': firstName.text.toString(),
+            //   'lastName': lastName.text.toString(),
+            //   'email': email.text.toString(),
+            //   'password': password.text.toString(),
+            //   'timezone': currentTimeZone.toString(),
+            //   'latitude': latitude.toString(),
+            //   'longitude': longitude.toString(),
+            //   'deviceToken':
+            //       sharedPref.getString(SharedKey.deviceToken).toString(),
+            //   'deviceType': deviceType.toString(),
+            //   'pseudo': pseudo.text.toString(),
+            //   'phoneNumber': phoneNumber.text.toString(),
+            //   'city': city.text.toString(),
+            //   'address': address.text.toString(),
+            // };
+            //
+            // Navigator.pushNamed(context, RoutesName.otpScreen,
+            //     arguments: mapData2);
           }
         },
         child: Scaffold(
@@ -1401,7 +1401,7 @@ class _SignupScreenState extends State<SignupScreen> {
             ? result.additionalUserInfo!.profile!['last_name'].toString()
             : '',
         result.additionalUserInfo!.profile!['email'].toString(),
-        '2');
+        'Facebook');
   }
 
   googleSignup(BuildContext context) async {
@@ -1450,7 +1450,8 @@ class _SignupScreenState extends State<SignupScreen> {
           firstName.isNotEmpty ? firstName.trim() : '',
           lastName.isNotEmpty ? lastName.trim() : '',
           useremail,
-          'Google');
+          'Google'
+      );
       // }
     }
   }
@@ -1516,7 +1517,10 @@ class _SignupScreenState extends State<SignupScreen> {
             Navigator.pushNamedAndRemoveUntil(
                 context,
                 RoutesName.otpScreen,
-                arguments: mapData,
+                arguments: {
+                  'data': mapData,
+                  'screen': 'signup',
+                },
                 (route) => false);
           }
         } else {
@@ -1525,7 +1529,8 @@ class _SignupScreenState extends State<SignupScreen> {
               context,
               RoutesName.selectAnimal,
               arguments: mapData,
-              (route) => false);
+              (route) => false
+          );
         }
       }
     } else if (result['status'] == 401) {

@@ -31,9 +31,12 @@ class _MyAnimalsState extends State<MyAnimals> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () async {
-      await GetApi.getMyAnimal(
+      await GetApi.getMyAnimalNew(
         context,
       );
+      // await GetApi.getMyAnimal(
+      //   context,
+      // );
       setState(() {
         loader = false;
       });
@@ -88,10 +91,19 @@ class _MyAnimalsState extends State<MyAnimals> {
                           ),
                           onPressed: () async {
                             await Navigator.pushNamed(
-                                context, RoutesName.createAnimal);
+                                context, RoutesName.createAnimal
+                            );
                             page = 1;
+                            setState(() {
+                              loader = true;
+                            });
+                            await GetApi.getMyAnimalNew(
+                              context,
+                            );
+                            setState(() {
+                              loader = false;
+                            });
                             // await GetApi.getMyAnimal(context, page);
-                            setState(() {});
                           },
                         ),
                       ),
@@ -277,13 +289,17 @@ class _MyAnimalsState extends State<MyAnimals> {
                                                       setState(() {
                                                         loader = true;
                                                       });
-                                                      await GetApi.getMyAnimal(
+                                                      await GetApi.getMyAnimalNew(
                                                         context,
                                                       );
-                                                      setState(() {
-                                                        loader = false;
-                                                      });
-                                                      setState(() {});
+                                                      // await GetApi.getMyAnimal(
+                                                      //   context,
+                                                      // );
+                                                      if(this.mounted){
+                                                        setState(() {
+                                                          loader = false;
+                                                        });
+                                                      }
                                                     },
                                                     child: MyString.reg(
                                                         'edit'.tr,
@@ -307,7 +323,10 @@ class _MyAnimalsState extends State<MyAnimals> {
                                                                   .toString());
                                                         },
                                                       );
-                                                      await GetApi.getMyAnimal(
+                                                      // await GetApi.getMyAnimal(
+                                                      //   context,
+                                                      // );
+                                                      await GetApi.getMyAnimalNew(
                                                         context,
                                                       );
                                                       setState(() {
@@ -482,7 +501,10 @@ class _MyAnimalsState extends State<MyAnimals> {
     GetApi.getAnimal.clear();
     if (text.isEmpty) {
       page = 1;
-      await GetApi.getMyAnimal(
+      // await GetApi.getMyAnimal(
+      //   context,
+      // );
+      await GetApi.getMyAnimalNew(
         context,
       );
       setState(() {

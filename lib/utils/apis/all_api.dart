@@ -134,11 +134,12 @@ class AllApi {
         headers: {
           'Authorization':
               "Bearer  ${sharedPref.getString(SharedKey.auth).toString()}",
+          'Content-Type': 'application/json',
           'Accept-Language':
               sharedPref.getString(SharedKey.languageValue).toString(),
           "x-access-token": sharedPref.getString(SharedKey.auth).toString()
         },
-        body: mapData);
+        body: jsonEncode(mapData));
 
     return response.body;
   }
@@ -289,6 +290,20 @@ class AllApi {
               sharedPref.getString(SharedKey.languageValue).toString()
         },
         body: signValues);
+    return response.body;
+  }
+
+  static Future<Object> resendOTP(Map<String, String> signValues) async {
+    var url = Uri.parse(ApiStrings.baseURl + ApiStrings.resendOTP);
+    var response = await http.post(url,
+        headers: {
+          // ApiStrings.headerKey: ApiStrings.headerValue,
+          'Content-Type': 'application/json',
+          'Accept-Language':
+          sharedPref.getString(SharedKey.languageValue).toString()
+        },
+        body: jsonEncode(signValues)
+    );
     return response.body;
   }
 

@@ -831,7 +831,7 @@ class _LoginScreenState extends State<LoginScreen> {
           firstName.isNotEmpty ? firstName.trim() : '',
           lastName.isNotEmpty ? lastName.trim() : '',
           useremail,
-          '1');
+          'Google');
       // }
     }
   }
@@ -863,7 +863,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ? result.additionalUserInfo!.profile!['last_name'].toString()
             : '',
         result.additionalUserInfo!.profile!['email'].toString(),
-        '2');
+        'Facebook');
   }
 
   void appleLogin() {
@@ -882,7 +882,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 call.arguments["firstName"],
                 call.arguments["lastName"],
                 call.arguments["email"],
-                '3');
+                'Apple');
           } else {
             toaster(context, call.arguments["error"]);
           }
@@ -953,7 +953,10 @@ class _LoginScreenState extends State<LoginScreen> {
             Navigator.pushNamedAndRemoveUntil(
                 context,
                 RoutesName.otpScreen,
-                arguments: mapData,
+                arguments: {
+                  'data': mapData,
+                  'screen': 'login',
+                },
                 (route) => false);
           }
         } else {

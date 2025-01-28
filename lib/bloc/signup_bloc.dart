@@ -172,7 +172,14 @@ class SignUpBlock extends Bloc<CreateProfileEvent, BlocStates> {
                   'SIGNUP SUCCESS - DEVICE TOKEN: ${sharedPref.getString(SharedKey.deviceToken)}');
 
               emit(ValidationCheck(result['message'].toString()));
-              Navigator.pushNamed(context, RoutesName.otpScreen, arguments: mapData);
+              Navigator.pushNamed(
+                  context,
+                  RoutesName.otpScreen,
+                  arguments: {
+                    'data': mapData,
+                    'screen': 'signup',
+                  }
+              );
 
               // Navigate to OTP screen
               // Navigator.pushNamed(context, RoutesName.otpScreen, arguments: {
