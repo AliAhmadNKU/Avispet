@@ -33,6 +33,7 @@ class _CreateGroupState extends State<CreateGroup> {
 
   List<FollowingFollowerBody> followList = [];
   List<UserDiscussion> userDiscussionList = [];
+  List<UserDiscussion> userDiscussionListTemp = [];
   List<FollowingFollowerBody> saveList = [];
   List<String> saveList1 = [];
 
@@ -143,7 +144,8 @@ class _CreateGroupState extends State<CreateGroup> {
                                                   .instance.primaryFocus!
                                                   .unfocus();
                                               searchBar.text = '';
-                                              stackLoader = false;
+                                              // stackLoader = false;
+                                              getAllUsersForDiscussion();
 
                                               // getFollowFollowingApi(
                                               //     page, 1, '');
@@ -174,20 +176,22 @@ class _CreateGroupState extends State<CreateGroup> {
                                       fontSize: 14),
                                 ),
                                 onChanged: (value) {
+                                  // setState(() {
+                                  //   // page = 1;
+                                  //   stackLoader = true;
+                                  // });
+                                  if (value.isNotEmpty) {
+                                    userDiscussionListTemp = userDiscussionList.where((item) => item.name!.toLowerCase().contains(value.toLowerCase())).toList();
+                                    // getFollowFollowingApi(page, 1, value);
+                                  }
+                                  if(value.isEmpty){
+                                    userDiscussionListTemp = userDiscussionList;
+                                  }
                                   setState(() {
-                                    page = 1;
-                                    stackLoader = true;
-                                    searchDelay.run(() {
-                                      if (value.isNotEmpty) {
-                                        // getFollowFollowingApi(page, 1, value);
-                                      }
-                                      if (value.isEmpty) {
-                                        // getFollowFollowingApi(page, 1, '');
-                                      }
-                                      FocusManager.instance.primaryFocus!
-                                          .unfocus();
-                                    });
+
                                   });
+                                  // FocusManager.instance.primaryFocus!
+                                  //     .unfocus();
                                 },
                               )),
                           if (saveList.isNotEmpty)
@@ -337,8 +341,10 @@ class _CreateGroupState extends State<CreateGroup> {
       loader = false;
       stackLoader = false;
       userDiscussionList.clear();
+      userDiscussionListTemp.clear();
       _allUsersDiscussionModel = AllUsersDiscussionModel.fromJson(result);
       userDiscussionList.addAll(_allUsersDiscussionModel.data!);
+      userDiscussionListTemp.addAll(_allUsersDiscussionModel.data!);
       setState(() {});
     }
   }
@@ -457,12 +463,12 @@ class _CreateGroupState extends State<CreateGroup> {
 
   Widget _buildUsersUI() {
     return ListView.builder(
-      itemCount: userDiscussionList.length,
+      itemCount: userDiscussionListTemp.length,
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
       padding: EdgeInsets.zero,
       itemBuilder: (context, index) {
-        final user = userDiscussionList[index];
+        final user = userDiscussionListTemp[index];
         return Container(
           padding:
           EdgeInsets.symmetric(vertical: 15),

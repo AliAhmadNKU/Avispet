@@ -35,7 +35,7 @@ class EditAnimalBloc extends Bloc<EditAnimalEvent, BlocStates> {
                 'weight': event.weight!,
                 'breed': event.race.toString(),
                 'age': int.parse(event.dob.toString()),
-                'sterilized': event.sterilized == 1 ? "Yes" : "No",
+                'sterilized': event.sterilized == "1" ? "Yes" : "No",
                 'images': event.image
               };
               debugPrint("EDIT-ANIMAL MAP DATA IS : $mapData");

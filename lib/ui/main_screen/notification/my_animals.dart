@@ -238,7 +238,7 @@ class _MyAnimalsState extends State<MyAnimals> {
                                                         'type': GetApi
                                                                     .getAnimal[
                                                                         index]
-                                                                    .type
+                                                                    .specices
                                                                     .toString() ==
                                                                 'Dog'
                                                             ? 1.toString()
@@ -272,13 +272,18 @@ class _MyAnimalsState extends State<MyAnimals> {
                                                             ? 1.toString()
                                                             : 2.toString(),
                                                         'specices':
-                                                            '${ApiStrings.mediaURl}${GetApi.getAnimal[index].specices.toString()}',
+                                                        '${GetApi.getAnimal[index].specices!}',
+                                                        // 'specices':
+                                                        //     '${ApiStrings.mediaURl}${GetApi.getAnimal[index].specices.toString()}',
                                                         'image':
                                                             '${GetApi.getAnimal[index].images![0].toString()}',
                                                       };
 
                                                       debugPrint(
-                                                          'MY-ANIMAL MAP-DATA IS : ${GetApi.getAnimal[index].sterilized.toString()}');
+                                                          'MY-ANIMAL MAP-DATA IS : ${GetApi
+                                                              .getAnimal[
+                                                          index]
+                                                              .type}');
                                                       debugPrint(
                                                           'MY-ANIMAL MAP-DATA IS : $mapData');
                                                       await Navigator.pushNamed(

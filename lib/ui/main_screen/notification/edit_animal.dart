@@ -842,7 +842,7 @@ class _EditAnimalState extends State<EditAnimal> {
                                         : sendRace.toString(),
                                     dob.text,
                                     gender == 1 ? 'Male' : 'Female',
-                                    12,
+                                    weight.text.isEmpty ? int.parse(widget.mapData!['weight'].toString()) : int.parse(weight.text.trim()),
                                     sterilized.toString(),
                                     fileImage == null && imageUrlList.isEmpty
                                         ? [image.toString()]

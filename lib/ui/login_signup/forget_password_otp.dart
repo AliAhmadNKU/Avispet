@@ -5,6 +5,7 @@ import 'package:avispets/utils/apis/all_api.dart';
 import 'package:avispets/utils/apis/api_strings.dart';
 import 'package:avispets/utils/common_function/header_widget2.dart';
 import 'package:avispets/utils/common_function/my_string.dart';
+import 'package:avispets/utils/common_function/toaster.dart';
 import 'package:avispets/utils/my_color.dart';
 import 'package:avispets/utils/my_routes/route_name.dart';
 import 'package:flutter/gestures.dart';
@@ -29,18 +30,11 @@ class _ForgetPasswordOtpScreenState extends State<ForgetPasswordOtpScreen> {
   bool enableResend = false;
   Timer? timer;
   int currentTab = 1;
+  bool loader = false;
   @override
   void initState() {
     Future.delayed(Duration.zero, () {
-      timer = Timer.periodic(const Duration(seconds: 1), (_) {
-        setState(() {
-          if (secondsRemaining != 0) {
-            secondsRemaining--;
-          } else {
-            enableResend = true;
-          }
-        });
-      });
+      _startTimer();
     });
     super.initState();
   }
@@ -50,6 +44,8 @@ class _ForgetPasswordOtpScreenState extends State<ForgetPasswordOtpScreen> {
     final secs = (seconds % 60).toString().padLeft(2, '0');
     return '$minutes:$secs';
   }
+
+
 
   String verification = "";
   @override
@@ -63,7 +59,7 @@ class _ForgetPasswordOtpScreenState extends State<ForgetPasswordOtpScreen> {
         appBar: AppBar(title: Text('Verify OTP')),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
+          child: !loader ? Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               HeaderWidget2(),
@@ -100,17 +96,17 @@ class _ForgetPasswordOtpScreenState extends State<ForgetPasswordOtpScreen> {
               ),
               MyString.reg(
                   "rememberSpam".tr, 12, MyColor.textBlack0, TextAlign.start),
-              Text(
-                (!enableResend)
-                    ? " ${getFormattedTime(secondsRemaining)}"
-                    : " ${'resend'.tr}",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontFamily: "mont_Med",
-                  fontWeight: FontWeight.w400,
-                  color: MyColor.orange2,
-                ),
-              ),
+              // Text(
+              //   (!enableResend)
+              //       ? " ${getFormattedTime(secondsRemaining)}"
+              //       : " ${'resend'.tr}",
+              //   style: TextStyle(
+              //     fontSize: 14,
+              //     fontFamily: "mont_Med",
+              //     fontWeight: FontWeight.w400,
+              //     color: MyColor.orange2,
+              //   ),
+              // ),
               Container(
                 margin: EdgeInsets.only(top: 50),
                 child: OtpTextField(
@@ -131,6 +127,7 @@ class _ForgetPasswordOtpScreenState extends State<ForgetPasswordOtpScreen> {
                   showFieldAsBox: true,
                   onCodeChanged: (String code) {
                     debugPrint("code =  $code");
+                    verification = code;
                     // verificationCode = code;
                     // print(verificationCode);
                   },
@@ -142,23 +139,15 @@ class _ForgetPasswordOtpScreenState extends State<ForgetPasswordOtpScreen> {
               ),
               GestureDetector(
                 onTap: () async {
-                  final mapData = {
-                    "reset_token": "$verification",
-                  };
-
-                  debugPrint("SIGN-UP MAP DATA: $mapData");
-                  var res = await AllApi.verifyOtpApiForgotPassword(
-                      mapData, ApiStrings.forgotPasswordOtp);
-                  var result = jsonDecode(res.toString());
-                  print(result);
-                  if (result['status'] == 200) {
-                    Navigator.pushNamed(
-                      context,
-                      RoutesName.newPassword,
-                      arguments: {'email': email.trim()},
-                    );
-                    print(verification);
+                  if(verification.isEmpty) {
+                    toaster(context, "enterOtp".tr);
+                    return;
                   }
+                  if(verification.length < 6){
+                    toaster(context, "Please enter a valid 6 digit code");
+                    return;
+                  }
+                  verifyOtp();
                 },
                 child: Center(
                   child: Container(
@@ -190,7 +179,9 @@ class _ForgetPasswordOtpScreenState extends State<ForgetPasswordOtpScreen> {
                       ),
                       children: <TextSpan>[
                         TextSpan(
-                            text: " ${'resend'.tr}",
+                            text: (!enableResend)
+                                ? " ${getFormattedTime(secondsRemaining)}"
+                                : " ${'resend'.tr}",
                             style: TextStyle(
                               fontSize: 14,
                               fontFamily: "mont_Med",
@@ -199,32 +190,104 @@ class _ForgetPasswordOtpScreenState extends State<ForgetPasswordOtpScreen> {
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () async {
-                                final mapData = {
-                                  "reset_token": "$verification",
-                                };
-
-                                debugPrint("SIGN-UP MAP DATA: $mapData");
-                                var res =
-                                    await AllApi.verifyOtpApiForgotPassword(
-                                        mapData, ApiStrings.forgotPasswordOtp);
-                                var result = jsonDecode(res.toString());
-                                print(result);
-                                if (result['status'] == 200) {
-                                  Navigator.pushNamed(
-                                    context,
-                                    RoutesName.newPassword,
-                                    arguments: {'email': email.trim()},
-                                  );
-                                  print(verification);
-                                }
+                              if(enableResend){
+                                _resendOTP();
+                              }
                               }),
                       ]),
                 ),
               ),
             ],
+          ) : Container(
+            margin: EdgeInsets.only(top: 100),
+            child: progressBar(),
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _resendOTP() async {
+    setState(() {
+      loader = true;
+    });
+    Map<String, String> mapData = {
+      'email': widget.data['email']!,
+    };
+    debugPrint("FORGOT-PASSWORD MAP DATA IS : $mapData");
+
+    var res = await AllApi.forgotApi(mapData);
+
+    var result = jsonDecode(res.toString());
+
+    // emit(Loaded());
+    if (result['status'] == 200) {
+      toaster(context, result['message']);
+      secondsRemaining = 120;
+      enableResend = false;
+      _startTimer();
+    }
+    setState(() {
+      loader = false;
+    });
+  }
+
+  void _startTimer() {
+    Future.delayed(Duration.zero, () {
+      timer = Timer.periodic(const Duration(seconds: 1), (_) {
+        if(mounted){
+          setState(() {
+            if (secondsRemaining != 0) {
+              secondsRemaining--;
+            } else {
+              enableResend = true;
+            }
+          });
+        }
+      });
+    });
+  }
+
+  Future<void> verifyOtp() async {
+    try{
+      setState(() {
+        loader = true;
+      });
+      final mapData = {
+        "reset_token": "$verification",
+      };
+
+      debugPrint("SIGN-UP MAP DATA: $mapData");
+      var res = await AllApi.verifyOtpApiForgotPassword(
+          mapData, ApiStrings.forgotPasswordOtp);
+      var result = jsonDecode(res.toString());
+      print(result);
+      if (result['status'] == 200) {
+        Navigator.pushNamed(
+          context,
+          RoutesName.newPassword,
+          arguments: {'email': widget.data['email']!},
+        );
+        print(verification);
+      }
+      toaster(context, result['message']);
+      setState(() {
+        loader = false;
+      });
+    }
+    catch(e){
+      print(e);
+      setState(() {
+        loader = false;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    if(timer != null){
+      timer!.cancel();
+    }
+    super.dispose();
   }
 }

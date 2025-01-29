@@ -114,7 +114,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: HeaderWidget(),
+                    child: HeaderWidget(backIcon: false,),
                   ),
                   (GetApi.getProfileModel.data == null && loader)
                       ? Container(

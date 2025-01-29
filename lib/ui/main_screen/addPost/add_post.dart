@@ -780,34 +780,34 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                               },
                                             ),
                                           ),
-                                          GestureDetector(
-                                            onTap: () {
-                                              Navigator.pushNamed(
-                                                context,
-                                                RoutesName.addPostDetail,
-                                              );
-                                            },
-                                            child: Center(
-                                              child: Container(
-                                                alignment: Alignment.center,
-                                                height: 59,
-                                                width: double.infinity,
-                                                decoration: BoxDecoration(
-                                                    color: MyColor.orange2,
-                                                    borderRadius:
-                                                        const BorderRadius.all(
-                                                            Radius.circular(
-                                                                22))),
-                                                child: isLoadingLocation
-                                                    ? CircularProgressIndicator()
-                                                    : MyString.med(
-                                                        'createANewPlace'.tr,
-                                                        18,
-                                                        MyColor.white,
-                                                        TextAlign.center),
-                                              ),
-                                            ),
-                                          )
+                                          // GestureDetector(
+                                          //   onTap: () {
+                                          //     Navigator.pushNamed(
+                                          //       context,
+                                          //       RoutesName.addPostDetail,
+                                          //     );
+                                          //   },
+                                          //   child: Center(
+                                          //     child: Container(
+                                          //       alignment: Alignment.center,
+                                          //       height: 59,
+                                          //       width: double.infinity,
+                                          //       decoration: BoxDecoration(
+                                          //           color: MyColor.orange2,
+                                          //           borderRadius:
+                                          //               const BorderRadius.all(
+                                          //                   Radius.circular(
+                                          //                       22))),
+                                          //       child: isLoadingLocation
+                                          //           ? CircularProgressIndicator()
+                                          //           : MyString.med(
+                                          //               'createANewPlace'.tr,
+                                          //               18,
+                                          //               MyColor.white,
+                                          //               TextAlign.center),
+                                          //     ),
+                                          //   ),
+                                          // )
                                         ],
                                       ),
                                     Container(
@@ -1668,29 +1668,29 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                   },
                                 ),
                               ),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.pushNamed(
-                                    context,
-                                    RoutesName.addPostDetail,
-                                  );
-                                },
-                                child: Center(
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    height: 59,
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                        color: MyColor.orange2,
-                                        borderRadius: const BorderRadius.all(
-                                            Radius.circular(22))),
-                                    child: isLoadingLocation
-                                        ? CircularProgressIndicator()
-                                        : MyString.med('createANewPlace'.tr, 18,
-                                            MyColor.white, TextAlign.center),
-                                  ),
-                                ),
-                              )
+                              // GestureDetector(
+                              //   onTap: () {
+                              //     Navigator.pushNamed(
+                              //       context,
+                              //       RoutesName.addPostDetail,
+                              //     );
+                              //   },
+                              //   child: Center(
+                              //     child: Container(
+                              //       alignment: Alignment.center,
+                              //       height: 59,
+                              //       width: double.infinity,
+                              //       decoration: BoxDecoration(
+                              //           color: MyColor.orange2,
+                              //           borderRadius: const BorderRadius.all(
+                              //               Radius.circular(22))),
+                              //       child: isLoadingLocation
+                              //           ? CircularProgressIndicator()
+                              //           : MyString.med('createANewPlace'.tr, 18,
+                              //               MyColor.white, TextAlign.center),
+                              //     ),
+                              //   ),
+                              // )
                             ],
                           ),
                         ],
@@ -1876,6 +1876,38 @@ class _AddPostScreenState extends State<AddPostScreen> {
     }
   }
 
+  Future<void> getCurrentLocationNew() async {
+    setState(() {
+      isLoadingLocation = true;
+    });
+    try {
+      print('Latitude: ${_locationData!.latitude}, Longitude: ${_locationData!.longitude}');
+      setState(() {
+        lat = _locationData!.latitude!.toDouble();
+        long = _locationData!.longitude!.toDouble();
+        currentTab = 2;
+      });
+      print(lat);
+      print(long);
+      Map<String, dynamic>? curPos =
+      await GoogleMapsService.getLocationInfo(lat, long);
+      print(curPos);
+      setState(() {
+        currPos = curPos;
+        isLoadingLocation = false;
+      });
+      if (currPos != null) {
+        loader = false;
+      }
+    } catch (e) {
+      print("Error: $e");
+    } finally {
+      setState(() {
+        isLoadingLocation = false;
+      });
+    }
+  }
+
   Future<void> getCurrentLocation() async {
     setState(() {
       isLoadingLocation = true;
@@ -1910,6 +1942,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
   _onPlaceSelected(LocationData locationData) {
     _locationData = locationData;
+    getCurrentLocationNew();
   }
 }
 

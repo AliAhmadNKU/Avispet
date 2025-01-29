@@ -44,7 +44,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
   @override
   void initState() {
     super.initState();
-    GetApi.getNotify(context, '');
+    // GetApi.getNotify(context, '');
     page = 1;
   }
 

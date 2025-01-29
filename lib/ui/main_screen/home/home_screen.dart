@@ -453,6 +453,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Expanded(
                                     child: ListView.builder(
                                       itemCount: postsList.length,
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) {
                                         final post = postsList[index];
                                         return GestureDetector(
@@ -575,6 +577,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ],
                               ),
+                            ),
+                            SizedBox(
+                              height: 200,
                             )
                           ],
                         ),

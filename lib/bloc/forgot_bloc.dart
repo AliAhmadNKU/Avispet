@@ -33,11 +33,11 @@ class ForgotBloc extends Bloc<ForgotEvent, BlocStates> {
             if (result['status'] == 200) {
               print('==============================');
               // emit(ValidationCheck(result['message'].toString()));
-              Navigator.pushNamed(context, RoutesName.forgetPasswordOtpScreen,
+              await Navigator.pushNamed(context, RoutesName.forgetPasswordOtpScreen,
                   arguments: {
                     'email': event.email!.trim(),
                   });
-              // emit(NextScreen());
+              emit(Loaded());
             } else if (result['status'] == 401) {
               sharedPref.clear();
               sharedPref.setString(SharedKey.onboardScreen, 'OFF');

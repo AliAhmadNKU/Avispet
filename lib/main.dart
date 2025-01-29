@@ -66,8 +66,6 @@ main() async {
                 .isNotEmpty)) {
       languageKey = sharedPref.getString(SharedKey.languageKey).toString();
       languageValue = sharedPref.getString(SharedKey.languageValue).toString();
-      debugPrint('LANGUAGE KEYS IS  $languageKey');
-      debugPrint('LANGUAGE VALUE IS  $languageValue');
     } else {
       sharedPref.setString(SharedKey.languageKey, 'fr');
       sharedPref.setString(SharedKey.languageValue, 'fr');
@@ -76,7 +74,6 @@ main() async {
       languageValue = "fr";
     }
   });
-
   runApp(MyApp(languageKey, languageValue));
 }
 
@@ -101,6 +98,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('LANGUAGE KEYS IS  ${widget.languageKey}');
+    debugPrint('LANGUAGE KEYS IS  ${widget.languageValue}');
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
