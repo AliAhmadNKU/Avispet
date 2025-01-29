@@ -58,6 +58,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
   late CreatePostBloc _postBloc;
   TextEditingController searchBar = TextEditingController();
   TextEditingController additionalInfo = TextEditingController();
+  LocationData? _locationData;
 
   //post fields
   String selectedCategory = 'petstore';
@@ -228,11 +229,19 @@ class _AddPostScreenState extends State<AddPostScreen> {
   String currentTimeZone = "";
   num longitude = 0.0;
   num latitude = 0.0;
+
   _getLocation() async {
     Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.low);
+        desiredAccuracy: LocationAccuracy.high);
     longitude = position.longitude;
     latitude = position.latitude;
+
+    setState(() {
+
+    });
+
+    print('_getLocation | longitude ${longitude}');
+    print('_getLocation | latitude ${latitude}');
   }
 
   Future<String?> uploadImage(File imageFile) async {
@@ -283,17 +292,17 @@ class _AddPostScreenState extends State<AddPostScreen> {
     }
   }
 
-  getLocationByName() async {
+  Future<List<LocationData>> getLocationByNameNew(String query) async {
     try {
       Map<String, dynamic> data = {
         "latitude": latitude,
         "longitude": longitude,
-        "query": "${searchBar.text}",
+        "query": query,
         "radius": 500
       };
 
-      print(data);
-      var res = await AllApi.postMethodApii(
+      print('getLocationByName => $data');
+      var res = await AllApi.postMethodApi(
           ApiStrings.getLocationByNameAndAddress, data);
       print('========================$res');
 
@@ -302,9 +311,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
       if (result['status'] == 201) {
         // Parse the response into the GetAllCategories model
         GetLocatioByName location = GetLocatioByName.fromJson(result);
-        setState(() {
-          locationListByName = location.data ?? [];
-        });
+        return location.data!;
+        // setState(() {
+        //   locationListByName = location.data ?? [];
+        // });
       } else if (result['status'] == 401) {
         Navigator.pushNamedAndRemoveUntil(
             context, RoutesName.loginScreen, (route) => false);
@@ -315,7 +325,42 @@ class _AddPostScreenState extends State<AddPostScreen> {
       debugPrint("Error: {$e");
       toaster(context, "An error occurred while fetching categories.");
     }
+    return [];
   }
+
+  // Future getLocationByName(String query) async {
+  //   try {
+  //     Map<String, dynamic> data = {
+  //       "latitude": latitude,
+  //       "longitude": longitude,
+  //       "query": query,
+  //       "radius": 500
+  //     };
+  //
+  //     print('getLocationByName => $data');
+  //     var res = await AllApi.postMethodApii(
+  //         ApiStrings.getLocationByNameAndAddress, data);
+  //     print('========================$res');
+  //
+  //     var result = res is String ? jsonDecode(res) : res;
+  //
+  //     if (result['status'] == 201) {
+  //       // Parse the response into the GetAllCategories model
+  //       GetLocatioByName location = GetLocatioByName.fromJson(result);
+  //       setState(() {
+  //         locationListByName = location.data ?? [];
+  //       });
+  //     } else if (result['status'] == 401) {
+  //       Navigator.pushNamedAndRemoveUntil(
+  //           context, RoutesName.loginScreen, (route) => false);
+  //     } else {
+  //       toaster(context, result['message'].toString());
+  //     }
+  //   } catch (e) {
+  //     debugPrint("Error: {$e");
+  //     toaster(context, "An error occurred while fetching categories.");
+  //   }
+  // }
 
   getAllCatergoryandLocation() async {
     await getAllCategoriesApi();
@@ -328,7 +373,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
   void initState() {
     super.initState();
     getAllCatergoryandLocation();
-    GetApi.getNotify(context, '');
+    // GetApi.getNotify(context, '');
     _postBloc = CreatePostBloc(context);
     if (video.isNotEmpty) {
       Future.delayed(Duration.zero, () async {
@@ -431,7 +476,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
           hintStyle: TextStyle(color: MyColor.textBlack0, fontSize: 14),
         ),
         onChanged: (value) async {
-          await getLocationByName();
+          print(value);
+          // await getLocationByName();
         },
       ),
     );
@@ -517,8 +563,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                             child: Container(
                                               child: SearchingBar(
                                                   onChanged: _updateSuggestions,
-                                                  onPlaceSelected:
-                                                      _getLocations),
+                                                  onPlaceSelected: _onPlaceSelected
+                                              ),
                                             ),
                                           ),
                                         ],
@@ -601,16 +647,17 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                                 children: [
                                                   categoriesList[index].icon !=
                                                           null
-                                                      ? Image.network(
-                                                          categoriesList[index]
-                                                              .icon!,
-                                                          height: 40,
-                                                          width: 40,
-                                                          errorBuilder: (context,
-                                                                  error,
-                                                                  stackTrace) =>
-                                                              Icon(Icons.error),
-                                                        )
+                                                      ? ClipRRect(
+                                                    borderRadius: BorderRadius.circular(20),
+                                                    child: Image.network(
+                                                      categoriesList[index].icon!,
+                                                      height: 40,
+                                                      width: 40,
+                                                      fit: BoxFit.cover,
+                                                      errorBuilder: (context, error, stackTrace) =>
+                                                          Icon(Icons.error),
+                                                    ),
+                                                  )
                                                       : Icon(Icons.category,
                                                           size: 40),
                                                   SizedBox(height: 5),
@@ -1785,10 +1832,13 @@ class _AddPostScreenState extends State<AddPostScreen> {
     ));
   }
 
-  Future<void> _updateSuggestions(String query) async {
+  Future<List<LocationData>> _updateSuggestions(String query) async {
+    print(query);
     if (query.isNotEmpty) {
-      await GoogleMapsService.getPlaceSuggestions(query);
+      return await getLocationByNameNew(query);
+      // await GoogleMapsService.getPlaceSuggestions(query);
     }
+    return [];
   }
 
   Future<void> _getLocations(String address) async {
@@ -1856,6 +1906,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
         isLoadingLocation = false;
       });
     }
+  }
+
+  _onPlaceSelected(LocationData locationData) {
+    _locationData = locationData;
   }
 }
 

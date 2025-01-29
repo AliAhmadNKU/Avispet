@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:avispets/models/follower_following_model.dart';
 import 'package:avispets/models/forum/get_forum.dart';
 import 'package:avispets/models/get_all_categories_model.dart';
+import 'package:avispets/ui/widgets/no_data_found.dart';
 
 import 'package:avispets/utils/apis/all_api.dart';
 import 'package:avispets/utils/apis/api_strings.dart';
@@ -644,9 +645,8 @@ class _HomeScreenState extends State<HomeScreen> {
   getAllCategoriesApi() async {
     try {
       var res = await AllApi.getMethodApi("${ApiStrings.getAllCategories}");
-      print(res);
       var result = jsonDecode(res.toString());
-
+      // print('getAllCategoriesApi => $result');
       if (result['status'] == 200) {
         // Parse the response into the GetAllCategories model
         GetAllCategories categories = GetAllCategories.fromJson(result);
@@ -741,13 +741,16 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         Container(
-          height: MediaQuery.of(context).size.height * 0.1,
+          height: MediaQuery.of(context).size.height * 0.13,
           child: ListView.builder(
             padding: EdgeInsets.zero,
             scrollDirection: Axis.horizontal,
             shrinkWrap: true,
-            itemCount: categoriesList.length,
+            itemCount: categoriesList.isNotEmpty ? categoriesList.length : 1,
             itemBuilder: (context, index) {
+              if(categoriesList.isEmpty){
+                return NoDataFound();
+              }
               return GestureDetector(
                 onTap: () {
                   // Handle tap action here
@@ -757,13 +760,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     children: [
                       categoriesList[index].icon != null
-                          ? Image.network(
-                              categoriesList[index].icon!,
-                              height: 40,
-                              width: 40,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  Icon(Icons.error),
-                            )
+                          ? ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Image.network(
+                                categoriesList[index].icon!,
+                                height: 40,
+                                width: 40,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Icon(Icons.error),
+                              ),
+                          )
                           : Icon(Icons.category, size: 40),
                       SizedBox(height: 5),
                       Flexible(

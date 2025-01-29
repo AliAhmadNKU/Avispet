@@ -1,10 +1,11 @@
+import 'package:avispets/models/locations/get_location_name_address.dart';
 import 'package:avispets/ui/main_screen/map/google_maps_service.dart';
 import 'package:flutter/material.dart';
 import '../../../utils/my_routes/route_name.dart';
 
 class SearchingBar extends StatelessWidget {
-  final Function(String) onChanged;
-  final Function(String) onPlaceSelected;
+  final Future<List<LocationData>> Function(String) onChanged;
+  final Function(LocationData) onPlaceSelected;
 
   const SearchingBar({
     Key? key,
@@ -26,7 +27,10 @@ class SearchingBar extends StatelessWidget {
             onPressed: () {
               showSearch(
                 context: context,
-                delegate: PlaceSearchDelegate(onPlaceSelected: onPlaceSelected),
+                delegate: PlaceSearchDelegate(
+                    onPlaceSelected: onPlaceSelected,
+                  onChanged: onChanged
+                ),
               );
             },
           ),
@@ -49,13 +53,19 @@ class SearchingBar extends StatelessWidget {
 }
 
 class PlaceSearchDelegate extends SearchDelegate {
-  final Function(String) onPlaceSelected;
+  final Function(LocationData) onPlaceSelected;
+  final Future<List<LocationData>> Function(String) onChanged;
+  LocationData? _selectedLocation;
 
-  PlaceSearchDelegate({required this.onPlaceSelected});
+  PlaceSearchDelegate({
+    required this.onPlaceSelected,
+    required this.onChanged,
+  });
 
-  Future<List<String>> _getSuggestions(String query) async {
+  Future<List<LocationData>> _getSuggestions(String query) async {
     try {
-      return await GoogleMapsService.getPlaceSuggestions(query);
+      return await onChanged(query);
+      // return await GoogleMapsService.getPlaceSuggestions(query);
     } catch (e) {
       return [];
     }
@@ -81,13 +91,13 @@ class PlaceSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    onPlaceSelected(query);
+    onPlaceSelected(_selectedLocation!);
     return Container();
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return FutureBuilder<List<String>>(
+    return FutureBuilder<List<LocationData>>(
       future: _getSuggestions(query),
       builder: (context, snapshot) {
         if (!snapshot.hasData)
@@ -98,9 +108,10 @@ class PlaceSearchDelegate extends SearchDelegate {
           itemCount: suggestions.length,
           itemBuilder: (context, index) {
             return ListTile(
-              title: Text(suggestions[index]),
+              title: Text('${suggestions[index].name!} ${suggestions[index].address!}'),
               onTap: () {
-                onPlaceSelected(suggestions[index]);
+                _selectedLocation = suggestions[index];
+                onPlaceSelected(_selectedLocation!);
                 close(context, null);
               },
             );

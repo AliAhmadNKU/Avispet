@@ -1,13 +1,20 @@
+import 'package:avispets/models/locations/get_location_name_address.dart';
 import 'package:avispets/ui/main_screen/map/search_bar.dart';
+import 'package:avispets/utils/apis/all_api.dart';
+import 'package:avispets/utils/apis/api_strings.dart';
+import 'package:avispets/utils/base_location_utils.dart';
 import 'package:avispets/utils/common_function/header_widget.dart';
+import 'package:avispets/utils/common_function/toaster.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:avispets/models/locations/get_location_name_address.dart' as LocationDataModel;
 import '../../../../utils/my_color.dart';
 import '../../../../utils/common_function/my_string.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
+import 'package:location/location.dart' as LocationPackage;
 import '../../../utils/apis/get_api.dart';
 import '../../../utils/my_routes/route_name.dart';
 import '../home/home_screen.dart';
@@ -38,27 +45,35 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   GoogleMapController? _mapController;
-  final Location _location = Location();
+  final LocationPackage.Location _location = LocationPackage.Location();
   final TextEditingController _searchController = TextEditingController();
   List<String> _suggestions = [];
 
-  Future<void> _updateSuggestions(String query) async {
-    if (query.isNotEmpty) {
-      try {
-        final suggestions = await GoogleMapsService.getPlaceSuggestions(query);
-        setState(() {
-          _suggestions = suggestions;
-        });
-      } catch (e) {
-        setState(() {
-          _suggestions = [];
-        });
-      }
-    } else {
-      setState(() {
-        _suggestions = [];
-      });
-    }
+  // Future<void> _updateSuggestions(String query) async {
+  //   if (query.isNotEmpty) {
+  //     try {
+  //       final suggestions = await GoogleMapsService.getPlaceSuggestions(query);
+  //       setState(() {
+  //         _suggestions = suggestions;
+  //       });
+  //     } catch (e) {
+  //       setState(() {
+  //         _suggestions = [];
+  //       });
+  //     }
+  //   } else {
+  //     setState(() {
+  //       _suggestions = [];
+  //     });
+  //   }
+  // }
+
+
+  _getLocation() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    longitude = position.longitude;
+    latitude = position.latitude;
   }
 
   final Set<Marker> _markers = {};
@@ -76,7 +91,7 @@ class _MapScreenState extends State<MapScreen> {
 
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
-    _location.onLocationChanged.listen((LocationData locationData) {
+    _location.onLocationChanged.listen((LocationPackage.LocationData locationData) {
       if (_shouldFollowUserLocation &&
           locationData.latitude != null &&
           locationData.longitude != null) {
@@ -96,6 +111,10 @@ class _MapScreenState extends State<MapScreen> {
       _selectedMarkerPosition = position;
       _selectedAddress = address;
     });
+  }
+
+  _onPlaceSelected(LocationDataModel.LocationData locationData) async {
+    await _convertAddressToLatLng(locationData.address!);
   }
 
   Future<void> _convertAddressToLatLng(String address) async {
@@ -209,6 +228,10 @@ class _MapScreenState extends State<MapScreen> {
     ),
   ];
   List<Postssss> filteredPosts = [];
+
+  double longitude = 0;
+
+  double latitude = 0;
   void filterPosts(String category) {
     setState(() {
       filteredPosts = posts.where((post) => post.category == category).toList();
@@ -726,10 +749,11 @@ class _MapScreenState extends State<MapScreen> {
   Widget buildSearchBar() {
     return Container(
       child: SearchingBar(
-        onChanged: _updateSuggestions,
-        onPlaceSelected: _convertAddressToLatLng,
+        onChanged: BaseLocationUtils.updateSuggestionsNew,
+        onPlaceSelected: _onPlaceSelected,
       ),
     );
+    return SizedBox();
   }
 }
 
