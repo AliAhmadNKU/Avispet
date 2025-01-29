@@ -758,15 +758,14 @@ class _PostDetailState extends State<PostDetail> {
                                                       height:
                                                           10), // Spacing between elements
 
-                                                  MyString.bold(
+                                                  if(rev.placeName != null) MyString.bold(
                                                     '${rev.placeName}',
                                                     14,
                                                     MyColor.black,
                                                     TextAlign.start,
                                                   ),
                                                   SizedBox(height: 10), //
-                                                  SizedBox(height: 10),
-                                                  MyString.regMultiLine(
+                                                  if(rev.description != null) MyString.regMultiLine(
                                                       '${rev.description}',
                                                       12,
                                                       MyColor.black,
@@ -904,15 +903,14 @@ class _PostDetailState extends State<PostDetail> {
                                                 height:
                                                     10), // Spacing between elements
 
-                                            MyString.bold(
+                                            if(rev.placeName != null) MyString.bold(
                                               '${rev.placeName}',
                                               14,
                                               MyColor.black,
                                               TextAlign.start,
                                             ),
                                             SizedBox(height: 10), //
-                                            SizedBox(height: 10),
-                                            MyString.regMultiLine(
+                                            if(rev.description != null) MyString.regMultiLine(
                                                 '${rev.description}',
                                                 12,
                                                 MyColor.black,

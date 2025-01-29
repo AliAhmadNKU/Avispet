@@ -446,137 +446,133 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ],
                               ),
                             ),
-                            Container(
-                              height: 400,
-                              child: Column(
-                                children: [
-                                  Expanded(
-                                    child: ListView.builder(
-                                      itemCount: postsList.length,
-                                      shrinkWrap: true,
-                                      physics: NeverScrollableScrollPhysics(),
-                                      itemBuilder: (context, index) {
-                                        final post = postsList[index];
-                                        return GestureDetector(
-                                          onTap: () async {
-                                            Navigator.pushNamed(
-                                                context, RoutesName.postDetail,
-                                                arguments: {
-                                                  'post': post
-                                                });
-                                          },
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                color: MyColor.card,
-                                                borderRadius:
-                                                    BorderRadius.circular(22)),
-                                            margin: EdgeInsets.symmetric(
-                                                horizontal: 10, vertical: 6),
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 10, vertical: 10),
-                                            child: Row(
-                                              children: [
-                                                ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(15),
-                                                  child: Image.network(
-                                                    post.images[
-                                                        0], // URL of the image
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                ListView.builder(
+                                  itemCount: postsList.length,
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemBuilder: (context, index) {
+                                    final post = postsList[index];
+                                    return GestureDetector(
+                                      onTap: () async {
+                                        Navigator.pushNamed(
+                                            context, RoutesName.postDetail,
+                                            arguments: {
+                                              'post': post
+                                            });
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            color: MyColor.card,
+                                            borderRadius:
+                                                BorderRadius.circular(22)),
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 6),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 10),
+                                        child: Row(
+                                          children: [
+                                            ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                              child: Image.network(
+                                                post.images[
+                                                    0], // URL of the image
+                                                width: 130,
+                                                height: 110,
+                                                fit: BoxFit.cover,
+                                                errorBuilder:
+                                                    (BuildContext context,
+                                                        Object error,
+                                                        StackTrace?
+                                                            stackTrace) {
+                                                  // Fallback widget for error
+                                                  return Container(
                                                     width: 130,
                                                     height: 110,
-                                                    fit: BoxFit.cover,
-                                                    errorBuilder:
-                                                        (BuildContext context,
-                                                            Object error,
-                                                            StackTrace?
-                                                                stackTrace) {
-                                                      // Fallback widget for error
-                                                      return Container(
-                                                        width: 130,
-                                                        height: 110,
-                                                        color: Colors.grey[
-                                                            300], // Background color for placeholder
-                                                        child: Center(
-                                                          child: Column(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
-                                                            children: [
-                                                              Icon(
-                                                                Icons
-                                                                    .image_not_supported, // Fallback icon
-                                                                color:
-                                                                    Colors.grey,
-                                                                size: 40,
-                                                              ),
-                                                              Text(
-                                                                'Image not found',
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .grey,
-                                                                    fontSize:
-                                                                        12),
-                                                              ),
-                                                            ],
+                                                    color: Colors.grey[
+                                                        300], // Background color for placeholder
+                                                    child: Center(
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Icon(
+                                                            Icons
+                                                                .image_not_supported, // Fallback icon
+                                                            color:
+                                                                Colors.grey,
+                                                            size: 40,
                                                           ),
-                                                        ),
-                                                      );
-                                                    },
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  width: 15,
-                                                ),
-                                                Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    if(post.placeName != null) MyString.reg(
-                                                        post.placeName!,
-                                                        14,
-                                                        MyColor.orange2,
-                                                        TextAlign.start),
-                                                    MyString.reg(
-                                                        post.category,
-                                                        12,
-                                                        MyColor.textBlack0,
-                                                        TextAlign.start),
-                                                    MyString.reg(
-                                                        post.websiteName ?? "",
-                                                        12,
-                                                        MyColor.textBlack0,
-                                                        TextAlign.start),
-                                                    Row(
-                                                      children: [
-                                                        Icon(Icons.star,
-                                                            color: Colors.amber,
-                                                            size: 16),
-                                                        MyString.reg(
-                                                            '${post.overallRating}  ',
-                                                            12,
-                                                            MyColor.textBlack0,
-                                                            TextAlign.start),
-                                                      ],
+                                                          Text(
+                                                            'Image not found',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .grey,
+                                                                fontSize:
+                                                                    12),
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 15,
+                                            ),
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                if(post.placeName != null) MyString.reg(
+                                                    post.placeName!,
+                                                    14,
+                                                    MyColor.orange2,
+                                                    TextAlign.start),
+                                                MyString.reg(
+                                                    post.category,
+                                                    12,
+                                                    MyColor.textBlack0,
+                                                    TextAlign.start),
+                                                MyString.reg(
+                                                    post.websiteName ?? "",
+                                                    12,
+                                                    MyColor.textBlack0,
+                                                    TextAlign.start),
+                                                Row(
+                                                  children: [
+                                                    Icon(Icons.star,
+                                                        color: Colors.amber,
+                                                        size: 16),
                                                     MyString.reg(
-                                                        post.openingClosingHour ??
-                                                            "",
-                                                        8,
+                                                        '${post.overallRating}  ',
+                                                        12,
                                                         MyColor.textBlack0,
                                                         TextAlign.start),
                                                   ],
-                                                )
+                                                ),
+                                                MyString.reg(
+                                                    post.openingClosingHour ??
+                                                        "",
+                                                    8,
+                                                    MyColor.textBlack0,
+                                                    TextAlign.start),
                                               ],
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
                             ),
                             SizedBox(
                               height: 200,
@@ -631,6 +627,7 @@ class _HomeScreenState extends State<HomeScreen> {
           postsList = posts.data!.data!.post!
               .map((post) => Post.fromJson(post.toJson()))
               .toList();
+          print('getAllPostsApi => total_post ${postsList.length}');
         });
       } else if (result['status'] == 401) {
         // Handle unauthorized access

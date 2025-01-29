@@ -3978,6 +3978,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void registerUserListener() {
     checkSocketConnect();
     attachRegisterListener();
+
     socket.emit('register', int.parse(sharedPref.getString(SharedKey.userId)!));
   }
 
