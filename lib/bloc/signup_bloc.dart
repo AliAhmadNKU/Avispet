@@ -113,6 +113,7 @@ import 'package:avispets/bloc/bloc_events.dart';
 import 'package:avispets/bloc/bloc_states.dart';
 import 'package:avispets/models/signup_model.dart';
 import 'package:avispets/utils/apis/all_api.dart';
+import 'package:avispets/utils/common_function/toaster.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../utils/my_routes/route_name.dart';
@@ -195,6 +196,7 @@ class SignUpBlock extends Bloc<CreateProfileEvent, BlocStates> {
                   context, RoutesName.loginScreen, (route) => false);
             } else {
               emit(ValidationCheck(result['message'].toString()));
+              toaster(context, result['message']);
             }
           } catch (error) {
             print(error);

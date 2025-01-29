@@ -123,7 +123,7 @@ class _InboxScreenState extends State<InboxScreen> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(top: 30),
-                        child: HeaderWidget(),
+                        child: HeaderWidget(backIcon: false,),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 15),

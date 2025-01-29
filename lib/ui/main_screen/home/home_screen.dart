@@ -241,7 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             horizontal: 15.0, vertical: 10),
                         child: Column(
                           children: [
-                            HeaderWidget(),
+                            HeaderWidget(backIcon: false,),
                             Container(
                               height: MediaQuery.of(context).size.height * 0.25,
                               child: Column(

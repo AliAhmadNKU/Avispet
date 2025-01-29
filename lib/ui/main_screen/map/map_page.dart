@@ -322,7 +322,7 @@ class _MapScreenState extends State<MapScreen> {
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 12.0),
-                                child: HeaderWidget(),
+                                child: HeaderWidget(backIcon: false,),
                               ),
                               Padding(
                                 padding: const EdgeInsets.symmetric(

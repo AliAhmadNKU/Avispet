@@ -991,7 +991,7 @@ class _ChatScreenState extends State<GroupChatScreen> {
                             fontFamily: 'poppins_medium',
                           ),
                         ))),
-                    Padding(
+                    if(_listChats[index].createdAt != null) Padding(
                       padding: EdgeInsets.all(5),
                       child: MyString.medMultiLine(
                           formatDateTime(_listChats[index].createdAt.toString()),
