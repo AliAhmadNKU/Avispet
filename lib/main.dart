@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:avispets/services/base_location_service.dart';
 import 'package:avispets/utils/langauges.dart';
 import 'package:avispets/utils/my_routes/app_routes.dart';
 import 'package:avispets/utils/my_routes/route_name.dart';
@@ -48,7 +49,8 @@ main() async {
   StatisticsCallback? statisticsCallback;
   FFmpegKitConfig.enableStatisticsCallback(statisticsCallback);
   // FlutterFFmpegConfig().enableStatisticsCallback(statisticsCallback);
-  await getLocationPermission();
+  // await getLocationPermission();
+  await BaseLocationService().getLocationPermission();
 
   String? languageKey;
   String? languageValue;

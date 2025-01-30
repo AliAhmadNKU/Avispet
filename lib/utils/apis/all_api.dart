@@ -34,6 +34,23 @@ class AllApi {
     return response.body;
   }
 
+  static Future<Object> getEvents(Map<String, String> queryParams) async {
+    final Uri uri = Uri.parse(ApiStrings.events).replace(queryParameters: queryParams);
+    // Make the GET request
+    final response = await http.get(
+        uri,
+        headers: {
+          'Authorization':
+          "Bearer  ${sharedPref.getString(SharedKey.auth).toString()}",
+          'Content-Type': 'application/json',
+          "x-access-token": sharedPref.getString(SharedKey.auth).toString(),
+          'Accept-Language':
+          sharedPref.getString(SharedKey.languageValue).toString()
+        }
+    );
+    return response.body;
+  }
+
   static Future<Object> deleteMethodApi(
       String endPoint, Map<String, dynamic> mapData) async {
     debugPrint(

@@ -113,6 +113,7 @@ import 'package:avispets/bloc/bloc_events.dart';
 import 'package:avispets/bloc/bloc_states.dart';
 import 'package:avispets/models/signup_model.dart';
 import 'package:avispets/utils/apis/all_api.dart';
+import 'package:avispets/utils/common_function/loader_screen.dart';
 import 'package:avispets/utils/common_function/toaster.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -125,7 +126,7 @@ class SignUpBlock extends Bloc<CreateProfileEvent, BlocStates> {
   SignUpBlock(BuildContext context) : super(Initial()) {
     on((event, emit) async {
       if (event is GetCreateProfileEvent) {
-        emit(Loading());
+        LoadingDialog.show(context);
         await Future.delayed(Duration.zero, () async {
           try {
             final mapData = {
@@ -154,10 +155,9 @@ class SignUpBlock extends Bloc<CreateProfileEvent, BlocStates> {
             print(jsonEncode(res));
             var result = jsonDecode(res.toString());
             // Deserialize response
-            _signUpModel = SignUpModel.fromJson(result);
-            emit(Loaded());
 
             if (result['status'] == 201) {
+              _signUpModel = SignUpModel.fromJson(result);
               // sharedPref.setString(
               //     SharedKey.auth, _signUpModel.data!.token.toString());
               sharedPref.setString(SharedKey.deviceToken,
@@ -194,14 +194,17 @@ class SignUpBlock extends Bloc<CreateProfileEvent, BlocStates> {
               sharedPref.setString(SharedKey.onboardScreen, 'OFF');
               Navigator.pushNamedAndRemoveUntil(
                   context, RoutesName.loginScreen, (route) => false);
-            } else {
-              emit(ValidationCheck(result['message'].toString()));
+            }else if (result['status'] == 403) {
+              toaster(context, (result['data'] as List).first);
+            }
+            else {
               toaster(context, result['message']);
             }
           } catch (error) {
             print(error);
             emit(Error(error.toString()));
           }
+          LoadingDialog.hide(context);
         });
       }
     });

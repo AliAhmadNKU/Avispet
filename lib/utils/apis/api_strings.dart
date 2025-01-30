@@ -19,6 +19,7 @@ class ApiStrings {
   static const String feedComment = 'feed-comment';
   static const String reportfeed = 'report-feed';
   static const String likefeedComment = 'like-feed-comment';
+  static const String events = baseURl +'events/pets';
   static const String feeds = 'feeds';
   static const String feed = 'feed';
   static const String feedComments = 'feed-comments';
@@ -95,6 +96,7 @@ class ApiStrings {
   static const String userAllChats = chats + '/user-all-chats';
   static const String userIndividualMessages = chats + '/user-individual-messages';
   static const String userGroupChats = chats + '/user-groups';
+  static const String fetchOnlineStores = 'location/fetch-online-stores';
   static const String groupMessages = chats + '/$groups';
   static const String notifications = 'notifications';
   static const String suggestedFriends = 'suggested-friends';

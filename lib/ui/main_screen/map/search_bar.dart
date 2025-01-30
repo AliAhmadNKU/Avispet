@@ -1,11 +1,13 @@
+import 'package:avispets/models/events_response_model.dart';
 import 'package:avispets/models/locations/get_location_name_address.dart';
+import 'package:avispets/models/online_store_response_model.dart';
 import 'package:avispets/ui/main_screen/map/google_maps_service.dart';
 import 'package:flutter/material.dart';
 import '../../../utils/my_routes/route_name.dart';
 
 class SearchingBar extends StatelessWidget {
-  final Future<List<LocationData>> Function(String) onChanged;
-  final Function(LocationData) onPlaceSelected;
+  final Future<dynamic> Function(String) onChanged;
+  final Function(dynamic) onPlaceSelected;
 
   const SearchingBar({
     Key? key,
@@ -29,7 +31,7 @@ class SearchingBar extends StatelessWidget {
                 context: context,
                 delegate: PlaceSearchDelegate(
                     onPlaceSelected: onPlaceSelected,
-                  onChanged: onChanged
+                  onChanged: onChanged,
                 ),
               );
             },
@@ -53,16 +55,15 @@ class SearchingBar extends StatelessWidget {
 }
 
 class PlaceSearchDelegate extends SearchDelegate {
-  final Function(LocationData) onPlaceSelected;
-  final Future<List<LocationData>> Function(String) onChanged;
-  LocationData? _selectedLocation;
+  final Function(dynamic) onPlaceSelected;
+  final Future<dynamic> Function(String) onChanged;
 
   PlaceSearchDelegate({
     required this.onPlaceSelected,
     required this.onChanged,
   });
 
-  Future<List<LocationData>> _getSuggestions(String query) async {
+  Future<dynamic> _getSuggestions(String query) async {
     try {
       return await onChanged(query);
       // return await GoogleMapsService.getPlaceSuggestions(query);
@@ -91,32 +92,62 @@ class PlaceSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    onPlaceSelected(_selectedLocation!);
+    // onPlaceSelected(_selectedLocation!);
     return Container();
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return FutureBuilder<List<LocationData>>(
+    return FutureBuilder<dynamic>(
       future: _getSuggestions(query),
       builder: (context, snapshot) {
         if (!snapshot.hasData)
           return const Center(child: CircularProgressIndicator());
 
         final suggestions = snapshot.data!;
-        return ListView.builder(
-          itemCount: suggestions.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text('${suggestions[index].name!} ${suggestions[index].address!}'),
-              onTap: () {
-                _selectedLocation = suggestions[index];
-                onPlaceSelected(_selectedLocation!);
-                close(context, null);
-              },
-            );
-          },
-        );
+        if(suggestions is List<LocationData>){
+          return ListView.builder(
+            itemCount: suggestions.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text('${suggestions[index].name!} ${suggestions[index].address!}'),
+                onTap: () {
+                  onPlaceSelected(suggestions[index]);
+                  close(context, null);
+                },
+              );
+            },
+          );
+        }
+        else if(suggestions is List<EventsModel>){
+          return ListView.builder(
+            itemCount: suggestions.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text('${suggestions[index].name!}, ${suggestions[index].venue!}, ${suggestions[index].city}'),
+                onTap: () {
+                  onPlaceSelected(suggestions[index]);
+                  close(context, null);
+                },
+              );
+            },
+          );
+        }
+        else if(suggestions is List<OnlineStoreModel>){
+          return ListView.builder(
+            itemCount: suggestions.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text('${suggestions[index].name!}, ${suggestions[index].address!}'),
+                onTap: () {
+                  onPlaceSelected(suggestions[index]);
+                  close(context, null);
+                },
+              );
+            },
+          );
+        }
+        return SizedBox();
       },
     );
   }

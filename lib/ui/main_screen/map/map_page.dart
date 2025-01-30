@@ -113,7 +113,7 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  _onPlaceSelected(LocationDataModel.LocationData locationData) async {
+  _onPlaceSelected(dynamic locationData) async {
     await _convertAddressToLatLng(locationData.address!);
   }
 

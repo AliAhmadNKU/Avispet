@@ -99,6 +99,7 @@ class _SignupScreenState extends State<SignupScreen> {
       create: (context) => _createProfileBloc,
       child: BlocListener<CreateProfileBloc, BlocStates>(
         listener: (context, state) {
+          print('BlocListener => $state');
           if (state is ValidationCheck) {
             toaster(context, state.value.toString());
           }
@@ -1098,8 +1099,6 @@ class _SignupScreenState extends State<SignupScreen> {
                                       //         address.text.trim().toString(),
                                       //         deviceType,
                                       //         conditionCheck));
-                                      FocusManager.instance.primaryFocus
-                                          ?.unfocus();
 
                                       // Call the signup function
                                       _signUpBlock.add(
