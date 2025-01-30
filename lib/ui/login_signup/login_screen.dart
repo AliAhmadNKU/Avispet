@@ -4,6 +4,7 @@ import 'package:avispets/bloc/bloc_events.dart';
 import 'package:avispets/bloc/bloc_states.dart';
 import 'package:avispets/utils/apis/all_api.dart';
 import 'package:avispets/utils/apis/api_strings.dart';
+import 'package:avispets/utils/common_function/dialogs/bottom_language.dart';
 import 'package:avispets/utils/common_function/header_widget2.dart';
 import 'package:avispets/utils/common_function/toaster.dart';
 import 'package:avispets/utils/my_color.dart';
@@ -125,7 +126,21 @@ class _LoginScreenState extends State<LoginScreen> {
                             Padding(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 18.0, vertical: 5),
-                              child: HeaderWidget2(),
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: GestureDetector(
+                                  onTap: () async {
+                                    await changeLanguage(context);
+                                  },
+                                  child: Image.asset(
+                                    'assets/images/icons/translation.png',
+                                    width: 40,
+                                    height: 40,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              )
+                              // HeaderWidget2(),
                             ),
                             Padding(
                               padding:

@@ -52,7 +52,7 @@ cameraPhoto(BuildContext context, String from) async {
                                     : (from == "editGroup")
                                         ? 'editGroupPhoto'.tr
                                         : (from == "create_animal")
-                                            ? 'animalPhoto'.tr
+                                            ? 'animalPhotoCreate'.tr
                                             : 'cameraGallery1'.tr,
                         16,
                         MyColor.black,

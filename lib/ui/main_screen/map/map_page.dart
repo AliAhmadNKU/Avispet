@@ -1,8 +1,11 @@
+import 'package:avispets/models/events_response_model.dart';
+import 'package:avispets/models/get_all_categories_model.dart';
 import 'package:avispets/models/locations/get_location_name_address.dart';
+import 'package:avispets/models/online_store_response_model.dart';
 import 'package:avispets/ui/main_screen/map/search_bar.dart';
+import 'package:avispets/ui/widgets/no_data_found.dart';
 import 'package:avispets/utils/apis/all_api.dart';
 import 'package:avispets/utils/apis/api_strings.dart';
-import 'package:avispets/utils/base_location_utils.dart';
 import 'package:avispets/utils/common_function/header_widget.dart';
 import 'package:avispets/utils/common_function/toaster.dart';
 import 'package:flutter/material.dart';
@@ -48,33 +51,9 @@ class _MapScreenState extends State<MapScreen> {
   final LocationPackage.Location _location = LocationPackage.Location();
   final TextEditingController _searchController = TextEditingController();
   List<String> _suggestions = [];
-
-  // Future<void> _updateSuggestions(String query) async {
-  //   if (query.isNotEmpty) {
-  //     try {
-  //       final suggestions = await GoogleMapsService.getPlaceSuggestions(query);
-  //       setState(() {
-  //         _suggestions = suggestions;
-  //       });
-  //     } catch (e) {
-  //       setState(() {
-  //         _suggestions = [];
-  //       });
-  //     }
-  //   } else {
-  //     setState(() {
-  //       _suggestions = [];
-  //     });
-  //   }
-  // }
-
-
-  _getLocation() async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    longitude = position.longitude;
-    latitude = position.latitude;
-  }
+  LocationData? _locationData;
+  EventsModel? _eventsModel;
+  OnlineStoreModel? _onlineStoreModel;
 
   final Set<Marker> _markers = {};
   LatLng _initialPosition = const LatLng(37.7749, -122.4194); // San Francisco
@@ -88,6 +67,7 @@ class _MapScreenState extends State<MapScreen> {
   String? _selectedReviews;
   String? _selectedDistance;
   String _selectedImage = 'assets/images/place.png';
+  List<Data> categoriesList = [];
 
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
@@ -113,9 +93,26 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  _onPlaceSelected(dynamic locationData) async {
-    await _convertAddressToLatLng(locationData.address!);
+  _onPlaceSelected(dynamic data) async {
+    print('_onPlaceSelected => $data');
+    if(data is LocationData){
+      _locationData = data;
+      // await _convertAddressToLatLng(_locationData!.address!);
+    }
+    else if(data is EventsModel){
+      _eventsModel = data;
+      // await _convertAddressToLatLng(_eventsModel!.name!);
+    }
+    else if(data is OnlineStoreModel){
+      _onlineStoreModel = data;
+      // await _convertAddressToLatLng(_onlineStoreModel!.address!);
+    }
+
   }
+
+  // _onPlaceSelected(dynamic locationData) async {
+  //   await _convertAddressToLatLng(locationData.address!);
+  // }
 
   Future<void> _convertAddressToLatLng(String address) async {
     const apiKey = 'AIzaSyBANJJlDplrqmPbPM2CK6suomwcrRmI_sU';
@@ -242,60 +239,114 @@ class _MapScreenState extends State<MapScreen> {
     _shouldFollowUserLocation = false;
     final List<Marker> newMarkers = [];
     final filteredPosts =
-        posts.where((post) => post.category == category).toList();
+    categoriesList.where((post) => post.name == category).toList();
     for (var post in filteredPosts) {
       BitmapDescriptor customIcon =
           BitmapDescriptor.defaultMarker; // Fallback to default marker
       try {
-        final matchingFilter = dataList.firstWhere(
-          (filter) => filter.nickname == post.category,
+        final matchingFilter = categoriesList.firstWhere(
+              (filter) => filter.name == post.name,
         );
 
         if (matchingFilter != null) {
-          customIcon = await getResizedMarker(matchingFilter.image, 100,
+          customIcon = await getResizedMarker(matchingFilter.icon!, 100,
               100); // Adjust width and height as needed
         }
       } catch (e) {
         debugPrint('Error loading marker icon: $e');
       }
-      newMarkers.add(
-        Marker(
-          markerId: MarkerId(post.title),
-          position: LatLng(post.lat, post.long),
-          onTap: () {
-            setState(() {
-              _selectedMarkerPosition = LatLng(post.lat, post.long);
-              _selectedAddress = '${post.location}';
-              _selectedPlace = '${post.title}';
-              _selectedRating = '${post.rating}';
-              _selectedReviews = '${post.reviews}';
-              _selectedDistance = '${post.distance}';
-              _selectedImage = '${post.imageUrl}';
-            });
-          },
-          icon: customIcon,
-        ),
-      );
+      // newMarkers.add(
+      //   Marker(
+      //     markerId: MarkerId(post.title),
+      //     position: LatLng(post.lat, post.long),
+      //     onTap: () {
+      //       setState(() {
+      //         _selectedMarkerPosition = LatLng(post.lat, post.long);
+      //         _selectedAddress = '${post.location}';
+      //         _selectedPlace = '${post.title}';
+      //         _selectedRating = '${post.rating}';
+      //         _selectedReviews = '${post.reviews}';
+      //         _selectedDistance = '${post.distance}';
+      //         _selectedImage = '${post.imageUrl}';
+      //       });
+      //     },
+      //     icon: customIcon,
+      //   ),
+      // );
     }
+    // final filteredPosts =
+    //     posts.where((post) => post.category == category).toList();
+    // for (var post in filteredPosts) {
+    //   BitmapDescriptor customIcon =
+    //       BitmapDescriptor.defaultMarker; // Fallback to default marker
+    //   try {
+    //     final matchingFilter = dataList.firstWhere(
+    //       (filter) => filter.nickname == post.category,
+    //     );
+    //
+    //     if (matchingFilter != null) {
+    //       customIcon = await getResizedMarker(matchingFilter.image, 100,
+    //           100); // Adjust width and height as needed
+    //     }
+    //   } catch (e) {
+    //     debugPrint('Error loading marker icon: $e');
+    //   }
+    //   newMarkers.add(
+    //     Marker(
+    //       markerId: MarkerId(post.title),
+    //       position: LatLng(post.lat, post.long),
+    //       onTap: () {
+    //         setState(() {
+    //           _selectedMarkerPosition = LatLng(post.lat, post.long);
+    //           _selectedAddress = '${post.location}';
+    //           _selectedPlace = '${post.title}';
+    //           _selectedRating = '${post.rating}';
+    //           _selectedReviews = '${post.reviews}';
+    //           _selectedDistance = '${post.distance}';
+    //           _selectedImage = '${post.imageUrl}';
+    //         });
+    //       },
+    //       icon: customIcon,
+    //     ),
+    //   );
+    // }
     setState(() {
       _markers.clear();
       _markers.addAll(newMarkers);
 
-      if (filteredPosts.isNotEmpty) {
-        _mapController?.animateCamera(
-          CameraUpdate.newLatLng(
-            LatLng(filteredPosts.last.lat, filteredPosts.last.long),
-          ),
-        );
-      }
+      // if (filteredPosts.isNotEmpty) {
+      //   _mapController?.animateCamera(
+      //     CameraUpdate.newLatLng(
+      //       LatLng(filteredPosts.last.lat, filteredPosts.last.long),
+      //     ),
+      //   );
+      // }
     });
   }
 
   @override
   void initState() {
     super.initState();
-    GetApi.getNotify(context, '');
+    // GetApi.getNotify(context, '');
     filteredPosts = posts;
+    Future.delayed(Duration.zero, () async {
+      await getAllCategoriesApi();
+      await _getLocation();
+    });
+  }
+
+  _getLocation() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    longitude = position.longitude;
+    latitude = position.latitude;
+
+    setState(() {
+
+    });
+
+    print('_getLocation | longitude ${longitude}');
+    print('_getLocation | latitude ${latitude}');
   }
 
   @override
@@ -703,34 +754,53 @@ class _MapScreenState extends State<MapScreen> {
 
   Widget buildCategoryFilter() {
     return Container(
-      height: 70,
+      height: MediaQuery.of(context).size.height * 0.135,
       child: ListView.builder(
         padding: EdgeInsets.zero,
         scrollDirection: Axis.horizontal,
         shrinkWrap: true,
-        itemCount: dataList.length,
+        itemCount: categoriesList.isEmpty ? 1 : categoriesList.length,
+        // itemCount: dataList.length,
         itemBuilder: (context, index) {
+          if(categoriesList.isEmpty){
+            return NoDataFound();
+          }
           return GestureDetector(
             onTap: () async {
-              selectedCategory = dataList[index].nickname;
+              selectedCategory = categoriesList[index].name!;
+              setState(() {
+
+              });
+              // selectedCategory = dataList[index].nickname;
               _filterPostsAndAddMarkers(selectedCategory);
-              filterPosts(selectedCategory);
+              // filterPosts(selectedCategory);
             },
             child: Container(
               width: 70,
               child: Column(
                 children: [
-                  Image.asset(
-                    '${dataList[index].image}',
-                    height: 30,
-                    width: 30,
-                  ),
-                  dataList[index].nickname == selectedCategory
-                      ? MyString.bold('${dataList[index].name}', 10,
-                          MyColor.title, TextAlign.center)
-                      : MyString.reg('${dataList[index].name}', 10,
-                          MyColor.title, TextAlign.center),
-                  if (dataList[index].nickname == selectedCategory)
+                  categoriesList[index].icon != null
+                      ? Image.network(
+                        categoriesList[index].icon!,
+                        height: 40,
+                        width: 40,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            Icon(Icons.error),
+                      )
+                      : Icon(Icons.category, size: 40),
+                  categoriesList[index].name == selectedCategory
+                      ? MyString.bold('${categoriesList[index].name}', 10,
+                      MyColor.title, TextAlign.center)
+                      : MyString.reg('${categoriesList[index].name}', 10,
+                      MyColor.title, TextAlign.center),
+                  // dataList[index].nickname == selectedCategory
+                  //     ? MyString.bold('${dataList[index].name}', 10,
+                  //         MyColor.title, TextAlign.center)
+                  //     : MyString.reg('${dataList[index].name}', 10,
+                  //         MyColor.title, TextAlign.center),
+                  if (categoriesList[index].name == selectedCategory)
+                  // if (dataList[index].nickname == selectedCategory)
                     Divider(
                       color: Colors.pink, // Color of the divider
                       thickness: 3, // Thickness of the line
@@ -749,12 +819,141 @@ class _MapScreenState extends State<MapScreen> {
   Widget buildSearchBar() {
     return Container(
       child: SearchingBar(
-        onChanged: BaseLocationUtils.updateSuggestionsNew,
+        onChanged: _updateSuggestions,
         onPlaceSelected: _onPlaceSelected,
       ),
     );
     return SizedBox();
   }
+
+  Future<dynamic> _updateSuggestions(String query) async {
+    print('_updateSuggestions => query $query');
+    if(selectedCategory.toLowerCase().contains('store')){
+      if(query.isNotEmpty) return [];
+      return await getLocationByStore();
+    }
+    else if(selectedCategory.toLowerCase().contains('event')){
+      if(query.isNotEmpty) return [];
+      return await getLocationByEvent();
+    }
+    else if (query.isNotEmpty) {
+      return await getLocationByNameNew(query);
+      // await GoogleMapsService.getPlaceSuggestions(query);
+    }
+    return [];
+  }
+
+  Future<List<OnlineStoreModel>> getLocationByStore() async {
+    try {
+      final Map<String, dynamic> map = {
+        "latitude": latitude,
+        "longitude": longitude
+      };
+
+      print('getLocationByStore => $map');
+      final response = await AllApi.postMethodApi(
+          ApiStrings.fetchOnlineStores,
+          map
+      );
+      var result = response is String ? jsonDecode(response) : response;
+      if (result['status'] == 201) {
+        OnlineStoreResponseModel onlineStoreResponseModel = OnlineStoreResponseModel.fromJson(result);
+        return onlineStoreResponseModel.data!;
+      } else {
+        toaster(context, result['message'].toString());
+      }
+    } catch (e) {
+      debugPrint("Error: {$e");
+      toaster(context, "An error occurred while fetching categories.");
+    }
+    return [];
+  }
+
+  Future<List<EventsModel>> getLocationByEvent() async {
+    try {
+      final Map<String, String> queryParams = {
+        'keyword': 'pets',
+        'city': 'london',
+        'size': '20',
+      };
+
+      print('getLocationByEvent => $queryParams');
+      final response = await AllApi.getEvents(queryParams);
+      var result = response is String ? jsonDecode(response) : response;
+      if (result['status'] == 200) {
+        EventsResponseModel eventsResponseModel = EventsResponseModel.fromJson(result);
+        return eventsResponseModel.data!;
+      } else {
+        toaster(context, result['message'].toString());
+      }
+    } catch (e) {
+      debugPrint("Error: {$e");
+      toaster(context, "An error occurred while fetching categories.");
+    }
+    return [];
+  }
+
+  Future<List<LocationData>> getLocationByNameNew(String query) async {
+    try {
+      Map<String, dynamic> data = {
+        "latitude": latitude,
+        "longitude": longitude,
+        "query": query,
+        "radius": 500
+      };
+
+      print('getLocationByName => $data');
+      var res = await AllApi.postMethodApi(
+          ApiStrings.getLocationByNameAndAddress, data);
+      print('========================$res');
+
+      var result = res is String ? jsonDecode(res) : res;
+
+      if (result['status'] == 201) {
+        // Parse the response into the GetAllCategories model
+        GetLocatioByName location = GetLocatioByName.fromJson(result);
+        return location.data!;
+        // setState(() {
+        //   locationListByName = location.data ?? [];
+        // });
+      } else if (result['status'] == 401) {
+        Navigator.pushNamedAndRemoveUntil(
+            context, RoutesName.loginScreen, (route) => false);
+      } else {
+        toaster(context, result['message'].toString());
+      }
+    } catch (e) {
+      debugPrint("Error: {$e");
+      toaster(context, "An error occurred while fetching categories.");
+    }
+    return [];
+  }
+
+  getAllCategoriesApi() async {
+    try {
+      var res = await AllApi.getMethodApi("${ApiStrings.getAllCategories}");
+      print(res);
+      var result = jsonDecode(res.toString());
+
+      if (result['status'] == 200) {
+        // Parse the response into the GetAllCategories model
+        GetAllCategories categories = GetAllCategories.fromJson(result);
+        setState(() {
+          categoriesList = categories.data ?? [];
+          selectedCategory = categoriesList.first.name!;
+        });
+      } else if (result['status'] == 401) {
+        Navigator.pushNamedAndRemoveUntil(
+            context, RoutesName.loginScreen, (route) => false);
+      } else {
+        toaster(context, result['message'].toString());
+      }
+    } catch (e) {
+      debugPrint("Error: $e");
+      toaster(context, "An error occurred while fetching categories.");
+    }
+  }
+
 }
 
 class FilterModel {

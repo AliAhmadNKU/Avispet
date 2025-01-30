@@ -69,6 +69,7 @@ class EventsModel {
       String? city, 
       String? latitude, 
       String? longitude, 
+      String? profile, 
       String? url,}){
     _name = name;
     _date = date;
@@ -77,6 +78,7 @@ class EventsModel {
     _city = city;
     _latitude = latitude;
     _longitude = longitude;
+    _profile = profile;
     _url = url;
 }
 
@@ -88,6 +90,7 @@ class EventsModel {
     _city = json['city'];
     _latitude = json['latitude'];
     _longitude = json['longitude'];
+    _profile = json['profile'];
     _url = json['url'];
   }
   String? _name;
@@ -97,6 +100,7 @@ class EventsModel {
   String? _city;
   String? _latitude;
   String? _longitude;
+  String? _profile;
   String? _url;
   EventsModel copyWith({  String? name,
   String? date,
@@ -105,6 +109,7 @@ class EventsModel {
   String? city,
   String? latitude,
   String? longitude,
+  String? profile,
   String? url,
 }) => EventsModel(  name: name ?? _name,
   date: date ?? _date,
@@ -113,6 +118,7 @@ class EventsModel {
   city: city ?? _city,
   latitude: latitude ?? _latitude,
   longitude: longitude ?? _longitude,
+  profile: profile ?? _profile,
   url: url ?? _url,
 );
   String? get name => _name;
@@ -122,6 +128,7 @@ class EventsModel {
   String? get city => _city;
   String? get latitude => _latitude;
   String? get longitude => _longitude;
+  String? get profile => _profile;
   String? get url => _url;
 
   Map<String, dynamic> toJson() {
@@ -133,6 +140,7 @@ class EventsModel {
     map['city'] = _city;
     map['latitude'] = _latitude;
     map['longitude'] = _longitude;
+    map['profile'] = _profile;
     map['url'] = _url;
     return map;
   }

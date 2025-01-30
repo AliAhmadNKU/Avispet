@@ -106,6 +106,7 @@ class Lang extends Translations {
           'haveAnAccount': 'Don’t have an account? ',
           'editAnimalPhoto': 'Edit animal photo',
           'animalPhoto': 'Edit photo',
+          'animalPhotoCreate': 'Add a photo of your pet',
           'bio': 'Bio',
           'enterBio': 'Enter your bio',
           'enterBioP':
@@ -587,6 +588,7 @@ class Lang extends Translations {
           'haveAnAccount': 'Vous n\'avez pas de compte? ',
           'editAnimalPhoto': 'Modifier la photo de l’ animal',
           'animalPhoto': 'Modifier la photo',
+          'animalPhotoCreate': 'Ajoutez une photo de votre animal de compagnie',
           'bio': 'Biographie',
           'enterBio': 'Entrez votre bio',
           'enterBioP':

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:avispets/bloc/bloc_events.dart';
 import 'package:avispets/bloc/bloc_states.dart';
 import 'package:avispets/bloc/signup_bloc.dart';
+import 'package:avispets/utils/common_function/dialogs/bottom_language.dart';
 import 'package:avispets/utils/common_function/header_widget2.dart';
 import 'package:avispets/utils/my_color.dart';
 import 'package:avispets/utils/my_routes/route_name.dart';
@@ -149,7 +150,35 @@ class _SignupScreenState extends State<SignupScreen> {
                             Padding(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 18.0, vertical: 5),
-                              child: HeaderWidget2(),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () => Navigator.pop(context),
+                                    child: Container(
+                                      width: 31,
+                                      height: 31,
+                                      child: Image.asset(
+                                        'assets/images/icons/prev.png',
+                                      ),
+                                    ),
+                                  ),
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: GestureDetector(
+                                      onTap: () async {
+                                        await changeLanguage(context);
+                                      },
+                                      child: Image.asset(
+                                        'assets/images/icons/translation.png',
+                                        width: 40,
+                                        height: 40,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
                             ),
                             Padding(
                               padding:

@@ -110,6 +110,15 @@ class PlaceSearchDelegate extends SearchDelegate {
             itemCount: suggestions.length,
             itemBuilder: (context, index) {
               return ListTile(
+                leading: suggestions[index].profile != null
+                    ? CircleAvatar(
+                  backgroundImage: NetworkImage(suggestions[index].profile!),
+                  radius: 20,
+                )
+                    : CircleAvatar(
+                  radius: 20,
+                  child: Icon(Icons.location_on, color: Colors.black), // Fallback icon
+                ),
                 title: Text('${suggestions[index].name!} ${suggestions[index].address!}'),
                 onTap: () {
                   onPlaceSelected(suggestions[index]);
@@ -124,6 +133,15 @@ class PlaceSearchDelegate extends SearchDelegate {
             itemCount: suggestions.length,
             itemBuilder: (context, index) {
               return ListTile(
+                leading: suggestions[index].profile != null
+                    ? CircleAvatar(
+                  backgroundImage: NetworkImage(suggestions[index].profile!),
+                  radius: 20,
+                )
+                    : CircleAvatar(
+                  radius: 20,
+                  child: Icon(Icons.location_on, color: Colors.white), // Fallback icon
+                ),
                 title: Text('${suggestions[index].name!}, ${suggestions[index].venue!}, ${suggestions[index].city}'),
                 onTap: () {
                   onPlaceSelected(suggestions[index]);
@@ -138,6 +156,15 @@ class PlaceSearchDelegate extends SearchDelegate {
             itemCount: suggestions.length,
             itemBuilder: (context, index) {
               return ListTile(
+                leading: suggestions[index].profile != null
+                    ? CircleAvatar(
+                  backgroundImage: NetworkImage(suggestions[index].profile!),
+                  radius: 20,
+                )
+                    : CircleAvatar(
+                  radius: 20,
+                  child: Icon(Icons.location_on, color: Colors.white), // Fallback icon
+                ),
                 title: Text('${suggestions[index].name!}, ${suggestions[index].address!}'),
                 onTap: () {
                   onPlaceSelected(suggestions[index]);

@@ -657,9 +657,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                     // ),
 
                                     Container(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.1,
+                                      height: MediaQuery.of(context).size.height * 0.135,
                                       child: ListView.builder(
                                         padding: EdgeInsets.zero,
                                         scrollDirection: Axis.horizontal,
@@ -680,17 +678,14 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                                 children: [
                                                   categoriesList[index].icon !=
                                                           null
-                                                      ? ClipRRect(
-                                                    borderRadius: BorderRadius.circular(20),
-                                                    child: Image.network(
-                                                      categoriesList[index].icon!,
-                                                      height: 40,
-                                                      width: 40,
-                                                      fit: BoxFit.cover,
-                                                      errorBuilder: (context, error, stackTrace) =>
-                                                          Icon(Icons.error),
-                                                    ),
-                                                  )
+                                                      ? Image.network(
+                                                        categoriesList[index].icon!,
+                                                        height: 40,
+                                                        width: 40,
+                                                        fit: BoxFit.cover,
+                                                        errorBuilder: (context, error, stackTrace) =>
+                                                            Icon(Icons.error),
+                                                      )
                                                       : Icon(Icons.category,
                                                           size: 40),
                                                   SizedBox(height: 5),
@@ -999,13 +994,15 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                         ),
                                         Container(
                                           margin: EdgeInsets.only(bottom: 20),
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.54,
+                                          // height: MediaQuery.of(context)
+                                          //         .size
+                                          //         .height *
+                                          //     0.54,
                                           child: ListView.builder(
                                               scrollDirection: Axis.vertical,
                                               itemCount: CriteriasList.length,
+                                              shrinkWrap: true,
+                                              physics: NeverScrollableScrollPhysics(),
                                               itemBuilder:
                                                   (BuildContext context,
                                                       int index) {
@@ -1207,7 +1204,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                                                           Color(
                                                                               0xffBEBEBE),
                                                                       itemSize:
-                                                                          15,
+                                                                          30,
                                                                       initialRating:
                                                                           1,
                                                                       minRating:
@@ -1665,90 +1662,90 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                       ],
                                     ),
                           //=============================================
-                          Column(
-                            children: [
-                              Container(
-                                height: Get.height / 2,
-                                child: ListView.builder(
-                                  itemCount: locationListByName.length,
-                                  itemBuilder: (context, index) {
-                                    return Card(
-                                      elevation: 0,
-                                      color: MyColor.white,
-                                      margin: const EdgeInsets.symmetric(
-                                          vertical: 5),
-                                      child: ListTile(
-                                        leading: Image.network(
-                                          locationListByName[index]
-                                              .profile
-                                              .toString(),
-                                          width: 40,
-                                          height: 40,
-                                        ),
-                                        title: Text(
-                                          locationListByName[index]
-                                              .name
-                                              .toString(),
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                        subtitle: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                                locationListByName[index]
-                                                    .address
-                                                    .toString(),
-                                                style: const TextStyle(
-                                                    fontSize: 14)),
-                                            Text(
-                                              'Rating by ${locationListByName[index].userRating.toString()} users',
-                                              style: const TextStyle(
-                                                  fontSize: 12,
-                                                  color: Colors.grey),
-                                            ),
-                                          ],
-                                        ),
-                                        trailing: Text(
-                                          locationListByName[index]
-                                              .source
-                                              .toString(),
-                                          style: const TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                              // GestureDetector(
-                              //   onTap: () {
-                              //     Navigator.pushNamed(
-                              //       context,
-                              //       RoutesName.addPostDetail,
-                              //     );
-                              //   },
-                              //   child: Center(
-                              //     child: Container(
-                              //       alignment: Alignment.center,
-                              //       height: 59,
-                              //       width: double.infinity,
-                              //       decoration: BoxDecoration(
-                              //           color: MyColor.orange2,
-                              //           borderRadius: const BorderRadius.all(
-                              //               Radius.circular(22))),
-                              //       child: isLoadingLocation
-                              //           ? CircularProgressIndicator()
-                              //           : MyString.med('createANewPlace'.tr, 18,
-                              //               MyColor.white, TextAlign.center),
-                              //     ),
-                              //   ),
-                              // )
-                            ],
-                          ),
+                          // Column(
+                          //   children: [
+                          //     Container(
+                          //       height: Get.height / 2,
+                          //       child: ListView.builder(
+                          //         itemCount: locationListByName.length,
+                          //         itemBuilder: (context, index) {
+                          //           return Card(
+                          //             elevation: 0,
+                          //             color: MyColor.white,
+                          //             margin: const EdgeInsets.symmetric(
+                          //                 vertical: 5),
+                          //             child: ListTile(
+                          //               leading: Image.network(
+                          //                 locationListByName[index]
+                          //                     .profile
+                          //                     .toString(),
+                          //                 width: 40,
+                          //                 height: 40,
+                          //               ),
+                          //               title: Text(
+                          //                 locationListByName[index]
+                          //                     .name
+                          //                     .toString(),
+                          //                 style: const TextStyle(
+                          //                   fontSize: 16,
+                          //                 ),
+                          //               ),
+                          //               subtitle: Column(
+                          //                 crossAxisAlignment:
+                          //                     CrossAxisAlignment.start,
+                          //                 children: [
+                          //                   Text(
+                          //                       locationListByName[index]
+                          //                           .address
+                          //                           .toString(),
+                          //                       style: const TextStyle(
+                          //                           fontSize: 14)),
+                          //                   Text(
+                          //                     'Rating by ${locationListByName[index].userRating.toString()} users',
+                          //                     style: const TextStyle(
+                          //                         fontSize: 12,
+                          //                         color: Colors.grey),
+                          //                   ),
+                          //                 ],
+                          //               ),
+                          //               trailing: Text(
+                          //                 locationListByName[index]
+                          //                     .source
+                          //                     .toString(),
+                          //                 style: const TextStyle(
+                          //                     fontSize: 14,
+                          //                     fontWeight: FontWeight.bold),
+                          //               ),
+                          //             ),
+                          //           );
+                          //         },
+                          //       ),
+                          //     ),
+                          //     // GestureDetector(
+                          //     //   onTap: () {
+                          //     //     Navigator.pushNamed(
+                          //     //       context,
+                          //     //       RoutesName.addPostDetail,
+                          //     //     );
+                          //     //   },
+                          //     //   child: Center(
+                          //     //     child: Container(
+                          //     //       alignment: Alignment.center,
+                          //     //       height: 59,
+                          //     //       width: double.infinity,
+                          //     //       decoration: BoxDecoration(
+                          //     //           color: MyColor.orange2,
+                          //     //           borderRadius: const BorderRadius.all(
+                          //     //               Radius.circular(22))),
+                          //     //       child: isLoadingLocation
+                          //     //           ? CircularProgressIndicator()
+                          //     //           : MyString.med('createANewPlace'.tr, 18,
+                          //     //               MyColor.white, TextAlign.center),
+                          //     //     ),
+                          //     //   ),
+                          //     // )
+                          //   ],
+                          // ),
                         ],
                       ),
                     ),

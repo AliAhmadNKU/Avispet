@@ -497,7 +497,7 @@ class _CreateAnimalState extends State<CreateAnimal> {
                                     print('==============================');
 
                                     String? result =
-                                        await cameraPhoto(context, "add_post");
+                                        await cameraPhoto(context, "create_animal");
                                     File? returnImage;
 
                                     // Pick image from Camera or Gallery

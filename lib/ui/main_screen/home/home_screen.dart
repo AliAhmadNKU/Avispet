@@ -762,17 +762,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     children: [
                       categoriesList[index].icon != null
-                          ? ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: Image.network(
-                                categoriesList[index].icon!,
-                                height: 40,
-                                width: 40,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    Icon(Icons.error),
-                              ),
-                          )
+                          ? Image.network(
+                              categoriesList[index].icon!,
+                              height: 40,
+                              width: 40,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Icon(Icons.error),
+                            )
                           : Icon(Icons.category, size: 40),
                       SizedBox(height: 5),
                       Flexible(
