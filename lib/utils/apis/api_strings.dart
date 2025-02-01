@@ -99,6 +99,9 @@ class ApiStrings {
   static const String fetchOnlineStores = 'location/fetch-online-stores';
   static const String groupMessages = chats + '/$groups';
   static const String notifications = 'notifications';
+  static const String getFollowingUsers = 'user/get-following-user';
+  static const String getFollowerUsers = 'user/get-follower-user';
+  static const String followUser = 'user/follow';
   static const String suggestedFriends = 'suggested-friends';
   static const String forums = 'forums';
   static const String forumTopics = 'forum-topics';

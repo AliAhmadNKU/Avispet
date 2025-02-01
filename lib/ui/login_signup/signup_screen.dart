@@ -171,8 +171,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                       },
                                       child: Image.asset(
                                         'assets/images/icons/translation.png',
-                                        width: 40,
-                                        height: 40,
+                                        width: 30,
+                                        height: 30,
                                         fit: BoxFit.cover,
                                       ),
                                     ),
