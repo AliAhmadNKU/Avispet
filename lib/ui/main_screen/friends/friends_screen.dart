@@ -61,6 +61,8 @@ class _FriendsScreenState extends State<FriendsScreen> {
   FollowerUserResponseModel _followerUserResponseModel = FollowerUserResponseModel();
   AllUsersDiscussionModel _allUsersDiscussionModel = AllUsersDiscussionModel();
 
+  bool followedBySuggestion = false;
+
   @override
   void initState() {
     super.initState();
@@ -94,12 +96,22 @@ class _FriendsScreenState extends State<FriendsScreen> {
           }
           if (state is Loaded) {
             LoadingDialog.hide(context);
-            if(currentTab == 1){
-              getFollowerUsers();
-            }
-            else if(currentTab == 2){
-              getFollowingUsers();
-            }
+            setState(() {
+              loader = true;
+            });
+            getAllUsersUpdated();
+            // if(currentTab == 1){
+            //   if(followedBySuggestion){
+            //     followedBySuggestion = false;
+            //     getAllUsersUpdated();
+            //   }
+            //   else{
+            //     getFollowerUsers();
+            //   }
+            // }
+            // else if(currentTab == 2){
+            //   getFollowingUsers();
+            // }
             // getFollowFollowingApi(page, currentTab, '');
             // getSuggestionApi();
             // LoadingDialog.hide(context);
@@ -1885,6 +1897,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                                         child:
                                         GestureDetector(
                                           onTap: () async {
+                                            followedBySuggestion = true;
                                             _followUnfollowBloc.add(
                                                 GetFollowUnfollowEvent(user.id!
                                                     .toString()));

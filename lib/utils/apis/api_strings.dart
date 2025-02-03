@@ -92,6 +92,7 @@ class ApiStrings {
   static const String groups = 'groups';
   static const String messages = 'messages';
   static const String individual = 'individual';
+  static const String userActivitiesGamification = 'gamification/user-activities';
   static const String group = 'group';
   static const String userAllChats = chats + '/user-all-chats';
   static const String userIndividualMessages = chats + '/user-individual-messages';
