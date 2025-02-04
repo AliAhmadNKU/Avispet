@@ -74,8 +74,7 @@ Widget deleteAccount() {
                         onTap: () {
                           LoadingDialog.show(context);
                           Future.delayed(Duration.zero, () async {
-                            var res = await AllApi.deactivate(
-                                ApiStrings.deleteAccount);
+                            var res = await AllApi.deactivate(ApiStrings.deleteAccount);
                             var result = jsonDecode(res.toString());
                             if (result['status'] == 200) {
                               _commonModel = CommonModel.fromJson(result);
