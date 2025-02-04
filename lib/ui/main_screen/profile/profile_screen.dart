@@ -585,6 +585,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     } else if (dataList[index].count == 7) {
                                       await changeLanguage(context);
                                     } else if (dataList[index].count == 8) {
+
+                                      print("deactive");
                                       await showDialog(
                                         context: context,
                                         barrierDismissible: true,

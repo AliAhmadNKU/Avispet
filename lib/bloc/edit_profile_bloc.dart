@@ -30,19 +30,24 @@ class EditProfileBloc extends Bloc<GetEditProfileEvent, BlocStates> {
 
             if (event.from == 'editProfile') {
               mapData = {
-                'firstName': event.firstName.toString(),
-                'lastName': event.lastName.toString(),
-                'email': event.email.toString(),
+                'first_name': event.firstName.toString(),
+                'last_name': event.lastName.toString(),
                 'pseudo': event.pseudo.toString(),
                 'biography': event.bio.toString(),
-                'phoneNumber': event.phoneNumber.toString(),
+                'phone_number': event.phoneNumber.toString(),
                 'city': event.city.toString(),
-                'address': event.address.toString(),
+                'area': event.address.toString(),
               };
             }
 
-            var res =
-                await AllApi.putMethodApi(ApiStrings.updateProfile, mapData);
+
+
+
+            String id= "/${sharedPref.getString(SharedKey.userId)}";
+            String editProfile = "";
+            editProfile = ApiStrings.updateProfile+id;
+
+            var res = await AllApi.patchtMethodApi(editProfile, mapData);
             var result = jsonDecode(res.toString());
             if (result['status'] == 200) {
               GetApi.getProfileModel.data = Data();

@@ -64,10 +64,10 @@ class ApiStrings {
       'enable-disable-forum-notification';
 
   // PUT METHODS
-  static const String changePassword = 'change-password';
+  static const String changePassword = 'auth/change-password';
   static const String resetPassword = 'auth/reset-password';
 
-  static const String updateProfile = 'update-profile';
+  static const String updateProfile =  'user'; //'update-profile';
   static const String updateProfilePicture = 'update-profile-picture';
 
   //GET METHODS
@@ -119,8 +119,9 @@ class ApiStrings {
   static const String getPostReviewsByPostId = review + 'get-post-reviews-by-postId/';
 
   //DELETE
-  static const String deleteAccount = 'delete-account';
-  static const String deactivateAccount = 'deactivate-account';
+
+  static const String deleteAccount ='user';    //'delete-account';
+  static const String deactivateAccount = 'user/deactivate-account';
   static const String deleteAnimal = 'animal/delete-animal';
   static const String removeFollowing = 'remove-following';
   static const String deleteForumReply = 'delete-forum-reply';

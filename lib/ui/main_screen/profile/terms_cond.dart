@@ -25,7 +25,7 @@ class _TermsState extends State<Terms> {
   void initState() {
     super.initState();
     page = 1;
-    GetApi.getNotify(context, '');
+    // GetApi.getNotify(context, '');
 
   }
 

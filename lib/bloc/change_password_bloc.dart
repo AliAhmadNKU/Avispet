@@ -21,14 +21,14 @@ class ChangePasswordBloc extends Bloc<GetChangePasswordEvent, BlocStates> {
           emit(Loading());
           await Future.delayed(Duration.zero, () async {
             Map<String, String> mapData = {
-              'currentPassword': event.currentPassword.toString(),
-              'newPassword': event.newPassword.toString(),
-              'confirmPassword': event.confirmPassword.toString(),
+              'old_password': event.currentPassword.toString(),
+              'password': event.newPassword.toString(),
+              'confirm_password': event.confirmPassword.toString(),
             };
             debugPrint("CHANGE-PASSWORD MAP DATA IS : $mapData");
 
             var res =
-                await AllApi.putMethodApi(ApiStrings.changePassword, mapData);
+                await AllApi.patchtMethodApi(ApiStrings.changePassword, mapData);
             var result = jsonDecode(res.toString());
             debugPrint("CHANGE-PASSWORD CODE : ${result['status']}");
             emit(Loaded());

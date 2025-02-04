@@ -320,6 +320,7 @@ class Data {
   String? gender;
   String? city;
   String? area;
+  String? biography;
   String? timezone;
   dynamic socketId;
   String? latitude;
@@ -366,6 +367,7 @@ class Data {
       this.deviceType,
       this.lastActive,
       this.gamePoints,
+        this.biography,
       this.allowPushNotifications,
       this.resetToken,
       this.resetTokenExpiresAt,
@@ -389,6 +391,7 @@ class Data {
     profession = json['profession'];
     dob = json['dob'];
     age = json['age'];
+    biography = json['biography'];
     gender = json['gender'];
     city = json['city'];
     area = json['area'];
@@ -434,6 +437,7 @@ class Data {
     data['timezone'] = this.timezone;
     data['socket_id'] = this.socketId;
     data['latitude'] = this.latitude;
+    data['biography'] = this.biography;
     data['longitude'] = this.longitude;
     data['deviceToken'] = this.deviceToken;
     data['socialId'] = this.socialId;
