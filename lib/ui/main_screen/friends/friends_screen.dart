@@ -6,6 +6,7 @@ import 'package:avispets/models/all_users_model.dart';
 import 'package:avispets/models/chats/all_users_discussion_model.dart';
 import 'package:avispets/models/follower_user_response_model.dart';
 import 'package:avispets/models/following_user_response_model.dart';
+import 'package:avispets/models/gamification/following_suggestions_response_model.dart';
 import 'package:avispets/models/get_suggestion_list.dart';
 import 'package:avispets/ui/widgets/no_data_found.dart';
 import 'package:avispets/utils/common_function/header_widget.dart';
@@ -59,7 +60,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
 
   FollowingUserResponseModel _followingUserResponseModel = FollowingUserResponseModel();
   FollowerUserResponseModel _followerUserResponseModel = FollowerUserResponseModel();
-  AllUsersDiscussionModel _allUsersDiscussionModel = AllUsersDiscussionModel();
+  FollowingSuggestionsResponseModel _allUsersDiscussionModel = FollowingSuggestionsResponseModel();
 
   bool followedBySuggestion = false;
 
@@ -157,10 +158,10 @@ class _FriendsScreenState extends State<FriendsScreen> {
 
   Future getAllUsersUpdated() async {
     var res = await AllApi.getMethodApi(
-        "${ApiStrings.allUsersDiscussion}");
+        "${ApiStrings.followingSuggestions}");
     var result = jsonDecode(res.toString());
     if (result['status'] == 200) {
-      _allUsersDiscussionModel = AllUsersDiscussionModel.fromJson(result);
+      _allUsersDiscussionModel = FollowingSuggestionsResponseModel.fromJson(result);
       getFollowingUsers();
     }
   }

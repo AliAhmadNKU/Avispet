@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:avispets/ui/widgets/header_auth_widget.dart';
 import 'package:avispets/utils/apis/all_api.dart';
 import 'package:avispets/utils/apis/api_strings.dart';
 import 'package:avispets/utils/common_function/header_widget2.dart';
@@ -13,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:get/get.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
 
 class ForgetPasswordOtpScreen extends StatefulWidget {
   final Map<String, String> data;
@@ -53,16 +55,35 @@ class _ForgetPasswordOtpScreenState extends State<ForgetPasswordOtpScreen> {
     final String email = widget.data['email'] ?? '';
     final TextEditingController _otpController = TextEditingController();
 
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-        appBar: AppBar(title: Text('Verify OTP')),
-        body: Padding(
+    return Scaffold(
+      // appBar: AppBar(title: Text('Verify OTP')),
+      body: SafeArea(
+        child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: !loader ? Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              HeaderWidget2(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      width: 31,
+                      height: 31,
+                      child: Image.asset(
+                        'assets/images/icons/prev.png',
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10.0, vertical: 5),
+                    child: HeaderAuthWidget(),
+                  ),
+                ],
+              ),
+              // HeaderWidget2(),
               Container(
                   padding: EdgeInsets.symmetric(vertical: 20),
                   child: MyString.bold(
@@ -109,33 +130,60 @@ class _ForgetPasswordOtpScreenState extends State<ForgetPasswordOtpScreen> {
               // ),
               Container(
                 margin: EdgeInsets.only(top: 50),
-                child: OtpTextField(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  contentPadding: EdgeInsets.all(10),
-                  fieldHeight: 46,
-                  fieldWidth: 46,
-                  fillColor: Color(0xffF6F6F6),
-                  borderWidth: 1,
-                  borderRadius: BorderRadius.circular(100),
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  focusedBorderColor: MyColor.orange2.withOpacity(.3),
-                  disabledBorderColor: MyColor.textFieldBorder,
-                  enabledBorderColor: MyColor.orange2,
-                  numberOfFields: 6,
-                  borderColor: MyColor.orange2,
-                  showFieldAsBox: true,
-                  onCodeChanged: (String code) {
-                    debugPrint("code =  $code");
-                    verification = code;
-                    // verificationCode = code;
-                    // print(verificationCode);
+                child: PinCodeTextField(
+                  appContext: context,
+                  length: 6,
+                  onChanged: (String value) {
+                    verification = value;
+                    print("Changed: $value");
                   },
-                  onSubmit: (String verificationCode) {
-                    verification = verificationCode;
-                    print(verification);
-                  }, // end onSubmit
-                ),
+                  onCompleted: (String value) {
+                    verification = value;
+                    print("Completed: $value");
+                  },
+                  pinTheme: PinTheme(
+                    shape: PinCodeFieldShape.circle,
+                    borderRadius: BorderRadius.circular(100),
+                    borderWidth: 1,
+                    fieldHeight: 46,
+                    fieldWidth: 46,
+                    activeFillColor: Color(0xffF6F6F6),
+                    inactiveFillColor: Color(0xffF6F6F6),
+                    selectedFillColor: Color(0xffF6F6F6),
+                    activeColor: MyColor.orange2.withOpacity(.3),
+                    inactiveColor: MyColor.textFieldBorder,
+                    selectedColor: MyColor.orange2,
+                  ),
+                  keyboardType: TextInputType.number,
+                  enableActiveFill: false,
+                )
+                // OtpTextField(
+                //   mainAxisAlignment: MainAxisAlignment.center,
+                //   crossAxisAlignment: CrossAxisAlignment.center,
+                //   contentPadding: EdgeInsets.all(10),
+                //   fieldHeight: 46,
+                //   fieldWidth: 46,
+                //   fillColor: Color(0xffF6F6F6),
+                //   borderWidth: 1,
+                //   borderRadius: BorderRadius.circular(100),
+                //   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                //   focusedBorderColor: MyColor.orange2.withOpacity(.3),
+                //   disabledBorderColor: MyColor.textFieldBorder,
+                //   enabledBorderColor: MyColor.orange2,
+                //   numberOfFields: 6,
+                //   borderColor: MyColor.orange2,
+                //   showFieldAsBox: true,
+                //   onCodeChanged: (String code) {
+                //     debugPrint("code =  $code");
+                //     verification = code;
+                //     // verificationCode = code;
+                //     // print(verificationCode);
+                //   },
+                //   onSubmit: (String verificationCode) {
+                //     verification = verificationCode;
+                //     print(verification);
+                //   }, // end onSubmit
+                // ),
               ),
               GestureDetector(
                 onTap: () async {

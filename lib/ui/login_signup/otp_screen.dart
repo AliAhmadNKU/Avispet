@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:avispets/ui/widgets/header_auth_widget.dart';
 import 'package:avispets/utils/apis/all_api.dart';
 import 'package:avispets/utils/apis/api_strings.dart';
 import 'package:avispets/utils/common_function/header_widget2.dart';
@@ -12,6 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:get/get_utils/get_utils.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../bloc/bloc_events.dart';
 import '../../bloc/bloc_states.dart';
@@ -129,15 +131,18 @@ class _OtpScreenState extends State<OtpScreen> {
         if(screen == 'signup'){
           Navigator.pushNamedAndRemoveUntil(
               context,
-              RoutesName.selectAnimal,
+              RoutesName.loginScreen,
+              // RoutesName.selectAnimal,
               arguments: payload,
                   (route) => false
           );
         }
       }
-      setState(() {
-        loader = false;
-      });
+      if(mounted){
+        setState(() {
+          loader = false;
+        });
+      }
     }
     catch(e){
         print(e);
@@ -585,7 +590,27 @@ class _OtpScreenState extends State<OtpScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            HeaderWidget2(),
+            // HeaderWidget2(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    width: 31,
+                    height: 31,
+                    child: Image.asset(
+                      'assets/images/icons/prev.png',
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10.0, vertical: 5),
+                  child: HeaderAuthWidget(),
+                ),
+              ],
+            ),
             Container(
                 padding: EdgeInsets.symmetric(vertical: 20),
                 child: MyString.bold('verification'.tr, 27,
@@ -622,35 +647,62 @@ class _OtpScreenState extends State<OtpScreen> {
 
             Container(
               margin: EdgeInsets.only(top: 50),
-              child: OtpTextField(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                contentPadding: EdgeInsets.all(10),
-                fieldHeight: 46,
-                fieldWidth: 46,
-                fillColor: Color(0xffF6F6F6),
-                borderWidth: 1,
-                borderRadius: BorderRadius.circular(100),
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly
-                ],
-                focusedBorderColor:
-                MyColor.orange2.withOpacity(.3),
-                disabledBorderColor: MyColor.textFieldBorder,
-                enabledBorderColor: MyColor.orange2,
-                numberOfFields: 6,
-                borderColor: MyColor.orange2,
-                showFieldAsBox: true,
-                onCodeChanged: (String code) {
-                  debugPrint("code =  $code");
-                  verificationCode = code;
-                  // verificationCode = code;
-                  // setState(() {});
+              child: PinCodeTextField(
+                appContext: context,
+                length: 6,
+                onChanged: (String value) {
+                  verificationCode = value;
+                  print("Changed: $value");
                 },
-                onSubmit: (String verificationCode) {
-                  this.verificationCode = verificationCode;
-                }, // end onSubmit
-              ),
+                onCompleted: (String value) {
+                  verificationCode = value;
+                  print("Completed: $value");
+                },
+                pinTheme: PinTheme(
+                  shape: PinCodeFieldShape.circle,
+                  borderRadius: BorderRadius.circular(100),
+                  borderWidth: 1,
+                  fieldHeight: 46,
+                  fieldWidth: 46,
+                  activeFillColor: Color(0xffF6F6F6),
+                  inactiveFillColor: Color(0xffF6F6F6),
+                  selectedFillColor: Color(0xffF6F6F6),
+                  activeColor: MyColor.orange2.withOpacity(.3),
+                  inactiveColor: MyColor.textFieldBorder,
+                  selectedColor: MyColor.orange2,
+                ),
+                keyboardType: TextInputType.number,
+                enableActiveFill: false,
+              )
+              // OtpTextField(
+              //   mainAxisAlignment: MainAxisAlignment.center,
+              //   crossAxisAlignment: CrossAxisAlignment.center,
+              //   contentPadding: EdgeInsets.all(10),
+              //   fieldHeight: 46,
+              //   fieldWidth: 46,
+              //   fillColor: Color(0xffF6F6F6),
+              //   borderWidth: 1,
+              //   borderRadius: BorderRadius.circular(100),
+              //   inputFormatters: [
+              //     FilteringTextInputFormatter.digitsOnly
+              //   ],
+              //   focusedBorderColor:
+              //   MyColor.orange2.withOpacity(.3),
+              //   disabledBorderColor: MyColor.textFieldBorder,
+              //   enabledBorderColor: MyColor.orange2,
+              //   numberOfFields: 6,
+              //   borderColor: MyColor.orange2,
+              //   showFieldAsBox: true,
+              //   onCodeChanged: (String code) {
+              //     debugPrint("code =  $code");
+              //     verificationCode = code;
+              //     // verificationCode = code;
+              //     // setState(() {});
+              //   },
+              //   onSubmit: (String verificationCode) {
+              //     this.verificationCode = verificationCode;
+              //   }, // end onSubmit
+              // ),
             ),
 
             GestureDetector(

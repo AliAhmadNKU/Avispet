@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:avispets/bloc/bloc_events.dart';
 import 'package:avispets/bloc/bloc_states.dart';
 import 'package:avispets/bloc/signup_bloc.dart';
+import 'package:avispets/ui/widgets/header_auth_widget.dart';
 import 'package:avispets/utils/common_function/dialogs/bottom_language.dart';
 import 'package:avispets/utils/common_function/header_widget2.dart';
 import 'package:avispets/utils/my_color.dart';
@@ -163,20 +164,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                       ),
                                     ),
                                   ),
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: GestureDetector(
-                                      onTap: () async {
-                                        await changeLanguage(context);
-                                      },
-                                      child: Image.asset(
-                                        'assets/images/icons/translation.png',
-                                        width: 30,
-                                        height: 30,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  )
+                                  HeaderAuthWidget()
                                 ],
                               ),
                             ),
