@@ -3,9 +3,14 @@ import 'package:flutter/material.dart';
 class MyString {
   // bold
   static Widget bold(
-      String value, double size, Color textColor, TextAlign align) {
+      String value, double size, Color textColor, TextAlign align,
+  {int maxLines = 30}
+
+      ) {
     return Text(value,
         textAlign: align,
+        maxLines: maxLines,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(
             color: textColor,
             fontSize: size,

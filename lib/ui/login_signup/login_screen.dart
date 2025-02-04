@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:avispets/bloc/bloc_events.dart';
 import 'package:avispets/bloc/bloc_states.dart';
+import 'package:avispets/ui/widgets/header_auth_widget.dart';
 import 'package:avispets/utils/apis/all_api.dart';
 import 'package:avispets/utils/apis/api_strings.dart';
 import 'package:avispets/utils/common_function/dialogs/bottom_language.dart';
@@ -124,23 +125,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 18.0, vertical: 5),
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: GestureDetector(
-                                  onTap: () async {
-                                    await changeLanguage(context);
-                                  },
-                                  child: Image.asset(
-                                    'assets/images/icons/translation.png',
-                                    width: 30,
-                                    height: 30,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              )
-                              // HeaderWidget2(),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 18.0, vertical: 5),
+                              child: HeaderAuthWidget(),
                             ),
                             Padding(
                               padding:

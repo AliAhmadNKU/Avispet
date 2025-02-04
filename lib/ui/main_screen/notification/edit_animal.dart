@@ -356,6 +356,7 @@ class _EditAnimalState extends State<EditAnimal> {
                             child: TextField(
                               keyboardType: TextInputType.number,
                               controller: dob,
+                              readOnly: doNotKnowDob,
                               scrollPadding: const EdgeInsets.only(bottom: 50),
                               style: TextStyle(color: MyColor.black),
                               decoration: InputDecoration(
@@ -399,6 +400,47 @@ class _EditAnimalState extends State<EditAnimal> {
                                   //   }
                                 }
                               },
+                            ),
+                          ), //radio 1
+                          Container(
+                            margin: const EdgeInsets.only(top: 8),
+                            height: 30,
+                            alignment: Alignment.center,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    doNotKnowDob = !doNotKnowDob;
+                                    dob.text = '';
+                                    setState(() {});
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(right: 8),
+                                    alignment: Alignment.center,
+                                    width: 20,
+                                    height: 20,
+                                    decoration: BoxDecoration(
+                                        color: doNotKnowDob
+                                            ? MyColor.orange
+                                            : MyColor.white,
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(10))),
+                                    child: Icon(
+                                      Icons.check,
+                                      color: MyColor.white,
+                                      size: 15,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                    child: MyString.reg(
+                                        "dontKnowDOB".tr,
+                                        14,
+                                        MyColor.textFieldBorder,
+                                        TextAlign.center)),
+                              ],
                             ),
                           ),
                           const SizedBox(height: 15),
@@ -462,49 +504,6 @@ class _EditAnimalState extends State<EditAnimal> {
                                   //   }
                                 }
                               },
-                            ),
-                          ),
-
-                          //radio 1
-                          Container(
-                            margin: const EdgeInsets.only(top: 8),
-                            height: 30,
-                            alignment: Alignment.center,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    doNotKnowDob = !doNotKnowDob;
-                                    dob.text = '';
-                                    setState(() {});
-                                  },
-                                  child: Container(
-                                    margin: const EdgeInsets.only(right: 8),
-                                    alignment: Alignment.center,
-                                    width: 20,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                        color: doNotKnowDob
-                                            ? MyColor.orange
-                                            : MyColor.white,
-                                        borderRadius: const BorderRadius.all(
-                                            Radius.circular(10))),
-                                    child: Icon(
-                                      Icons.check,
-                                      color: MyColor.white,
-                                      size: 15,
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                    child: MyString.reg(
-                                        "dontKnowDOB".tr,
-                                        14,
-                                        MyColor.textFieldBorder,
-                                        TextAlign.center)),
-                              ],
                             ),
                           ),
 

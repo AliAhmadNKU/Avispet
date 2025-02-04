@@ -155,6 +155,7 @@ class SignUpBlock extends Bloc<CreateProfileEvent, BlocStates> {
             print(jsonEncode(res));
             var result = jsonDecode(res.toString());
             // Deserialize response
+            LoadingDialog.hide(context);
 
             if (result['status'] == 201) {
               _signUpModel = SignUpModel.fromJson(result);
@@ -204,7 +205,6 @@ class SignUpBlock extends Bloc<CreateProfileEvent, BlocStates> {
             print(error);
             emit(Error(error.toString()));
           }
-          LoadingDialog.hide(context);
         });
       }
     });

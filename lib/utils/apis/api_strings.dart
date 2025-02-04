@@ -89,9 +89,12 @@ class ApiStrings {
   static const String followersFollowing = 'followers-following';
   static const String allUsers = 'users';
   static const String allUsersDiscussion = 'user';
+  static const String followingSuggestions = allUsersDiscussion +'/following_suggestions';
   static const String groups = 'groups';
   static const String messages = 'messages';
   static const String individual = 'individual';
+  static const String userActivitiesGamification = 'gamification/user-activities';
+  static const String allGamificationLevels = 'gamification/levels';
   static const String group = 'group';
   static const String userAllChats = chats + '/user-all-chats';
   static const String userIndividualMessages = chats + '/user-individual-messages';

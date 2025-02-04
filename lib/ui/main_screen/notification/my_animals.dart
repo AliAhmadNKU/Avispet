@@ -148,203 +148,212 @@ class _MyAnimalsState extends State<MyAnimals> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
-                                              Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  SizedBox(
-                                                    width: 56,
-                                                    height: 56,
-                                                    child: ClipRRect(
-                                                      borderRadius:
-                                                          const BorderRadius
-                                                              .all(
-                                                              Radius.circular(
-                                                                  50)),
-                                                      child: Image.network(
-                                                          '${GetApi.getAnimal[index].images![0].toString()}',
-                                                          fit: BoxFit.cover,
-                                                          loadingBuilder: (context,
-                                                                  child,
-                                                                  loadingProgress) =>
-                                                              (loadingProgress ==
-                                                                      null)
-                                                                  ? child
-                                                                  : customProgressBar()),
+                                              Container(
+                                                width: MediaQuery.sizeOf(context).width * 0.8 ,
+                                                child: Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  children: [
+                                                    SizedBox(
+                                                      width: 56,
+                                                      height: 56,
+                                                      child: ClipRRect(
+                                                        borderRadius:
+                                                            const BorderRadius
+                                                                .all(
+                                                                Radius.circular(
+                                                                    50)),
+                                                        child: Image.network(
+                                                            '${GetApi.getAnimal[index].images![0].toString()}',
+                                                            fit: BoxFit.cover,
+                                                            loadingBuilder: (context,
+                                                                    child,
+                                                                    loadingProgress) =>
+                                                                (loadingProgress ==
+                                                                        null)
+                                                                    ? child
+                                                                    : customProgressBar()),
+                                                      ),
                                                     ),
-                                                  ),
-                                                  const SizedBox(width: 10),
-                                                  Column(
-                                                    children: [
-                                                      const SizedBox(height: 5),
-                                                      MyString.bold(
-                                                          GetApi
-                                                              .getAnimal[index]
-                                                              .name
-                                                              .toString(),
-                                                          11,
-                                                          MyColor.textBlack0,
-                                                          TextAlign.start),
-                                                      const SizedBox(height: 5),
-                                                      MyString.bold(
-                                                          GetApi
-                                                              .getAnimal[index]
-                                                              .breed
-                                                              .toString(),
-                                                          11,
-                                                          MyColor.textBlack0,
-                                                          TextAlign.start),
+                                                    const SizedBox(width: 10),
+                                                    Expanded(
+                                                      child: Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          const SizedBox(height: 5),
+                                                          MyString.bold(
+                                                              '${GetApi.getAnimal[index].name}',
+                                                              11,
+                                                              maxLines: 1,
+                                                              MyColor.textBlack0,
+                                                              TextAlign.start),
+                                                          const SizedBox(height: 5),
+                                                          MyString.bold(
+                                                              GetApi
+                                                                  .getAnimal[index]
+                                                                  .breed
+                                                                  .toString(),
+                                                              11,
+                                                              MyColor.textBlack0,
+                                                              TextAlign.start),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: Container(
+                                                  color: Colors.transparent,
+                                                  child: PopupMenuButton<SampleItem>(
+                                                    color: MyColor.white,
+                                                    shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                                Radius.circular(
+                                                                    18.0))),
+                                                    icon: Icon(
+                                                      Icons
+                                                          .more_vert, // Change the icon here
+                                                      color: MyColor
+                                                          .redd, // Change the color here
+                                                    ),
+                                                    initialValue: selectedItem,
+                                                    onSelected: (SampleItem item) {
+                                                      setState(() {
+                                                        selectedItem = item;
+                                                      });
+                                                    },
+                                                    itemBuilder:
+                                                        (BuildContext context) =>
+                                                            <PopupMenuEntry<
+                                                                SampleItem>>[
+                                                      PopupMenuItem<SampleItem>(
+                                                        value: null,
+                                                        onTap: () async {
+                                                          Map<String, String>
+                                                              mapData = {
+                                                            'id': GetApi
+                                                                .getAnimal[index].id
+                                                                .toString(),
+                                                            'animal': GetApi
+                                                                .getAnimal[index]
+                                                                .name
+                                                                .toString(),
+                                                            'type': GetApi
+                                                                        .getAnimal[
+                                                                            index]
+                                                                        .specices
+                                                                        .toString() ==
+                                                                    'Dog'
+                                                                ? 1.toString()
+                                                                : 2.toString(),
+                                                            'dob': GetApi
+                                                                .getAnimal[index]
+                                                                .age
+                                                                .toString(),
+                                                            'weight': GetApi
+                                                                .getAnimal[index]
+                                                                .weight
+                                                                .toString(),
+                                                            'breed': GetApi
+                                                                .getAnimal[index]
+                                                                .breed
+                                                                .toString(),
+                                                            'gender': GetApi
+                                                                        .getAnimal[
+                                                                            index]
+                                                                        .gender
+                                                                        .toString() ==
+                                                                    'Male'
+                                                                ? 1.toString()
+                                                                : 2.toString(),
+                                                            'sterilized': GetApi
+                                                                        .getAnimal[
+                                                                            index]
+                                                                        .sterilized
+                                                                        .toString() ==
+                                                                    'Yes'
+                                                                ? 1.toString()
+                                                                : 2.toString(),
+                                                            'specices':
+                                                            '${GetApi.getAnimal[index].specices!}',
+                                                            // 'specices':
+                                                            //     '${ApiStrings.mediaURl}${GetApi.getAnimal[index].specices.toString()}',
+                                                            'image':
+                                                                '${GetApi.getAnimal[index].images![0].toString()}',
+                                                          };
+
+                                                          debugPrint(
+                                                              'MY-ANIMAL MAP-DATA IS : ${GetApi
+                                                                  .getAnimal[
+                                                              index]
+                                                                  .type}');
+                                                          debugPrint(
+                                                              'MY-ANIMAL MAP-DATA IS : $mapData');
+                                                          await Navigator.pushNamed(
+                                                              context,
+                                                              RoutesName.editAnimal,
+                                                              arguments: mapData);
+                                                          page = 1;
+                                                          setState(() {
+                                                            loader = true;
+                                                          });
+                                                          await GetApi.getMyAnimalNew(
+                                                            context,
+                                                          );
+                                                          // await GetApi.getMyAnimal(
+                                                          //   context,
+                                                          // );
+                                                          if(this.mounted){
+                                                            setState(() {
+                                                              loader = false;
+                                                            });
+                                                          }
+                                                        },
+                                                        child: MyString.reg(
+                                                            'edit'.tr,
+                                                            18,
+                                                            MyColor.redd,
+                                                            TextAlign.center),
+                                                      ),
+                                                      PopupMenuItem<SampleItem>(
+                                                        value: null,
+                                                        onTap: () async {
+                                                          await showDialog(
+                                                            context: context,
+                                                            barrierDismissible:
+                                                                true,
+                                                            builder: (_) {
+                                                              return deleteAnimalDialog(
+                                                                  GetApi
+                                                                      .getAnimal[
+                                                                          index]
+                                                                      .id
+                                                                      .toString());
+                                                            },
+                                                          );
+                                                          // await GetApi.getMyAnimal(
+                                                          //   context,
+                                                          // );
+                                                          await GetApi.getMyAnimalNew(
+                                                            context,
+                                                          );
+                                                          setState(() {
+                                                            // LoadingDialog.hide(context);
+                                                          });
+                                                        },
+                                                        child: MyString.reg(
+                                                            'deleteAnimal'.tr,
+                                                            18,
+                                                            MyColor.redd,
+                                                            TextAlign.center),
+                                                      ),
                                                     ],
                                                   ),
-                                                ],
-                                              ),
-                                              PopupMenuButton<SampleItem>(
-                                                color: MyColor.white,
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.all(
-                                                            Radius.circular(
-                                                                18.0))),
-                                                icon: Icon(
-                                                  Icons
-                                                      .more_vert, // Change the icon here
-                                                  color: MyColor
-                                                      .redd, // Change the color here
                                                 ),
-                                                initialValue: selectedItem,
-                                                onSelected: (SampleItem item) {
-                                                  setState(() {
-                                                    selectedItem = item;
-                                                  });
-                                                },
-                                                itemBuilder:
-                                                    (BuildContext context) =>
-                                                        <PopupMenuEntry<
-                                                            SampleItem>>[
-                                                  PopupMenuItem<SampleItem>(
-                                                    value: null,
-                                                    onTap: () async {
-                                                      Map<String, String>
-                                                          mapData = {
-                                                        'id': GetApi
-                                                            .getAnimal[index].id
-                                                            .toString(),
-                                                        'animal': GetApi
-                                                            .getAnimal[index]
-                                                            .name
-                                                            .toString(),
-                                                        'type': GetApi
-                                                                    .getAnimal[
-                                                                        index]
-                                                                    .specices
-                                                                    .toString() ==
-                                                                'Dog'
-                                                            ? 1.toString()
-                                                            : 2.toString(),
-                                                        'dob': GetApi
-                                                            .getAnimal[index]
-                                                            .age
-                                                            .toString(),
-                                                        'weight': GetApi
-                                                            .getAnimal[index]
-                                                            .weight
-                                                            .toString(),
-                                                        'breed': GetApi
-                                                            .getAnimal[index]
-                                                            .breed
-                                                            .toString(),
-                                                        'gender': GetApi
-                                                                    .getAnimal[
-                                                                        index]
-                                                                    .gender
-                                                                    .toString() ==
-                                                                'Male'
-                                                            ? 1.toString()
-                                                            : 2.toString(),
-                                                        'sterilized': GetApi
-                                                                    .getAnimal[
-                                                                        index]
-                                                                    .sterilized
-                                                                    .toString() ==
-                                                                'Yes'
-                                                            ? 1.toString()
-                                                            : 2.toString(),
-                                                        'specices':
-                                                        '${GetApi.getAnimal[index].specices!}',
-                                                        // 'specices':
-                                                        //     '${ApiStrings.mediaURl}${GetApi.getAnimal[index].specices.toString()}',
-                                                        'image':
-                                                            '${GetApi.getAnimal[index].images![0].toString()}',
-                                                      };
-
-                                                      debugPrint(
-                                                          'MY-ANIMAL MAP-DATA IS : ${GetApi
-                                                              .getAnimal[
-                                                          index]
-                                                              .type}');
-                                                      debugPrint(
-                                                          'MY-ANIMAL MAP-DATA IS : $mapData');
-                                                      await Navigator.pushNamed(
-                                                          context,
-                                                          RoutesName.editAnimal,
-                                                          arguments: mapData);
-                                                      page = 1;
-                                                      setState(() {
-                                                        loader = true;
-                                                      });
-                                                      await GetApi.getMyAnimalNew(
-                                                        context,
-                                                      );
-                                                      // await GetApi.getMyAnimal(
-                                                      //   context,
-                                                      // );
-                                                      if(this.mounted){
-                                                        setState(() {
-                                                          loader = false;
-                                                        });
-                                                      }
-                                                    },
-                                                    child: MyString.reg(
-                                                        'edit'.tr,
-                                                        18,
-                                                        MyColor.redd,
-                                                        TextAlign.center),
-                                                  ),
-                                                  PopupMenuItem<SampleItem>(
-                                                    value: null,
-                                                    onTap: () async {
-                                                      await showDialog(
-                                                        context: context,
-                                                        barrierDismissible:
-                                                            true,
-                                                        builder: (_) {
-                                                          return deleteAnimalDialog(
-                                                              GetApi
-                                                                  .getAnimal[
-                                                                      index]
-                                                                  .id
-                                                                  .toString());
-                                                        },
-                                                      );
-                                                      // await GetApi.getMyAnimal(
-                                                      //   context,
-                                                      // );
-                                                      await GetApi.getMyAnimalNew(
-                                                        context,
-                                                      );
-                                                      setState(() {
-                                                        // LoadingDialog.hide(context);
-                                                      });
-                                                    },
-                                                    child: MyString.reg(
-                                                        'deleteAnimal'.tr,
-                                                        18,
-                                                        MyColor.redd,
-                                                        TextAlign.center),
-                                                  ),
-                                                ],
                                               ),
                                             ],
                                           ),
