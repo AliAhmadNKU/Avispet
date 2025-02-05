@@ -1,10 +1,13 @@
+import 'package:avispets/models/events_response_model.dart';
+import 'package:avispets/models/locations/get_location_name_address.dart';
+import 'package:avispets/models/online_store_response_model.dart';
 import 'package:avispets/ui/main_screen/map/google_maps_service.dart';
 import 'package:flutter/material.dart';
 import '../../../utils/my_routes/route_name.dart';
 
 class SearchingBar extends StatelessWidget {
-  final Function(String) onChanged;
-  final Function(String) onPlaceSelected;
+  final Future<dynamic> Function(String) onChanged;
+  final Function(dynamic) onPlaceSelected;
 
   const SearchingBar({
     Key? key,
@@ -26,7 +29,10 @@ class SearchingBar extends StatelessWidget {
             onPressed: () {
               showSearch(
                 context: context,
-                delegate: PlaceSearchDelegate(onPlaceSelected: onPlaceSelected),
+                delegate: PlaceSearchDelegate(
+                    onPlaceSelected: onPlaceSelected,
+                  onChanged: onChanged,
+                ),
               );
             },
           ),
@@ -49,13 +55,18 @@ class SearchingBar extends StatelessWidget {
 }
 
 class PlaceSearchDelegate extends SearchDelegate {
-  final Function(String) onPlaceSelected;
+  final Function(dynamic) onPlaceSelected;
+  final Future<dynamic> Function(String) onChanged;
 
-  PlaceSearchDelegate({required this.onPlaceSelected});
+  PlaceSearchDelegate({
+    required this.onPlaceSelected,
+    required this.onChanged,
+  });
 
-  Future<List<String>> _getSuggestions(String query) async {
+  Future<dynamic> _getSuggestions(String query) async {
     try {
-      return await GoogleMapsService.getPlaceSuggestions(query);
+      return await onChanged(query);
+      // return await GoogleMapsService.getPlaceSuggestions(query);
     } catch (e) {
       return [];
     }
@@ -81,31 +92,89 @@ class PlaceSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    onPlaceSelected(query);
+    // onPlaceSelected(_selectedLocation!);
     return Container();
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return FutureBuilder<List<String>>(
+    return FutureBuilder<dynamic>(
       future: _getSuggestions(query),
       builder: (context, snapshot) {
         if (!snapshot.hasData)
           return const Center(child: CircularProgressIndicator());
 
         final suggestions = snapshot.data!;
-        return ListView.builder(
-          itemCount: suggestions.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text(suggestions[index]),
-              onTap: () {
-                onPlaceSelected(suggestions[index]);
-                close(context, null);
-              },
-            );
-          },
-        );
+        if(suggestions is List<LocationData>){
+          return ListView.builder(
+            itemCount: suggestions.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                leading: suggestions[index].profile != null
+                    ? CircleAvatar(
+                  backgroundImage: NetworkImage(suggestions[index].profile!),
+                  radius: 20,
+                )
+                    : CircleAvatar(
+                  radius: 20,
+                  child: Icon(Icons.location_on, color: Colors.black), // Fallback icon
+                ),
+                title: Text('${suggestions[index].name!} ${suggestions[index].address!}'),
+                onTap: () {
+                  onPlaceSelected(suggestions[index]);
+                  close(context, null);
+                },
+              );
+            },
+          );
+        }
+        else if(suggestions is List<EventsModel>){
+          return ListView.builder(
+            itemCount: suggestions.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                leading: suggestions[index].profile != null
+                    ? CircleAvatar(
+                  backgroundImage: NetworkImage(suggestions[index].profile!),
+                  radius: 20,
+                )
+                    : CircleAvatar(
+                  radius: 20,
+                  child: Icon(Icons.location_on, color: Colors.white), // Fallback icon
+                ),
+                title: Text('${suggestions[index].name!}, ${suggestions[index].venue!}, ${suggestions[index].city}'),
+                onTap: () {
+                  onPlaceSelected(suggestions[index]);
+                  close(context, null);
+                },
+              );
+            },
+          );
+        }
+        else if(suggestions is List<OnlineStoreModel>){
+          return ListView.builder(
+            itemCount: suggestions.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                leading: suggestions[index].profile != null
+                    ? CircleAvatar(
+                  backgroundImage: NetworkImage(suggestions[index].profile!),
+                  radius: 20,
+                )
+                    : CircleAvatar(
+                  radius: 20,
+                  child: Icon(Icons.location_on, color: Colors.white), // Fallback icon
+                ),
+                title: Text('${suggestions[index].name!}, ${suggestions[index].address!}'),
+                onTap: () {
+                  onPlaceSelected(suggestions[index]);
+                  close(context, null);
+                },
+              );
+            },
+          );
+        }
+        return SizedBox();
       },
     );
   }

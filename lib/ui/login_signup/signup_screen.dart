@@ -4,9 +4,12 @@ import 'dart:io';
 import 'package:avispets/bloc/bloc_events.dart';
 import 'package:avispets/bloc/bloc_states.dart';
 import 'package:avispets/bloc/signup_bloc.dart';
+import 'package:avispets/ui/widgets/header_auth_widget.dart';
+import 'package:avispets/utils/common_function/dialogs/bottom_language.dart';
 import 'package:avispets/utils/common_function/header_widget2.dart';
 import 'package:avispets/utils/my_color.dart';
 import 'package:avispets/utils/my_routes/route_name.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -98,6 +101,7 @@ class _SignupScreenState extends State<SignupScreen> {
       create: (context) => _createProfileBloc,
       child: BlocListener<CreateProfileBloc, BlocStates>(
         listener: (context, state) {
+          print('BlocListener => $state');
           if (state is ValidationCheck) {
             toaster(context, state.value.toString());
           }
@@ -108,25 +112,25 @@ class _SignupScreenState extends State<SignupScreen> {
             LoadingDialog.hide(context);
           }
           if (state is NextScreen) {
-            Map<String, String> mapData2 = {
-              'firstName': firstName.text.toString(),
-              'lastName': lastName.text.toString(),
-              'email': email.text.toString(),
-              'password': password.text.toString(),
-              'timezone': currentTimeZone.toString(),
-              'latitude': latitude.toString(),
-              'longitude': longitude.toString(),
-              'deviceToken':
-                  sharedPref.getString(SharedKey.deviceToken).toString(),
-              'deviceType': deviceType.toString(),
-              'pseudo': pseudo.text.toString(),
-              'phoneNumber': phoneNumber.text.toString(),
-              'city': city.text.toString(),
-              'address': address.text.toString(),
-            };
-
-            Navigator.pushNamed(context, RoutesName.otpScreen,
-                arguments: mapData2);
+            // Map<String, String> mapData2 = {
+            //   'firstName': firstName.text.toString(),
+            //   'lastName': lastName.text.toString(),
+            //   'email': email.text.toString(),
+            //   'password': password.text.toString(),
+            //   'timezone': currentTimeZone.toString(),
+            //   'latitude': latitude.toString(),
+            //   'longitude': longitude.toString(),
+            //   'deviceToken':
+            //       sharedPref.getString(SharedKey.deviceToken).toString(),
+            //   'deviceType': deviceType.toString(),
+            //   'pseudo': pseudo.text.toString(),
+            //   'phoneNumber': phoneNumber.text.toString(),
+            //   'city': city.text.toString(),
+            //   'address': address.text.toString(),
+            // };
+            //
+            // Navigator.pushNamed(context, RoutesName.otpScreen,
+            //     arguments: mapData2);
           }
         },
         child: Scaffold(
@@ -147,7 +151,22 @@ class _SignupScreenState extends State<SignupScreen> {
                             Padding(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 18.0, vertical: 5),
-                              child: HeaderWidget2(),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () => Navigator.pop(context),
+                                    child: Container(
+                                      width: 31,
+                                      height: 31,
+                                      child: Image.asset(
+                                        'assets/images/icons/prev.png',
+                                      ),
+                                    ),
+                                  ),
+                                  HeaderAuthWidget()
+                                ],
+                              ),
                             ),
                             Padding(
                               padding:
@@ -414,32 +433,48 @@ class _SignupScreenState extends State<SignupScreen> {
                                         Expanded(
                                           child: Row(
                                             children: [
-                                              /*
-                                              Container(
-                                                width: 50, // Adjust width as needed
-                                                padding: const EdgeInsets.symmetric(horizontal: 1),
-
-                                                child: DropdownButton<String>(
-                                                  isExpanded: true,
-                                                  value: selectedCountryCode,
-                                                  icon: const Icon(Icons.arrow_drop_down),
-                                                  underline: SizedBox(), // Removes default underline
-                                                  items: countryCodes.map<DropdownMenuItem<String>>((String code) {
-                                                    return DropdownMenuItem<String>(
-                                                      value: code,
-                                                      child: Text(
-                                                        code,
-                                                        style: TextStyle(color: MyColor.black, fontSize: 12),
-                                                      ),
-                                                    );
-                                                  }).toList(),
-                                                  onChanged: (String? newValue) {
-                                                    setState(() {
-                                                      selectedCountryCode = newValue!;
-                                                    });
-                                                  },
-                                                ),
-                                              ),*/
+                                              CountryCodePicker(
+                                                onChanged: (code){
+                                                  print(code);
+                                                  setState(() {
+                                                    selectedCountryCode = code.toString();
+                                                  });
+                                                },
+                                                // Initial selection and favorite can be one of code ('IT') OR dial_code('+39')
+                                                initialSelection: 'US',
+                                                showFlag: false,
+                                                // optional. Shows only country name and flag
+                                                showCountryOnly: false,
+                                                // optional. Shows only country name and flag when popup is closed.
+                                                showOnlyCountryWhenClosed: false,
+                                                // optional. aligns the flag and the Text left
+                                                alignLeft: false,
+                                              ),
+                                              // Container(
+                                              //   width: 50, // Adjust width as needed
+                                              //   padding: const EdgeInsets.symmetric(horizontal: 1),
+                                              //
+                                              //   child: DropdownButton<String>(
+                                              //     isExpanded: true,
+                                              //     value: selectedCountryCode,
+                                              //     icon: const Icon(Icons.arrow_drop_down),
+                                              //     underline: SizedBox(), // Removes default underline
+                                              //     items: countryCodes.map<DropdownMenuItem<String>>((String code) {
+                                              //       return DropdownMenuItem<String>(
+                                              //         value: code,
+                                              //         child: Text(
+                                              //           code,
+                                              //           style: TextStyle(color: MyColor.black, fontSize: 12),
+                                              //         ),
+                                              //       );
+                                              //     }).toList(),
+                                              //     onChanged: (String? newValue) {
+                                              //       setState(() {
+                                              //         selectedCountryCode = newValue!;
+                                              //       });
+                                              //     },
+                                              //   ),
+                                              // ),
                                               // Phone Number Input Field
                                               Expanded(
                                                 child: TextField(
@@ -457,22 +492,22 @@ class _SignupScreenState extends State<SignupScreen> {
                                                       borderSide:
                                                           BorderSide.none,
                                                     ),
-                                                    prefixIcon: SizedBox(
-                                                      width: 20,
-                                                      height: 20,
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                                horizontal: 12,
-                                                                vertical: 10),
-                                                        child: Image.asset(
-                                                          'assets/images/icons/phone.png',
-                                                          width: 20,
-                                                          height: 20,
-                                                        ),
-                                                      ),
-                                                    ),
+                                                    // prefixIcon: SizedBox(
+                                                    //   width: 20,
+                                                    //   height: 20,
+                                                    //   child: Padding(
+                                                    //     padding:
+                                                    //         const EdgeInsets
+                                                    //             .symmetric(
+                                                    //             horizontal: 12,
+                                                    //             vertical: 10),
+                                                    //     child: Image.asset(
+                                                    //       'assets/images/icons/phone.png',
+                                                    //       width: 20,
+                                                    //       height: 20,
+                                                    //     ),
+                                                    //   ),
+                                                    // ),
                                                     contentPadding:
                                                         const EdgeInsets
                                                             .symmetric(
@@ -1081,8 +1116,6 @@ class _SignupScreenState extends State<SignupScreen> {
                                       //         address.text.trim().toString(),
                                       //         deviceType,
                                       //         conditionCheck));
-                                      FocusManager.instance.primaryFocus
-                                          ?.unfocus();
 
                                       // Call the signup function
                                       _signUpBlock.add(
@@ -1098,7 +1131,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                           latitude,
                                           longitude,
                                           pseudo.text.trim().toString(),
-                                          phoneNumber.text.trim().toString(),
+                                          selectedCountryCode + phoneNumber.text.trim().toString(),
                                           city.text.trim().toString(),
                                           address.text.trim().toString(),
                                           deviceType,
@@ -1384,7 +1417,7 @@ class _SignupScreenState extends State<SignupScreen> {
             ? result.additionalUserInfo!.profile!['last_name'].toString()
             : '',
         result.additionalUserInfo!.profile!['email'].toString(),
-        '2');
+        'Facebook');
   }
 
   googleSignup(BuildContext context) async {
@@ -1433,7 +1466,8 @@ class _SignupScreenState extends State<SignupScreen> {
           firstName.isNotEmpty ? firstName.trim() : '',
           lastName.isNotEmpty ? lastName.trim() : '',
           useremail,
-          'Google');
+          'Google'
+      );
       // }
     }
   }
@@ -1499,7 +1533,10 @@ class _SignupScreenState extends State<SignupScreen> {
             Navigator.pushNamedAndRemoveUntil(
                 context,
                 RoutesName.otpScreen,
-                arguments: mapData,
+                arguments: {
+                  'data': mapData,
+                  'screen': 'signup',
+                },
                 (route) => false);
           }
         } else {
@@ -1508,7 +1545,8 @@ class _SignupScreenState extends State<SignupScreen> {
               context,
               RoutesName.selectAnimal,
               arguments: mapData,
-              (route) => false);
+              (route) => false
+          );
         }
       }
     } else if (result['status'] == 401) {

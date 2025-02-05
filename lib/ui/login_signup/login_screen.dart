@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:avispets/bloc/bloc_events.dart';
 import 'package:avispets/bloc/bloc_states.dart';
+import 'package:avispets/ui/widgets/header_auth_widget.dart';
 import 'package:avispets/utils/apis/all_api.dart';
 import 'package:avispets/utils/apis/api_strings.dart';
+import 'package:avispets/utils/common_function/dialogs/bottom_language.dart';
 import 'package:avispets/utils/common_function/header_widget2.dart';
 import 'package:avispets/utils/common_function/toaster.dart';
 import 'package:avispets/utils/my_color.dart';
@@ -123,9 +125,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 18.0, vertical: 5),
-                              child: HeaderWidget2(),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 18.0, vertical: 5),
+                              child: HeaderAuthWidget(),
                             ),
                             Padding(
                               padding:
@@ -334,6 +336,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                           MyColor.white, TextAlign.center),
                                     ),
                                   ),
+
+
                                   Container(
                                     margin: const EdgeInsets.only(
                                         top: 15, bottom: 15),
@@ -831,7 +835,7 @@ class _LoginScreenState extends State<LoginScreen> {
           firstName.isNotEmpty ? firstName.trim() : '',
           lastName.isNotEmpty ? lastName.trim() : '',
           useremail,
-          '1');
+          'Google');
       // }
     }
   }
@@ -863,7 +867,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ? result.additionalUserInfo!.profile!['last_name'].toString()
             : '',
         result.additionalUserInfo!.profile!['email'].toString(),
-        '2');
+        'Facebook');
   }
 
   void appleLogin() {
@@ -882,7 +886,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 call.arguments["firstName"],
                 call.arguments["lastName"],
                 call.arguments["email"],
-                '3');
+                'Apple');
           } else {
             toaster(context, call.arguments["error"]);
           }
@@ -953,7 +957,10 @@ class _LoginScreenState extends State<LoginScreen> {
             Navigator.pushNamedAndRemoveUntil(
                 context,
                 RoutesName.otpScreen,
-                arguments: mapData,
+                arguments: {
+                  'data': mapData,
+                  'screen': 'login',
+                },
                 (route) => false);
           }
         } else {

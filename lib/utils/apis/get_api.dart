@@ -25,6 +25,8 @@ class GetApi {
 
   // get-profile ////HOME_PAGE
   static GetProfileModel getProfileModel = GetProfileModel();
+
+
   static Future<GetProfileModel?> getProfileApi(
       BuildContext context, String userId) async {
     var res = await AllApi.getMethodApi("user/$userId");
@@ -50,6 +52,13 @@ class GetApi {
     }
     return null;
   }
+
+
+
+
+
+
+
 
   //get-all-post
   static GetAllPostModel _allPostModel = GetAllPostModel();
@@ -209,6 +218,31 @@ class GetApi {
           context, RoutesName.loginScreen, (route) => false);
     } else {
       toaster(context, result['status'].toString());
+    }
+  }
+
+  static getMyAnimalNew(
+      BuildContext context,
+      ) async {
+    getAnimal.clear();
+    var res = await AllApi.getMethodApi(ApiStrings.myAnimalsNew);
+
+    var result = jsonDecode(res.toString());
+    print(result);
+    if (result['status'] == 200) {
+      animalModel = MyAnimalModel.fromJson(result);
+      getAnimal.addAll(animalModel.data!);
+      // for (int i = 0; i < animalModel.data!.length; i++) {
+      //   getAnimal.add(animalModel.data![i]);
+      // }
+    } else if (result['status'] == 401) {
+      sharedPref.clear();
+      sharedPref.setString(SharedKey.onboardScreen, 'OFF');
+      toaster(context, result['status'].toString());
+      Navigator.pushNamedAndRemoveUntil(
+          context, RoutesName.loginScreen, (route) => false);
+    } else {
+      // toaster(context, result['status'].toString());
     }
   }
 

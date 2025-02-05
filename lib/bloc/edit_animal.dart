@@ -28,24 +28,24 @@ class EditAnimalBloc extends Bloc<EditAnimalEvent, BlocStates> {
 
             await Future.delayed(Duration.zero, () async {
               Map<String, dynamic> mapData = {
-                'id': event.id.toString(),
+                // 'id': event.id.toString(),
                 'name': event.name.toString(),
                 'specices': event.specices.toString(),
                 'gender': event.gender.toString(),
-                'weight': event.weight.toString(),
+                'weight': event.weight!,
                 'breed': event.race.toString(),
                 'age': int.parse(event.dob.toString()),
-                'sterilized': event.sterilized == 1 ? "Yes" : "No",
+                'sterilized': event.sterilized == "1" ? "Yes" : "No",
                 'images': event.image
               };
               debugPrint("EDIT-ANIMAL MAP DATA IS : $mapData");
 
               var res = await AllApi.patchtMethodApi(
-                ApiStrings.updateAnimal,
+                '${ApiStrings.updateAnimal}/${event.id}',
                 mapData,
               );
-              print('==================$res=================');
               var result = jsonDecode(res.toString());
+              print('==================$result=================');
               if (result['status'] == 200) {
                 commonModel = CommonModel.fromJson(result);
                 emit(ValidationCheck(result['message'].toString()));

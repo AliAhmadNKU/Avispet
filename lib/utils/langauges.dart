@@ -97,6 +97,7 @@ class Lang extends Translations {
           'phone': '123 456 7890',
           'city': 'City',
           'address': 'Area',
+          'add': 'Add',
           'password2': 'Password',
           'forgotPassword': 'Forgot',
           'forgotPassword2': 'Password',
@@ -106,6 +107,7 @@ class Lang extends Translations {
           'haveAnAccount': 'Don’t have an account? ',
           'editAnimalPhoto': 'Edit animal photo',
           'animalPhoto': 'Edit photo',
+          'animalPhotoCreate': 'Add a photo of your pet',
           'bio': 'Bio',
           'enterBio': 'Enter your bio',
           'enterBioP':
@@ -381,13 +383,15 @@ class Lang extends Translations {
 
           //createAnimal
           'animalName': 'Please enter the pet name',
-          'animalWeight': 'Please enter the pet name',
+          'animalWeight': 'Please enter the animal weight',
           'animalType': 'Please enter the pet type',
           'animalType1': 'Please select the pet',
           'animalRace': 'Please enter pet species',
           'animalbreed': 'Please enter the pet species',
           'animalDob': 'Please enter the Dob',
           'animalGender': 'Please enter the gender',
+          'animalAge': 'Please enter the age',
+
           'animalSterilized': 'Please enter the Sterilized',
           'animalImage': 'Please upload pet\'s image',
 
@@ -494,6 +498,7 @@ class Lang extends Translations {
           'Hotel': 'Hotel',
           'localisation': 'localisation',
           'Parks': 'Parks',
+          'add': 'Add',
           'Restaurants': 'Restaurants',
           'supermarket': 'supermarket',
           'Toilettage': 'Toilettage',
@@ -565,6 +570,8 @@ class Lang extends Translations {
               'Nous venons de vous envoyer un code de vérification à 6 chiffres à votre adresse courriel',
           'otp2Dec':
               'Nous venons de vous envoyer un code de vérification à 6 chiffres à votre numéro de téléphone',
+          'otpDec2':
+          'Nous venons de vous envoyer un code de vérification à 6 chiffres à votre numéro de téléphone',
           'otp2': 'Vérifier avec un numéro de téléphone?',
           'otp3': 'Vérifier avec un votre email?',
           'update': 'Mise à jour Avispets?',
@@ -585,6 +592,7 @@ class Lang extends Translations {
           'haveAnAccount': 'Vous n\'avez pas de compte? ',
           'editAnimalPhoto': 'Modifier la photo de l’ animal',
           'animalPhoto': 'Modifier la photo',
+          'animalPhotoCreate': 'Ajoutez une photo de votre animal de compagnie',
           'bio': 'Biographie',
           'enterBio': 'Entrez votre bio',
           'enterBioP':

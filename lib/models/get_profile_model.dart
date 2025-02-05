@@ -308,7 +308,7 @@ class Data {
   String? name;
   String? firstName;
   String? lastName;
-  Null? isOnline;
+  bool? isOnline;
   String? email;
   String? phoneNumber;
   String? pseudo;
@@ -320,19 +320,20 @@ class Data {
   String? gender;
   String? city;
   String? area;
+  String? biography;
   String? timezone;
-  Null? socketId;
+  dynamic socketId;
   String? latitude;
   String? longitude;
   String? deviceToken;
-  Null? socialId;
-  Null? socialType;
+  dynamic socialId;
+  dynamic socialType;
   String? deviceType;
-  Null? lastActive;
+  dynamic lastActive;
   int? gamePoints;
   bool? allowPushNotifications;
-  Null? resetToken;
-  Null? resetTokenExpiresAt;
+  dynamic resetToken;
+  dynamic resetTokenExpiresAt;
   bool? isVerified;
   bool? isActivate;
   String? createdAt;
@@ -366,6 +367,7 @@ class Data {
       this.deviceType,
       this.lastActive,
       this.gamePoints,
+        this.biography,
       this.allowPushNotifications,
       this.resetToken,
       this.resetTokenExpiresAt,
@@ -389,6 +391,7 @@ class Data {
     profession = json['profession'];
     dob = json['dob'];
     age = json['age'];
+    biography = json['biography'];
     gender = json['gender'];
     city = json['city'];
     area = json['area'];
@@ -403,7 +406,7 @@ class Data {
     lastActive = json['last_active'];
     gamePoints = json['gamePoints'];
     allowPushNotifications = json['allowPushNotifications'];
-    resetToken = json['reset_token'];
+    resetToken = json['reset_token'] != null  ? json['reset_token'] : '' ;
     resetTokenExpiresAt = json['reset_token_expires_at'];
     isVerified = json['is_verified'];
     isActivate = json['is_activate'];
@@ -434,6 +437,7 @@ class Data {
     data['timezone'] = this.timezone;
     data['socket_id'] = this.socketId;
     data['latitude'] = this.latitude;
+    data['biography'] = this.biography;
     data['longitude'] = this.longitude;
     data['deviceToken'] = this.deviceToken;
     data['socialId'] = this.socialId;

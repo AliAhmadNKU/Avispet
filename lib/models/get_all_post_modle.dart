@@ -99,11 +99,11 @@ class Post {
   double overallRating;
   String? email;
   String? phone;
-  String placeName;
+  String? placeName;
   String description;
   List<String> images;
-  String reservationPlatform;
-  String additionalInfo;
+  String? reservationPlatform;
+  String? additionalInfo;
   bool smallDogs;
   bool bigDogs;
   bool child;
@@ -203,7 +203,7 @@ class Review {
   String placeId;
   int postId;
   double overallRating;
-  String placeName;
+  String? placeName;
   String description;
   List<String> images;
   DateTime createdAt;

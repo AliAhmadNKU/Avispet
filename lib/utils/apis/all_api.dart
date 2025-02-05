@@ -20,6 +20,7 @@ class AllApi {
 
     print(sharedPref.getString(SharedKey.auth).toString());
     var url = Uri.parse("${ApiStrings.baseURl}$endPoint");
+    print(url);
 
     var response = await http.get(url, headers: {
       'Authorization':
@@ -33,6 +34,23 @@ class AllApi {
     return response.body;
   }
 
+  static Future<Object> getEvents(Map<String, String> queryParams) async {
+    final Uri uri = Uri.parse(ApiStrings.events).replace(queryParameters: queryParams);
+    // Make the GET request
+    final response = await http.get(
+        uri,
+        headers: {
+          'Authorization':
+          "Bearer  ${sharedPref.getString(SharedKey.auth).toString()}",
+          'Content-Type': 'application/json',
+          "x-access-token": sharedPref.getString(SharedKey.auth).toString(),
+          'Accept-Language':
+          sharedPref.getString(SharedKey.languageValue).toString()
+        }
+    );
+    return response.body;
+  }
+
   static Future<Object> deleteMethodApi(
       String endPoint, Map<String, dynamic> mapData) async {
     debugPrint(
@@ -40,12 +58,13 @@ class AllApi {
     var url = Uri.parse("${ApiStrings.baseURl}$endPoint");
     var response = await http.delete(url,
         headers: {
-          ApiStrings.headerKey: ApiStrings.headerValue,
+          // ApiStrings.headerKey: ApiStrings.headerValue,
+          'Authorization':
+          "Bearer  ${sharedPref.getString(SharedKey.auth).toString()}",
           'Accept-Language':
               sharedPref.getString(SharedKey.languageValue).toString(),
           "x-access-token": sharedPref.getString(SharedKey.auth).toString()
-        },
-        body: mapData);
+        },);
     return response.body;
   }
 
@@ -67,18 +86,32 @@ class AllApi {
       String endPoint, Map<String, dynamic> mapData) async {
     debugPrint(
         'SHARED-PREF SAVE LANGUAGE (postApi => ${ApiStrings.baseURl}$endPoint) ${sharedPref.getString(SharedKey.languageValue).toString()}');
+
+    debugPrint('Payload => ${jsonEncode(mapData)}');
     var url = Uri.parse("${ApiStrings.baseURl}$endPoint");
 
-    var response = await http.post(url,
-        headers: {
-          'Authorization':
-              "Bearer  ${sharedPref.getString(SharedKey.auth).toString()}",
-          'Accept-Language':
-              sharedPref.getString(SharedKey.languageValue).toString(),
-          "x-access-token": sharedPref.getString(SharedKey.auth).toString()
-        },
-        body: mapData);
-    return response.body;
+    try{
+      var response = await http.post(url,
+          headers: {
+            'Authorization':
+            "Bearer  ${sharedPref.getString(SharedKey.auth).toString()}",
+            'Content-Type': 'application/json',
+            'Accept-Language':
+            sharedPref.getString(SharedKey.languageValue).toString(),
+            "x-access-token": sharedPref.getString(SharedKey.auth).toString()
+          },
+          body: jsonEncode(mapData)
+      );
+
+
+
+      return response.body;
+    }
+    catch(e){
+      debugPrint(
+          'Exception response (postApi => ${e}');
+      throw e;
+    }
   }
 
   static Future<Object> postMethodApii(String endPoint, Map data) async {
@@ -115,17 +148,20 @@ class AllApi {
   static Future<Object> patchtMethodApi(
       String endPoint, Map<String, dynamic> mapData) async {
     debugPrint(
-        'SHARED-PREF SAVE LANGUAGE (postApi => ${ApiStrings.baseURl}$endPoint) ${sharedPref.getString(SharedKey.languageValue).toString()}');
+        'SHARED-PREF SAVE LANGUAGE (postApi => ${ApiStrings.baseURl}$endPoint) ${sharedPref.getString(SharedKey.languageValue).toString()} ${mapData}');
     var url = Uri.parse("${ApiStrings.baseURl}$endPoint");
     var response = await http.patch(url,
         headers: {
           'Authorization':
               "Bearer  ${sharedPref.getString(SharedKey.auth).toString()}",
+          'Content-Type': 'application/json',
           'Accept-Language':
               sharedPref.getString(SharedKey.languageValue).toString(),
           "x-access-token": sharedPref.getString(SharedKey.auth).toString()
         },
-        body: mapData);
+        body: jsonEncode(mapData));
+
+    print("change password ${response.body}");
 
     return response.body;
   }
@@ -259,6 +295,7 @@ class AllApi {
     var response = await http.post(url,
         headers: {
           ApiStrings.headerKey: "Bearer ${ApiStrings.headerValue}",
+          'Content-Type': 'application/json',
           'Accept-Language':
               sharedPref.getString(SharedKey.languageValue).toString(),
         },
@@ -275,6 +312,20 @@ class AllApi {
               sharedPref.getString(SharedKey.languageValue).toString()
         },
         body: signValues);
+    return response.body;
+  }
+
+  static Future<Object> resendOTP(Map<String, String> signValues) async {
+    var url = Uri.parse(ApiStrings.baseURl + ApiStrings.resendOTP);
+    var response = await http.post(url,
+        headers: {
+          // ApiStrings.headerKey: ApiStrings.headerValue,
+          'Content-Type': 'application/json',
+          'Accept-Language':
+          sharedPref.getString(SharedKey.languageValue).toString()
+        },
+        body: jsonEncode(signValues)
+    );
     return response.body;
   }
 
@@ -302,15 +353,53 @@ class AllApi {
   }
 
   static Future<Object> deactivate(String endPoint) async {
+
+    debugPrint(" deactivate account ${sharedPref.getString(SharedKey.auth).toString()}");
+    debugPrint(" deactivate account ${sharedPref.getString(SharedKey.auth).toString()}");
     var url = Uri.parse(ApiStrings.baseURl + endPoint);
-    var response = await http.delete(url, headers: {
-      ApiStrings.headerKey: ApiStrings.headerValue,
-      'Accept-Language':
+    var response = await http.post(url,
+
+        headers: {
+          'Authorization':
+          "Bearer  ${sharedPref.getString(SharedKey.auth).toString()}",
+          'Content-Type': 'application/json',
+          'Accept-Language':
           sharedPref.getString(SharedKey.languageValue).toString(),
-      "x-access-token": sharedPref.getString(SharedKey.auth).toString()
-    });
+          "x-access-token": sharedPref.getString(SharedKey.auth).toString()
+        },
+    //     headers: {
+    //   ApiStrings.headerKey: "Bearer ${ApiStrings.headerValue}",
+    //   'Accept-Language': sharedPref.getString(SharedKey.languageValue).toString(),
+    //   "x-access-token": sharedPref.getString(SharedKey.auth).toString()
+    // }
+
+
+    );
+
+    debugPrint(" deactivate account ${response.body}");
+
     return response.body;
   }
+
+  static Future<Object> delete(String endPoint) async {
+
+    var url = Uri.parse(ApiStrings.baseURl + endPoint);
+    var response = await http.delete(url,
+      headers: {
+        'Authorization':
+        "Bearer  ${sharedPref.getString(SharedKey.auth).toString()}",
+        'Content-Type': 'application/json',
+        'Accept-Language':
+        sharedPref.getString(SharedKey.languageValue).toString(),
+        "x-access-token": sharedPref.getString(SharedKey.auth).toString()
+      },
+    );
+    debugPrint(" delete account ${response.body}");
+    return response.body;
+  }
+
+
+
 
   static Future<Object> getNotify(String endPoint) async {
     var url = Uri.parse(ApiStrings.baseURl + endPoint);
@@ -335,6 +424,23 @@ class AllApi {
     if (image != "null") {
       request.files.add(await http.MultipartFile.fromPath('image', image));
     }
+    var response = await request.send();
+    var responded = await http.Response.fromStream(response);
+    return responded.body;
+  }
+
+  static Future<String> uploadChatImage(String image) async {
+    var url = Uri.parse(ApiStrings.baseURl + ApiStrings.postChatImage);
+    print(url);
+    var request = http.MultipartRequest("POST", url);
+    request.headers.addAll({
+      // ApiStrings.headerKey: ApiStrings.headerValue,
+      'Accept-Language':
+      sharedPref.getString(SharedKey.languageValue).toString(),
+      "x-access-token": sharedPref.getString(SharedKey.auth).toString(),
+      "Authorization": "Bearer  ${sharedPref.getString(SharedKey.auth).toString()}",
+    });
+    request.files.add(await http.MultipartFile.fromPath('chat_image', image));
     var response = await request.send();
     var responded = await http.Response.fromStream(response);
     return responded.body;

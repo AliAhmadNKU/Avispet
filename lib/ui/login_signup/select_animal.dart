@@ -192,11 +192,20 @@ class _SelectAnimalState extends State<SelectAnimal> {
                                             context, StringKey.selectPetType);
                                       } else {
                                         if (selectedAnimal == 2) {
-                                          Navigator.pushNamedAndRemoveUntil(
-                                              context,
-                                              RoutesName.mainPage,
-                                              arguments: 0,
-                                              (route) => false);
+                                          if(widget.mapData['googleLogin'] == null){
+                                            Navigator.pushNamedAndRemoveUntil(
+                                                context,
+                                                RoutesName.loginScreen,
+                                                arguments: 0,
+                                                    (route) => false);
+                                          }
+                                          else{
+                                            Navigator.pushNamedAndRemoveUntil(
+                                                context,
+                                                RoutesName.mainPage,
+                                                arguments: 0,
+                                                    (route) => false);
+                                          }
                                         } else {
                                           // selectedAnimal : 1 for dog , 2 for cat
                                           Map<String, dynamic> mapData = {
@@ -227,11 +236,20 @@ class _SelectAnimalState extends State<SelectAnimal> {
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                    Navigator.pushNamedAndRemoveUntil(
-                                        context,
-                                        RoutesName.mainPage,
-                                        arguments: 0,
-                                        (route) => false);
+                                    if(widget.mapData['googleLogin'] == null){
+                                      Navigator.pushNamedAndRemoveUntil(
+                                          context,
+                                          RoutesName.loginScreen,
+                                          arguments: 0,
+                                              (route) => false);
+                                    }
+                                    else{
+                                      Navigator.pushNamedAndRemoveUntil(
+                                          context,
+                                          RoutesName.mainPage,
+                                          arguments: 0,
+                                              (route) => false);
+                                    }
                                   },
                                   child: Container(
                                     alignment: Alignment.center,

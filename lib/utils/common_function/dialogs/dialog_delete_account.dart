@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/quill_delta.dart';
 import 'package:get/get.dart';
 import '../../../models/aa_common_model.dart';
 import '../../../ui/main_screen/main_page.dart';
@@ -74,9 +75,15 @@ Widget deleteAccount() {
                         onTap: () {
                           LoadingDialog.show(context);
                           Future.delayed(Duration.zero, () async {
-                            var res = await AllApi.deactivate(
-                                ApiStrings.deleteAccount);
+                             String id= "/${sharedPref.getString(SharedKey.userId)}";
+                             String deleteAccount = "";
+                             deleteAccount = ApiStrings.deleteAccount+id;
+
+                            var res = await AllApi.delete(deleteAccount);
                             var result = jsonDecode(res.toString());
+
+
+
                             if (result['status'] == 200) {
                               _commonModel = CommonModel.fromJson(result);
                               sharedPref.clear();

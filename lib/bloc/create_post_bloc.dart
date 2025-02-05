@@ -18,13 +18,13 @@ class CreatePostBloc extends Bloc<GetCreatePostEvent, BlocStates> {
         await Future.delayed(Duration.zero, () async {
           Map<String, dynamic> mapData = {
             'userId': event.userId,
-            'placeId': 101,
+            'placeId': event.placeId,
             'email': event.email,
             'phone': event.phone,
             'images': event.images,
             'category': event.category,
             'overallRating': 0.0,
-            'placeName': "Good Food Place",
+            'placeName': event.placeName,
             'description': event.description,
             'smallDogs': event.smallDogs,
             'bigDogs': event.bigDogs,
@@ -35,7 +35,7 @@ class CreatePostBloc extends Bloc<GetCreatePostEvent, BlocStates> {
             'reservationPlatform': event.reservationPlatform,
             'additionalInfo': event.description,
             'isFavourite': false,
-            'postRatings': event.postRatings,
+            'postRatings': event.postRatings.map((post) => post.toJson()).toList(),
 
             // 'category': event.category.toString(),
             // 'currPos': event.currPos.toString(),
@@ -55,7 +55,7 @@ class CreatePostBloc extends Bloc<GetCreatePostEvent, BlocStates> {
           };
           debugPrint("CREATE-POSTV2 MAP DATA IS : $mapData");
 
-          var res = await AllApi.postMethodApii(
+          var res = await AllApi.postMethodApi(
             ApiStrings.createPost,
             mapData,
           );

@@ -20,7 +20,6 @@ import '../my_string.dart';
 import '../toaster.dart';
 
 Widget logout() {
-  CommonModel _commonModel = CommonModel();
   return Dialog(
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(20),
@@ -79,59 +78,47 @@ Widget logout() {
                     ),
                     Flexible(
                       child: GestureDetector(
-                        onTap: () {
+                        onTap: () async {
+                          // _oldFlow(context);
                           LoadingDialog.show(context);
-                          Future.delayed(Duration.zero, () async {
-                            var res = await AllApi.logout(ApiStrings.logout);
-                            var result = jsonDecode(res.toString());
-                            if (result['status'] == 200) {
-                              disconnectSocket();
-                              _commonModel = CommonModel.fromJson(result);
-                              await FirebaseMessaging.instance.deleteToken();
-                              if (sharedPref
-                                      .getString(ApiStrings.socialLogin)
-                                      .toString() ==
-                                  "1") {
-                                debugPrint(
-                                    'LANGUAGE KEYS IS  ${sharedPref.getString(ApiStrings.socialLogin).toString()}');
-                                GoogleSignIn googleSignIn = GoogleSignIn();
-                                await googleSignIn.signOut();
-                                await FirebaseAuth.instance.signOut();
-                              }
+                          disconnectSocket();
+                          // try{
+                          //   await FirebaseMessaging.instance.deleteToken();
+                          // }
+                          // catch(e){
+                          //
+                          // }
+                          if (sharedPref
+                              .getString(ApiStrings.socialLogin)
+                              .toString() ==
+                              "1") {
+                            debugPrint(
+                                'LANGUAGE KEYS IS  ${sharedPref.getString(ApiStrings.socialLogin).toString()}');
+                            GoogleSignIn googleSignIn = GoogleSignIn();
+                            await googleSignIn.signOut();
+                            await FirebaseAuth.instance.signOut();
+                          }
 
-                              if (sharedPref
-                                      .getString(ApiStrings.socialLogin)
-                                      .toString() ==
-                                  "2") {
-                                debugPrint(
-                                    'LANGUAGE KEYS IS  ${sharedPref.getString(ApiStrings.socialLogin).toString()}');
-                                //pankaj
-                                final FirebaseAuth _auth =
-                                    FirebaseAuth.instance;
-                                // FacebookAuth.instance.logOut();
-                                await _auth.signOut();
-                              }
+                          if (sharedPref
+                              .getString(ApiStrings.socialLogin)
+                              .toString() ==
+                              "2") {
+                            debugPrint(
+                                'LANGUAGE KEYS IS  ${sharedPref.getString(ApiStrings.socialLogin).toString()}');
+                            //pankaj
+                            final FirebaseAuth _auth =
+                                FirebaseAuth.instance;
+                            // FacebookAuth.instance.logOut();
+                            await _auth.signOut();
+                          }
 
-                              sharedPref.clear();
-                              sharedPref.setString(
-                                  SharedKey.onboardScreen, 'OFF');
-                              toaster(context, _commonModel.message.toString());
-                              referralCode = '';
-                              LoadingDialog.hide(context);
-                              Navigator.pushNamedAndRemoveUntil(context,
-                                  RoutesName.loginScreen, (route) => false);
-                            } else if (result['status'] == 401) {
-                              sharedPref.clear();
-                              sharedPref.setString(
-                                  SharedKey.onboardScreen, 'OFF');
-                              Navigator.pushNamedAndRemoveUntil(context,
-                                  RoutesName.loginScreen, (route) => false);
-                            } else {
-                              LoadingDialog.hide(context);
-                              toaster(context, _commonModel.message.toString());
-                            }
-                          });
-                          setState(() {});
+                          sharedPref.clear();
+                          sharedPref.setString(
+                              SharedKey.onboardScreen, 'OFF');
+                          referralCode = '';
+                          LoadingDialog.hide(context);
+                          Navigator.pushNamedAndRemoveUntil(context,
+                              RoutesName.loginScreen, (route) => false);
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -157,4 +144,59 @@ Widget logout() {
       },
     ),
   );
+}
+
+void _oldFlow(BuildContext context) {
+  CommonModel? _commonModel;
+  LoadingDialog.show(context);
+  Future.delayed(Duration.zero, () async {
+    var res = await AllApi.logout(ApiStrings.logout);
+    var result = jsonDecode(res.toString());
+    if (result['status'] == 200) {
+      disconnectSocket();
+      _commonModel = CommonModel.fromJson(result);
+      await FirebaseMessaging.instance.deleteToken();
+      if (sharedPref
+          .getString(ApiStrings.socialLogin)
+          .toString() ==
+          "1") {
+        debugPrint(
+            'LANGUAGE KEYS IS  ${sharedPref.getString(ApiStrings.socialLogin).toString()}');
+        GoogleSignIn googleSignIn = GoogleSignIn();
+        await googleSignIn.signOut();
+        await FirebaseAuth.instance.signOut();
+      }
+
+      if (sharedPref
+          .getString(ApiStrings.socialLogin)
+          .toString() ==
+          "2") {
+        debugPrint(
+            'LANGUAGE KEYS IS  ${sharedPref.getString(ApiStrings.socialLogin).toString()}');
+        //pankaj
+        final FirebaseAuth _auth =
+            FirebaseAuth.instance;
+        // FacebookAuth.instance.logOut();
+        await _auth.signOut();
+      }
+
+      sharedPref.clear();
+      sharedPref.setString(
+          SharedKey.onboardScreen, 'OFF');
+      toaster(context, _commonModel!.message.toString());
+      referralCode = '';
+      LoadingDialog.hide(context);
+      Navigator.pushNamedAndRemoveUntil(context,
+          RoutesName.loginScreen, (route) => false);
+    } else if (result['status'] == 401) {
+      sharedPref.clear();
+      sharedPref.setString(
+          SharedKey.onboardScreen, 'OFF');
+      Navigator.pushNamedAndRemoveUntil(context,
+          RoutesName.loginScreen, (route) => false);
+    } else {
+      LoadingDialog.hide(context);
+      toaster(context, _commonModel!.message.toString());
+    }
+  });
 }

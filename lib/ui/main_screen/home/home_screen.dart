@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:avispets/models/follower_following_model.dart';
 import 'package:avispets/models/forum/get_forum.dart';
 import 'package:avispets/models/get_all_categories_model.dart';
+import 'package:avispets/ui/widgets/no_data_found.dart';
 
 import 'package:avispets/utils/apis/all_api.dart';
 import 'package:avispets/utils/apis/api_strings.dart';
@@ -146,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
     getAllCategoriesApi();
     getAllPostsApi();
     getForumApi(page, '', currentTabBreed);
-    GetApi.getNotify(context, '');
+    // GetApi.getNotify(context, '');
   }
 
   List<Postssss> postss = [
@@ -240,7 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             horizontal: 15.0, vertical: 10),
                         child: Column(
                           children: [
-                            HeaderWidget(),
+                            HeaderWidget(backIcon: false,),
                             Container(
                               height: MediaQuery.of(context).size.height * 0.25,
                               child: Column(
@@ -445,136 +446,136 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ],
                               ),
                             ),
-                            Container(
-                              height: 400,
-                              child: Column(
-                                children: [
-                                  Expanded(
-                                    child: ListView.builder(
-                                      itemCount: postsList.length,
-                                      itemBuilder: (context, index) {
-                                        final post = postsList[index];
-                                        return GestureDetector(
-                                          onTap: () async {
-                                            Map<String, dynamic> mapData = {
-                                              'postId': '',
-                                            };
-                                            Navigator.pushNamed(
-                                                context, RoutesName.postDetail,
-                                                arguments: mapData);
-                                          },
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                color: MyColor.card,
-                                                borderRadius:
-                                                    BorderRadius.circular(22)),
-                                            margin: EdgeInsets.symmetric(
-                                                horizontal: 10, vertical: 6),
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 10, vertical: 10),
-                                            child: Row(
-                                              children: [
-                                                ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(15),
-                                                  child: Image.network(
-                                                    post.images[
-                                                        0], // URL of the image
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                ListView.builder(
+                                  itemCount: postsList.length,
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemBuilder: (context, index) {
+                                    final post = postsList[index];
+                                    return GestureDetector(
+                                      onTap: () async {
+                                        Navigator.pushNamed(
+                                            context, RoutesName.postDetail,
+                                            arguments: {
+                                              'post': post
+                                            });
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            color: MyColor.card,
+                                            borderRadius:
+                                                BorderRadius.circular(22)),
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 6),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 10),
+                                        child: Row(
+                                          children: [
+                                            ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                              child: Image.network(
+                                                post.images[
+                                                    0], // URL of the image
+                                                width: 130,
+                                                height: 110,
+                                                fit: BoxFit.cover,
+                                                errorBuilder:
+                                                    (BuildContext context,
+                                                        Object error,
+                                                        StackTrace?
+                                                            stackTrace) {
+                                                  // Fallback widget for error
+                                                  return Container(
                                                     width: 130,
                                                     height: 110,
-                                                    fit: BoxFit.cover,
-                                                    errorBuilder:
-                                                        (BuildContext context,
-                                                            Object error,
-                                                            StackTrace?
-                                                                stackTrace) {
-                                                      // Fallback widget for error
-                                                      return Container(
-                                                        width: 130,
-                                                        height: 110,
-                                                        color: Colors.grey[
-                                                            300], // Background color for placeholder
-                                                        child: Center(
-                                                          child: Column(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
-                                                            children: [
-                                                              Icon(
-                                                                Icons
-                                                                    .image_not_supported, // Fallback icon
-                                                                color:
-                                                                    Colors.grey,
-                                                                size: 40,
-                                                              ),
-                                                              Text(
-                                                                'Image not found',
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .grey,
-                                                                    fontSize:
-                                                                        12),
-                                                              ),
-                                                            ],
+                                                    color: Colors.grey[
+                                                        300], // Background color for placeholder
+                                                    child: Center(
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Icon(
+                                                            Icons
+                                                                .image_not_supported, // Fallback icon
+                                                            color:
+                                                                Colors.grey,
+                                                            size: 40,
                                                           ),
-                                                        ),
-                                                      );
-                                                    },
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  width: 15,
-                                                ),
-                                                Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    MyString.reg(
-                                                        post.placeName,
-                                                        14,
-                                                        MyColor.orange2,
-                                                        TextAlign.start),
-                                                    MyString.reg(
-                                                        post.category,
-                                                        12,
-                                                        MyColor.textBlack0,
-                                                        TextAlign.start),
-                                                    MyString.reg(
-                                                        post.websiteName ?? "",
-                                                        12,
-                                                        MyColor.textBlack0,
-                                                        TextAlign.start),
-                                                    Row(
-                                                      children: [
-                                                        Icon(Icons.star,
-                                                            color: Colors.amber,
-                                                            size: 16),
-                                                        MyString.reg(
-                                                            '${post.overallRating}  ',
-                                                            12,
-                                                            MyColor.textBlack0,
-                                                            TextAlign.start),
-                                                      ],
+                                                          Text(
+                                                            'Image not found',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .grey,
+                                                                fontSize:
+                                                                    12),
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 15,
+                                            ),
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                if(post.placeName != null) MyString.reg(
+                                                    post.placeName!,
+                                                    14,
+                                                    MyColor.orange2,
+                                                    TextAlign.start),
+                                                MyString.reg(
+                                                    post.category,
+                                                    12,
+                                                    MyColor.textBlack0,
+                                                    TextAlign.start),
+                                                MyString.reg(
+                                                    post.websiteName ?? "",
+                                                    12,
+                                                    MyColor.textBlack0,
+                                                    TextAlign.start),
+                                                Row(
+                                                  children: [
+                                                    Icon(Icons.star,
+                                                        color: Colors.amber,
+                                                        size: 16),
                                                     MyString.reg(
-                                                        post.openingClosingHour ??
-                                                            "",
-                                                        8,
+                                                        '${post.overallRating}  ',
+                                                        12,
                                                         MyColor.textBlack0,
                                                         TextAlign.start),
                                                   ],
-                                                )
+                                                ),
+                                                MyString.reg(
+                                                    post.openingClosingHour ??
+                                                        "",
+                                                    8,
+                                                    MyColor.textBlack0,
+                                                    TextAlign.start),
                                               ],
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 200,
                             )
                           ],
                         ),
@@ -618,7 +619,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
       // Decode the response
       var result = jsonDecode(res.toString());
-
       if (result['status'] == 200) {
         // Parse the response into the GetAllPostModel
         var posts = GetAllPostModel.fromJson(result);
@@ -627,6 +627,7 @@ class _HomeScreenState extends State<HomeScreen> {
           postsList = posts.data!.data!.post!
               .map((post) => Post.fromJson(post.toJson()))
               .toList();
+          print('getAllPostsApi => total_post ${postsList.length}');
         });
       } else if (result['status'] == 401) {
         // Handle unauthorized access
@@ -646,9 +647,8 @@ class _HomeScreenState extends State<HomeScreen> {
   getAllCategoriesApi() async {
     try {
       var res = await AllApi.getMethodApi("${ApiStrings.getAllCategories}");
-      print(res);
       var result = jsonDecode(res.toString());
-
+      // print('getAllCategoriesApi => $result');
       if (result['status'] == 200) {
         // Parse the response into the GetAllCategories model
         GetAllCategories categories = GetAllCategories.fromJson(result);
@@ -743,13 +743,16 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         Container(
-          height: MediaQuery.of(context).size.height * 0.1,
+          height: MediaQuery.of(context).size.height * 0.135,
           child: ListView.builder(
             padding: EdgeInsets.zero,
             scrollDirection: Axis.horizontal,
             shrinkWrap: true,
-            itemCount: categoriesList.length,
+            itemCount: categoriesList.isNotEmpty ? categoriesList.length : 1,
             itemBuilder: (context, index) {
+              if(categoriesList.isEmpty){
+                return NoDataFound();
+              }
               return GestureDetector(
                 onTap: () {
                   // Handle tap action here
@@ -763,6 +766,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               categoriesList[index].icon!,
                               height: 40,
                               width: 40,
+                              fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) =>
                                   Icon(Icons.error),
                             )

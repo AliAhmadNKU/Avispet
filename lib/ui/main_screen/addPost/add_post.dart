@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:appinio_video_player/appinio_video_player.dart';
+import 'package:avispets/models/events_response_model.dart';
+import 'package:avispets/models/online_store_response_model.dart';
 import 'package:avispets/ui/main_screen/map/search_bar.dart';
 import 'package:avispets/utils/apis/all_api.dart';
 import 'package:avispets/utils/apis/api_strings.dart';
@@ -58,9 +60,12 @@ class _AddPostScreenState extends State<AddPostScreen> {
   late CreatePostBloc _postBloc;
   TextEditingController searchBar = TextEditingController();
   TextEditingController additionalInfo = TextEditingController();
+  LocationData? _locationData;
+  EventsModel? _eventsModel;
+  OnlineStoreModel? _onlineStoreModel;
 
   //post fields
-  String selectedCategory = 'petstore';
+  String selectedCategory = '';
   Map<String, dynamic>? currPos;
   double lat = 0;
   double long = 0;
@@ -212,6 +217,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
         GetAllCategories categories = GetAllCategories.fromJson(result);
         setState(() {
           categoriesList = categories.data ?? [];
+          selectedCategory = categoriesList.first.name!;
         });
       } else if (result['status'] == 401) {
         Navigator.pushNamedAndRemoveUntil(
@@ -228,11 +234,19 @@ class _AddPostScreenState extends State<AddPostScreen> {
   String currentTimeZone = "";
   num longitude = 0.0;
   num latitude = 0.0;
+
   _getLocation() async {
     Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.low);
+        desiredAccuracy: LocationAccuracy.high);
     longitude = position.longitude;
     latitude = position.latitude;
+
+    setState(() {
+
+    });
+
+    print('_getLocation | longitude ${longitude}');
+    print('_getLocation | latitude ${latitude}');
   }
 
   Future<String?> uploadImage(File imageFile) async {
@@ -283,17 +297,41 @@ class _AddPostScreenState extends State<AddPostScreen> {
     }
   }
 
-  getLocationByName() async {
+  Future<List<EventsModel>> getLocationByEvent() async {
+    try {
+      final Map<String, String> queryParams = {
+        'keyword': 'pets',
+        'city': 'london',
+        'size': '20',
+      };
+
+      print('getLocationByEvent => $queryParams');
+      final response = await AllApi.getEvents(queryParams);
+      var result = response is String ? jsonDecode(response) : response;
+      if (result['status'] == 200) {
+        EventsResponseModel eventsResponseModel = EventsResponseModel.fromJson(result);
+        return eventsResponseModel.data!;
+      } else {
+        toaster(context, result['message'].toString());
+      }
+    } catch (e) {
+      debugPrint("Error: {$e");
+      toaster(context, "An error occurred while fetching categories.");
+    }
+    return [];
+  }
+
+  Future<List<LocationData>> getLocationByNameNew(String query) async {
     try {
       Map<String, dynamic> data = {
         "latitude": latitude,
         "longitude": longitude,
-        "query": "${searchBar.text}",
+        "query": query,
         "radius": 500
       };
 
-      print(data);
-      var res = await AllApi.postMethodApii(
+      print('getLocationByName => $data');
+      var res = await AllApi.postMethodApi(
           ApiStrings.getLocationByNameAndAddress, data);
       print('========================$res');
 
@@ -302,9 +340,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
       if (result['status'] == 201) {
         // Parse the response into the GetAllCategories model
         GetLocatioByName location = GetLocatioByName.fromJson(result);
-        setState(() {
-          locationListByName = location.data ?? [];
-        });
+        return location.data!;
+        // setState(() {
+        //   locationListByName = location.data ?? [];
+        // });
       } else if (result['status'] == 401) {
         Navigator.pushNamedAndRemoveUntil(
             context, RoutesName.loginScreen, (route) => false);
@@ -315,7 +354,42 @@ class _AddPostScreenState extends State<AddPostScreen> {
       debugPrint("Error: {$e");
       toaster(context, "An error occurred while fetching categories.");
     }
+    return [];
   }
+
+  // Future getLocationByName(String query) async {
+  //   try {
+  //     Map<String, dynamic> data = {
+  //       "latitude": latitude,
+  //       "longitude": longitude,
+  //       "query": query,
+  //       "radius": 500
+  //     };
+  //
+  //     print('getLocationByName => $data');
+  //     var res = await AllApi.postMethodApii(
+  //         ApiStrings.getLocationByNameAndAddress, data);
+  //     print('========================$res');
+  //
+  //     var result = res is String ? jsonDecode(res) : res;
+  //
+  //     if (result['status'] == 201) {
+  //       // Parse the response into the GetAllCategories model
+  //       GetLocatioByName location = GetLocatioByName.fromJson(result);
+  //       setState(() {
+  //         locationListByName = location.data ?? [];
+  //       });
+  //     } else if (result['status'] == 401) {
+  //       Navigator.pushNamedAndRemoveUntil(
+  //           context, RoutesName.loginScreen, (route) => false);
+  //     } else {
+  //       toaster(context, result['message'].toString());
+  //     }
+  //   } catch (e) {
+  //     debugPrint("Error: {$e");
+  //     toaster(context, "An error occurred while fetching categories.");
+  //   }
+  // }
 
   getAllCatergoryandLocation() async {
     await getAllCategoriesApi();
@@ -328,7 +402,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
   void initState() {
     super.initState();
     getAllCatergoryandLocation();
-    GetApi.getNotify(context, '');
+    // GetApi.getNotify(context, '');
     _postBloc = CreatePostBloc(context);
     if (video.isNotEmpty) {
       Future.delayed(Duration.zero, () async {
@@ -431,7 +505,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
           hintStyle: TextStyle(color: MyColor.textBlack0, fontSize: 14),
         ),
         onChanged: (value) async {
-          await getLocationByName();
+          print(value);
+          // await getLocationByName();
         },
       ),
     );
@@ -494,7 +569,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                             child: MyString.bold('${'addPost'.tr}', 27,
                                 MyColor.title, TextAlign.center),
                           ),
-                          buildSearchBar(),
+                          // buildSearchBar(),
                           SizedBox(
                             height: 20,
                           ),
@@ -517,74 +592,72 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                             child: Container(
                                               child: SearchingBar(
                                                   onChanged: _updateSuggestions,
-                                                  onPlaceSelected:
-                                                      _getLocations),
+                                                  onPlaceSelected: _onPlaceSelected,
+                                              ),
                                             ),
                                           ),
                                         ],
                                       ),
                                     ),
-                                    Container(
-                                      height: 70,
-                                      child: ListView.builder(
-                                        padding: EdgeInsets.zero,
-                                        scrollDirection: Axis.horizontal,
-                                        shrinkWrap: true,
-                                        itemCount: dataList.length,
-                                        itemBuilder: (context, index) {
-                                          return GestureDetector(
-                                            onTap: () async {
-                                              setState(() {
-                                                selectedCategory =
-                                                    dataList[index].nickname;
-                                              });
-                                            },
-                                            child: Container(
-                                              width: 70,
-                                              child: Column(
-                                                children: [
-                                                  Image.asset(
-                                                    '${dataList[index].image}',
-                                                    height: 30,
-                                                    width: 30,
-                                                  ),
-                                                  dataList[index].nickname ==
-                                                          selectedCategory
-                                                      ? MyString.bold(
-                                                          '${dataList[index].name}',
-                                                          10,
-                                                          MyColor.title,
-                                                          TextAlign.center)
-                                                      : MyString.reg(
-                                                          '${dataList[index].name}',
-                                                          10,
-                                                          MyColor.title,
-                                                          TextAlign.center),
-                                                  if (dataList[index]
-                                                          .nickname ==
-                                                      selectedCategory)
-                                                    Divider(
-                                                      color: MyColor
-                                                          .orange2, // Color of the divider
-                                                      thickness:
-                                                          3, // Thickness of the line
-                                                      indent:
-                                                          5, // Start padding
-                                                      endIndent:
-                                                          5, // End padding
-                                                    ),
-                                                ],
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
+                                    // Container(
+                                    //   height: 70,
+                                    //   child: ListView.builder(
+                                    //     padding: EdgeInsets.zero,
+                                    //     scrollDirection: Axis.horizontal,
+                                    //     shrinkWrap: true,
+                                    //     itemCount: dataList.length,
+                                    //     itemBuilder: (context, index) {
+                                    //       return GestureDetector(
+                                    //         onTap: () async {
+                                    //           setState(() {
+                                    //             selectedCategory =
+                                    //                 dataList[index].nickname;
+                                    //           });
+                                    //         },
+                                    //         child: Container(
+                                    //           width: 70,
+                                    //           child: Column(
+                                    //             children: [
+                                    //               Image.asset(
+                                    //                 '${dataList[index].image}',
+                                    //                 height: 30,
+                                    //                 width: 30,
+                                    //               ),
+                                    //               dataList[index].nickname ==
+                                    //                       selectedCategory
+                                    //                   ? MyString.bold(
+                                    //                       '${dataList[index].name}',
+                                    //                       10,
+                                    //                       MyColor.title,
+                                    //                       TextAlign.center)
+                                    //                   : MyString.reg(
+                                    //                       '${dataList[index].name}',
+                                    //                       10,
+                                    //                       MyColor.title,
+                                    //                       TextAlign.center),
+                                    //               if (dataList[index]
+                                    //                       .nickname ==
+                                    //                   selectedCategory)
+                                    //                 Divider(
+                                    //                   color: MyColor
+                                    //                       .orange2, // Color of the divider
+                                    //                   thickness:
+                                    //                       3, // Thickness of the line
+                                    //                   indent:
+                                    //                       5, // Start padding
+                                    //                   endIndent:
+                                    //                       5, // End padding
+                                    //                 ),
+                                    //             ],
+                                    //           ),
+                                    //         ),
+                                    //       );
+                                    //     },
+                                    //   ),
+                                    // ),
 
                                     Container(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.1,
+                                      height: MediaQuery.of(context).size.height * 0.135,
                                       child: ListView.builder(
                                         padding: EdgeInsets.zero,
                                         scrollDirection: Axis.horizontal,
@@ -593,7 +666,11 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                         itemBuilder: (context, index) {
                                           return GestureDetector(
                                             onTap: () {
-                                              // Handle tap action here
+                                              if(mounted){
+                                                setState(() {
+                                                  selectedCategory = categoriesList[index].name!;
+                                                });
+                                              }
                                             },
                                             child: Container(
                                               width: 75,
@@ -602,31 +679,52 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                                   categoriesList[index].icon !=
                                                           null
                                                       ? Image.network(
-                                                          categoriesList[index]
-                                                              .icon!,
-                                                          height: 40,
-                                                          width: 40,
-                                                          errorBuilder: (context,
-                                                                  error,
-                                                                  stackTrace) =>
-                                                              Icon(Icons.error),
-                                                        )
+                                                        categoriesList[index].icon!,
+                                                        height: 40,
+                                                        width: 40,
+                                                        fit: BoxFit.cover,
+                                                        errorBuilder: (context, error, stackTrace) =>
+                                                            Icon(Icons.error),
+                                                      )
                                                       : Icon(Icons.category,
                                                           size: 40),
                                                   SizedBox(height: 5),
                                                   Flexible(
-                                                    child: Text(
-                                                      categoriesList[index]
-                                                              .name ??
-                                                          "Unnamed",
-                                                      style: TextStyle(
-                                                        fontSize: 12,
-                                                        color: MyColor.title,
-                                                      ),
-                                                      textAlign:
-                                                          TextAlign.center,
+                                                    child: selectedCategory == categoriesList[index].name
+                                                        ? MyString.bold(
+                                                        '${categoriesList[index].name}',
+                                                        10,
+                                                        MyColor.title,
+                                                        TextAlign.center,
+                                                    )
+                                                        : MyString.reg(
+                                                      '${categoriesList[index].name}',
+                                                      10,
+                                                      MyColor.title,
+                                                      TextAlign.center,
                                                     ),
-                                                  )
+                                                    // Text(
+                                                    //   categoriesList[index]
+                                                    //           .name ??
+                                                    //       "Unnamed",
+                                                    //   style: TextStyle(
+                                                    //     fontSize: 12,
+                                                    //     color: MyColor.title,
+                                                    //   ),
+                                                    //   textAlign: TextAlign.center,
+                                                    // ),
+                                                  ),
+                                                  if(selectedCategory == categoriesList[index].name!)
+                                                                  Divider(
+                                                                    color: MyColor
+                                                                        .orange2, // Color of the divider
+                                                                    thickness:
+                                                                        3, // Thickness of the line
+                                                                    indent:
+                                                                        5, // Start padding
+                                                                    endIndent:
+                                                                        5, // End padding
+                                                                  ),
                                                 ],
                                               ),
                                             ),
@@ -733,34 +831,34 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                               },
                                             ),
                                           ),
-                                          GestureDetector(
-                                            onTap: () {
-                                              Navigator.pushNamed(
-                                                context,
-                                                RoutesName.addPostDetail,
-                                              );
-                                            },
-                                            child: Center(
-                                              child: Container(
-                                                alignment: Alignment.center,
-                                                height: 59,
-                                                width: double.infinity,
-                                                decoration: BoxDecoration(
-                                                    color: MyColor.orange2,
-                                                    borderRadius:
-                                                        const BorderRadius.all(
-                                                            Radius.circular(
-                                                                22))),
-                                                child: isLoadingLocation
-                                                    ? CircularProgressIndicator()
-                                                    : MyString.med(
-                                                        'createANewPlace'.tr,
-                                                        18,
-                                                        MyColor.white,
-                                                        TextAlign.center),
-                                              ),
-                                            ),
-                                          )
+                                          // GestureDetector(
+                                          //   onTap: () {
+                                          //     Navigator.pushNamed(
+                                          //       context,
+                                          //       RoutesName.addPostDetail,
+                                          //     );
+                                          //   },
+                                          //   child: Center(
+                                          //     child: Container(
+                                          //       alignment: Alignment.center,
+                                          //       height: 59,
+                                          //       width: double.infinity,
+                                          //       decoration: BoxDecoration(
+                                          //           color: MyColor.orange2,
+                                          //           borderRadius:
+                                          //               const BorderRadius.all(
+                                          //                   Radius.circular(
+                                          //                       22))),
+                                          //       child: isLoadingLocation
+                                          //           ? CircularProgressIndicator()
+                                          //           : MyString.med(
+                                          //               'createANewPlace'.tr,
+                                          //               18,
+                                          //               MyColor.white,
+                                          //               TextAlign.center),
+                                          //     ),
+                                          //   ),
+                                          // )
                                         ],
                                       ),
                                     Container(
@@ -896,13 +994,15 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                         ),
                                         Container(
                                           margin: EdgeInsets.only(bottom: 20),
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.54,
+                                          // height: MediaQuery.of(context)
+                                          //         .size
+                                          //         .height *
+                                          //     0.54,
                                           child: ListView.builder(
                                               scrollDirection: Axis.vertical,
                                               itemCount: CriteriasList.length,
+                                              shrinkWrap: true,
+                                              physics: NeverScrollableScrollPhysics(),
                                               itemBuilder:
                                                   (BuildContext context,
                                                       int index) {
@@ -1104,7 +1204,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                                                           Color(
                                                                               0xffBEBEBE),
                                                                       itemSize:
-                                                                          15,
+                                                                          30,
                                                                       initialRating:
                                                                           1,
                                                                       minRating:
@@ -1562,90 +1662,90 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                       ],
                                     ),
                           //=============================================
-                          Column(
-                            children: [
-                              Container(
-                                height: Get.height / 2,
-                                child: ListView.builder(
-                                  itemCount: locationListByName.length,
-                                  itemBuilder: (context, index) {
-                                    return Card(
-                                      elevation: 0,
-                                      color: MyColor.white,
-                                      margin: const EdgeInsets.symmetric(
-                                          vertical: 5),
-                                      child: ListTile(
-                                        leading: Image.network(
-                                          locationListByName[index]
-                                              .profile
-                                              .toString(),
-                                          width: 40,
-                                          height: 40,
-                                        ),
-                                        title: Text(
-                                          locationListByName[index]
-                                              .name
-                                              .toString(),
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                        subtitle: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                                locationListByName[index]
-                                                    .address
-                                                    .toString(),
-                                                style: const TextStyle(
-                                                    fontSize: 14)),
-                                            Text(
-                                              'Rating by ${locationListByName[index].userRating.toString()} users',
-                                              style: const TextStyle(
-                                                  fontSize: 12,
-                                                  color: Colors.grey),
-                                            ),
-                                          ],
-                                        ),
-                                        trailing: Text(
-                                          locationListByName[index]
-                                              .source
-                                              .toString(),
-                                          style: const TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.pushNamed(
-                                    context,
-                                    RoutesName.addPostDetail,
-                                  );
-                                },
-                                child: Center(
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    height: 59,
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                        color: MyColor.orange2,
-                                        borderRadius: const BorderRadius.all(
-                                            Radius.circular(22))),
-                                    child: isLoadingLocation
-                                        ? CircularProgressIndicator()
-                                        : MyString.med('createANewPlace'.tr, 18,
-                                            MyColor.white, TextAlign.center),
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
+                          // Column(
+                          //   children: [
+                          //     Container(
+                          //       height: Get.height / 2,
+                          //       child: ListView.builder(
+                          //         itemCount: locationListByName.length,
+                          //         itemBuilder: (context, index) {
+                          //           return Card(
+                          //             elevation: 0,
+                          //             color: MyColor.white,
+                          //             margin: const EdgeInsets.symmetric(
+                          //                 vertical: 5),
+                          //             child: ListTile(
+                          //               leading: Image.network(
+                          //                 locationListByName[index]
+                          //                     .profile
+                          //                     .toString(),
+                          //                 width: 40,
+                          //                 height: 40,
+                          //               ),
+                          //               title: Text(
+                          //                 locationListByName[index]
+                          //                     .name
+                          //                     .toString(),
+                          //                 style: const TextStyle(
+                          //                   fontSize: 16,
+                          //                 ),
+                          //               ),
+                          //               subtitle: Column(
+                          //                 crossAxisAlignment:
+                          //                     CrossAxisAlignment.start,
+                          //                 children: [
+                          //                   Text(
+                          //                       locationListByName[index]
+                          //                           .address
+                          //                           .toString(),
+                          //                       style: const TextStyle(
+                          //                           fontSize: 14)),
+                          //                   Text(
+                          //                     'Rating by ${locationListByName[index].userRating.toString()} users',
+                          //                     style: const TextStyle(
+                          //                         fontSize: 12,
+                          //                         color: Colors.grey),
+                          //                   ),
+                          //                 ],
+                          //               ),
+                          //               trailing: Text(
+                          //                 locationListByName[index]
+                          //                     .source
+                          //                     .toString(),
+                          //                 style: const TextStyle(
+                          //                     fontSize: 14,
+                          //                     fontWeight: FontWeight.bold),
+                          //               ),
+                          //             ),
+                          //           );
+                          //         },
+                          //       ),
+                          //     ),
+                          //     // GestureDetector(
+                          //     //   onTap: () {
+                          //     //     Navigator.pushNamed(
+                          //     //       context,
+                          //     //       RoutesName.addPostDetail,
+                          //     //     );
+                          //     //   },
+                          //     //   child: Center(
+                          //     //     child: Container(
+                          //     //       alignment: Alignment.center,
+                          //     //       height: 59,
+                          //     //       width: double.infinity,
+                          //     //       decoration: BoxDecoration(
+                          //     //           color: MyColor.orange2,
+                          //     //           borderRadius: const BorderRadius.all(
+                          //     //               Radius.circular(22))),
+                          //     //       child: isLoadingLocation
+                          //     //           ? CircularProgressIndicator()
+                          //     //           : MyString.med('createANewPlace'.tr, 18,
+                          //     //               MyColor.white, TextAlign.center),
+                          //     //     ),
+                          //     //   ),
+                          //     // )
+                          //   ],
+                          // ),
                         ],
                       ),
                     ),
@@ -1763,14 +1863,14 @@ class _AddPostScreenState extends State<AddPostScreen> {
     }
     _postBloc.add(GetCreatePostEvent(
       userId: int.parse(sharedPref.getString(SharedKey.userId)!),
-      placeId: 0,
+      placeId: currPos!['placeId'],
       // currPos!['placeId']
       email: currPos!['email'],
       phone: currPos!['phone'],
       images: imageUrlList,
       category: selectedCategory,
       overallRating: 0.0,
-      placeName: "Good Food Place",
+      placeName: currPos!['name'],
       description: additionalInfo.text,
       smallDogs: smallDogsAllowed,
       bigDogs: bigDogsAllowed,
@@ -1785,10 +1885,21 @@ class _AddPostScreenState extends State<AddPostScreen> {
     ));
   }
 
-  Future<void> _updateSuggestions(String query) async {
-    if (query.isNotEmpty) {
-      await GoogleMapsService.getPlaceSuggestions(query);
+  Future<dynamic> _updateSuggestions(String query) async {
+    print('_updateSuggestions => query $query');
+    if(selectedCategory.toLowerCase().contains('store')){
+      if(query.isNotEmpty) return [];
+      return await getLocationByStore();
     }
+    else if(selectedCategory.toLowerCase().contains('event')){
+      if(query.isNotEmpty) return [];
+      return await getLocationByEvent();
+    }
+    else if (query.isNotEmpty) {
+      return await getLocationByNameNew(query);
+      // await GoogleMapsService.getPlaceSuggestions(query);
+    }
+    return [];
   }
 
   Future<void> _getLocations(String address) async {
@@ -1801,6 +1912,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       if (data['results'].isNotEmpty) {
+        print('google => $data');
         final location = data['results'][0]['geometry']['location'];
         setState(() {
           lat = location['lat'];
@@ -1822,6 +1934,102 @@ class _AddPostScreenState extends State<AddPostScreen> {
       }
     } else {
       throw Exception('Failed to load coordinates');
+    }
+  }
+
+  Future<void> getCurrentLocationByStores() async {
+    setState(() {
+      isLoadingLocation = true;
+    });
+    try {
+      print('Latitude: ${_onlineStoreModel!.latitude}, Longitude: ${_onlineStoreModel!.longitude}');
+      setState(() {
+        lat = _onlineStoreModel!.latitude!.toDouble();
+        long = _onlineStoreModel!.longitude!.toDouble();
+        currentTab = 2;
+      });
+      print(lat);
+      print(long);
+      Map<String, dynamic>? curPos =
+      await GoogleMapsService.getLocationInfo(lat, long);
+      print(curPos);
+      setState(() {
+        currPos = curPos;
+        isLoadingLocation = false;
+      });
+      if (currPos != null) {
+        loader = false;
+      }
+    } catch (e) {
+      print("Error: $e");
+    } finally {
+      setState(() {
+        isLoadingLocation = false;
+      });
+    }
+  }
+
+  Future<void> getCurrentLocationByEvents() async {
+    setState(() {
+      isLoadingLocation = true;
+    });
+    try {
+      print('Latitude: ${_eventsModel!.latitude}, Longitude: ${_eventsModel!.longitude}');
+      setState(() {
+        lat = double.parse(_eventsModel!.latitude!);
+        long = double.parse(_eventsModel!.longitude!);
+        currentTab = 2;
+      });
+      print(lat);
+      print(long);
+      Map<String, dynamic>? curPos =
+      await GoogleMapsService.getLocationInfo(lat, long);
+      print(curPos);
+      setState(() {
+        currPos = curPos;
+        isLoadingLocation = false;
+      });
+      if (currPos != null) {
+        loader = false;
+      }
+    } catch (e) {
+      print("Error: $e");
+    } finally {
+      setState(() {
+        isLoadingLocation = false;
+      });
+    }
+  }
+
+  Future<void> getCurrentLocationNew() async {
+    setState(() {
+      isLoadingLocation = true;
+    });
+    try {
+      print('Latitude: ${_locationData!.latitude}, Longitude: ${_locationData!.longitude}');
+      setState(() {
+        lat = _locationData!.latitude!.toDouble();
+        long = _locationData!.longitude!.toDouble();
+        currentTab = 2;
+      });
+      print(lat);
+      print(long);
+      Map<String, dynamic>? curPos =
+      await GoogleMapsService.getLocationInfo(lat, long);
+      print(curPos);
+      setState(() {
+        currPos = curPos;
+        isLoadingLocation = false;
+      });
+      if (currPos != null) {
+        loader = false;
+      }
+    } catch (e) {
+      print("Error: $e");
+    } finally {
+      setState(() {
+        isLoadingLocation = false;
+      });
     }
   }
 
@@ -1855,6 +2063,49 @@ class _AddPostScreenState extends State<AddPostScreen> {
         isLoadingLocation = false;
       });
     }
+  }
+
+  _onPlaceSelected(dynamic data) {
+    print('_onPlaceSelected => $data');
+    if(data is LocationData){
+      _locationData = data;
+      getCurrentLocationNew();
+    }
+    else if(data is EventsModel){
+      _eventsModel = data;
+      getCurrentLocationByEvents();
+    }
+    else if(data is OnlineStoreModel){
+      _onlineStoreModel = data;
+      getCurrentLocationByStores();
+    }
+
+  }
+
+  Future<List<OnlineStoreModel>> getLocationByStore() async {
+    try {
+      final Map<String, dynamic> map = {
+        "latitude": latitude,
+        "longitude": longitude
+      };
+
+      print('getLocationByStore => $map');
+      final response = await AllApi.postMethodApi(
+          ApiStrings.fetchOnlineStores,
+        map
+      );
+      var result = response is String ? jsonDecode(response) : response;
+      if (result['status'] == 201) {
+        OnlineStoreResponseModel onlineStoreResponseModel = OnlineStoreResponseModel.fromJson(result);
+        return onlineStoreResponseModel.data!;
+      } else {
+        toaster(context, result['message'].toString());
+      }
+    } catch (e) {
+      debugPrint("Error: {$e");
+      toaster(context, "An error occurred while fetching categories.");
+    }
+    return [];
   }
 }
 

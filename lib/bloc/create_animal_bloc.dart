@@ -16,7 +16,10 @@ class CreateAnimalBloc extends Bloc<CreateAnimalEvent, BlocStates> {
   CreateAnimalBloc(BuildContext context) : super(Initial()) {
     on((event, emit) async {
       if (event is GetCreateAnimalEvent) {
+
+
         String? value = checkValidation(event);
+
         if (value != '') {
           emit(ValidationCheck(value));
         } else {
@@ -28,8 +31,8 @@ class CreateAnimalBloc extends Bloc<CreateAnimalEvent, BlocStates> {
               'weight': event.weight,
               'age': event.age,
               'breed': event.race.toString(),
-              'images': event.image.toString(),
-              "user_id": await sharedPref.getString(SharedKey.userId)!,
+              'images': event.image,
+              "user_id": int.parse(await sharedPref.getString(SharedKey.userId)!),
               'gender': event.gender.toString(),
               'sterilized': event.sterilized.toString(),
             };
@@ -39,6 +42,7 @@ class CreateAnimalBloc extends Bloc<CreateAnimalEvent, BlocStates> {
               mapData,
             );
             var result = jsonDecode(res.toString());
+            print(result);
             if (result['status'] == 201) {
               commonModel = CommonModel.fromJson(result);
               emit(ValidationCheck(result['message'].toString()));
@@ -62,7 +66,10 @@ class CreateAnimalBloc extends Bloc<CreateAnimalEvent, BlocStates> {
   }
 
   String? checkValidation(GetCreateAnimalEvent data) {
-    if (data.image == null) {
+
+       print("data.age.toString() ${data.age.toString()}");
+
+    if (data.image == null || data.image!.isEmpty) {
       return StringKey.animalImage;
     }
     if (data.name.toString().trim().isEmpty) {
@@ -81,6 +88,19 @@ class CreateAnimalBloc extends Bloc<CreateAnimalEvent, BlocStates> {
     if (data.sterilized.toString().trim().isEmpty) {
       return StringKey.animalSterilized;
     }
+    if (data.age==0) {
+
+
+      return StringKey.animalAge;
+    }
+       if (data.weight==0) {
+
+
+         return StringKey.animalWeight;
+       }
+
+
+
     return '';
   }
 }

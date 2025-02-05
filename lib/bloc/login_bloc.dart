@@ -45,10 +45,8 @@ class LoginBloc extends Bloc<LoginEvent, BlocStates> {
                   SharedKey.auth, _loginModel.data!.token.toString());
               sharedPref.setString(SharedKey.deviceToken,
                   _loginModel.data!.deviceToken.toString());
-              sharedPref.setString(
-                  SharedKey.userId, _loginModel.data!.id.toString());
-              sharedPref.setString(
-                  SharedKey.userEmail, _loginModel.data!.email.toString());
+              sharedPref.setString(SharedKey.userId, _loginModel.data!.id.toString());
+              sharedPref.setString(SharedKey.userEmail, _loginModel.data!.email.toString());
 
               debugPrint(
                   'LOGIN (AUTH) : ${sharedPref.getString(SharedKey.auth)}');

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/avispets_flutter-ritik_dev_new.iml" filepath="$PROJECT_DIR$/.idea/avispets_flutter-ritik_dev_new.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Avispet.iml" filepath="$PROJECT_DIR$/.idea/Avispet.iml" />
     </modules>
   </component>
 </project>

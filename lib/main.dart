@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:avispets/services/base_location_service.dart';
 import 'package:avispets/utils/langauges.dart';
 import 'package:avispets/utils/my_routes/app_routes.dart';
 import 'package:avispets/utils/my_routes/route_name.dart';
@@ -48,7 +49,8 @@ main() async {
   StatisticsCallback? statisticsCallback;
   FFmpegKitConfig.enableStatisticsCallback(statisticsCallback);
   // FlutterFFmpegConfig().enableStatisticsCallback(statisticsCallback);
-  await getLocationPermission();
+  // await getLocationPermission();
+  await BaseLocationService().getLocationPermission();
 
   String? languageKey;
   String? languageValue;
@@ -66,8 +68,6 @@ main() async {
                 .isNotEmpty)) {
       languageKey = sharedPref.getString(SharedKey.languageKey).toString();
       languageValue = sharedPref.getString(SharedKey.languageValue).toString();
-      debugPrint('LANGUAGE KEYS IS  $languageKey');
-      debugPrint('LANGUAGE VALUE IS  $languageValue');
     } else {
       sharedPref.setString(SharedKey.languageKey, 'fr');
       sharedPref.setString(SharedKey.languageValue, 'fr');
@@ -76,7 +76,6 @@ main() async {
       languageValue = "fr";
     }
   });
-
   runApp(MyApp(languageKey, languageValue));
 }
 
@@ -101,6 +100,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('LANGUAGE KEYS IS  ${widget.languageKey}');
+    debugPrint('LANGUAGE KEYS IS  ${widget.languageValue}');
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,

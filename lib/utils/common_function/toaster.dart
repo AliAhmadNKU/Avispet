@@ -37,6 +37,7 @@ customProgressBar() {
     ),
   );
 }
+
 String formatDateTime(String dateTimeString) {
   DateTime dateTime = DateTime.parse(dateTimeString);
   String formattedDate = DateFormat('yyyy-MM-dd').format(dateTime);

@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:avispets/models/chats/all_users_discussion_model.dart';
 import 'package:avispets/models/chats/typing_check.dart';
+import 'package:avispets/models/chats/user_individual_chats_model.dart';
 import 'package:avispets/utils/apis/connect_socket.dart';
 import 'package:avispets/utils/common_function/header_widget.dart';
 import 'package:avispets/utils/my_routes/route_name.dart';
@@ -51,6 +53,8 @@ class _ChatScreenState extends State<ChatScreen> {
   bool bottomMsgField = true;
   bool bottomCamera = false;
   var searchBar = TextEditingController();
+  UserIndividualChatsModel _userIndividualChatsModel = UserIndividualChatsModel();
+  List<ChatModel> _listChats = [];
 
   SingleChat singleChat = SingleChat();
   TypingCheck typingCheck = TypingCheck();
@@ -61,36 +65,47 @@ class _ChatScreenState extends State<ChatScreen> {
   CroppedFile? _croppedFile;
   File? galleryFile;
   final picker = ImagePicker();
+  late UserDiscussion user;
 
   @override
   void initState() {
     super.initState();
-    GetApi.getNotify(context, '');
+    // GetApi.getNotify(context, '');
+    if(widget.mapData != null){
+      user = widget.mapData!['user'];
+    }
 
     Future.delayed(Duration.zero, () async {
-      getSingleChat();
-      getSingleChatListener();
-      checkSocketConnect();
+      getUserIndividualChats();
+      registerUserListener();
+      attachIndividualChatListener();
 
-      readMessage();
-      readMessageListener();
+      // getSingleChat();
+      // getSingleChatListener();
+      // checkSocketConnect();
 
-      sendMessageListener();
-      typingSocketListener();
+      // readMessage();
+      // readMessageListener();
+
+      // sendMessageListener();
+      // typingSocketListener();
     });
   }
 
   @override
   void dispose() {
-    super.dispose();
-    socketOff('get_chat_listener');
-    socketOff('read_data_status');
-    socketOff('typing');
-    socketOff('delete_data');
+    socketOff('register');
+    socketOff('send_individual_message');
+    socketOff('receive_message');
+    checkSocketConnect();
+// socketOff('get_chat_listener');
+    // socketOff('read_data_status');
+    // socketOff('typing');
+    // socketOff('delete_data');
     // socketOff('new_group_message');
     // socketOff('new_message');
 
-    checkSocketConnect();
+    super.dispose();
   }
 
   @override
@@ -104,668 +119,8 @@ class _ChatScreenState extends State<ChatScreen> {
             bottomCamera = false;
           });
         },
-        child: Scaffold(
-            backgroundColor: MyColor.white,
-            body: Container(
-              padding: EdgeInsets.symmetric(vertical: 25),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: HeaderWidget(),
-                  ),
-                  Container(
-                    height: 40,
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 15,
-                      horizontal: 15,
-                    ),
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Color(0xffEBEBEB)),
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(13),
-                            topRight: Radius.circular(13),
-                            bottomLeft: Radius.circular(13),
-                            bottomRight: Radius.circular(13))),
-                    child: TextField(
-                      controller: searchBar,
-                      scrollPadding: const EdgeInsets.only(bottom: 50),
-                      style: TextStyle(color: MyColor.black, fontSize: 14),
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                        ),
-                        prefixIcon: SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Image.asset(
-                              'assets/images/icons/search.png',
-                              width: 20,
-                              height: 20,
-                            ),
-                          ),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                            vertical: 5, horizontal: 12),
-                        hintText: 'search'.tr,
-                        hintStyle: TextStyle(color: MyColor.more, fontSize: 14),
-                      ),
-                      onChanged: (value) {},
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            const SizedBox(width: 10),
-                            GestureDetector(
-                              onTap: () async {
-                                FocusManager.instance.primaryFocus!.unfocus();
-
-                                if (widget.mapData!['groupId'].toString() !=
-                                    '0') {
-                                  Map<String, dynamic> mapping = {
-                                    'groupId':
-                                        widget.mapData!['groupId'].toString(),
-                                  };
-
-                                  Map<String, String>? res =
-                                      await Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  GroupInfoScreen(
-                                                      mapData: mapping)));
-                                  if (res != null) {
-                                    setState(() {
-                                      widget.mapData!['totalMember'] =
-                                          res['totalMember'].toString();
-                                      widget.mapData!['userName'] =
-                                          res['userName'].toString();
-                                      if (res['userImage']
-                                          .toString()
-                                          .isNotEmpty) {
-                                        widget.mapData!['userImage'] =
-                                            res['userImage'].toString();
-                                      }
-                                    });
-                                  }
-                                } else {
-                                  Map<String, dynamic> mapData = {
-                                    'userID':
-                                        widget.mapData!['userId'].toString()
-                                  };
-                                  Navigator.pushNamed(
-                                      context, RoutesName.myProfile,
-                                      arguments: mapData);
-                                }
-                              },
-                              child: ClipRRect(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50)),
-                                child: widget.mapData!['userImage']
-                                        .toString()
-                                        .isNotEmpty
-                                    ? Image.network(
-                                        widget.mapData!['userImage'].toString(),
-                                        width: 50,
-                                        height: 50,
-                                        fit: BoxFit.cover,
-                                        loadingBuilder: (context, child,
-                                                loadingProgress) =>
-                                            (loadingProgress == null)
-                                                ? child
-                                                : Container(
-                                                    height: 30,
-                                                    width: 30,
-                                                    child: customProgressBar()))
-                                    : Container(
-                                        width: 50,
-                                        height: 50,
-                                        color: MyColor.cardColor,
-                                        child: Center(
-                                            child: Image.asset(
-                                                'assets/images/onboard/placeholder_image.png',
-                                                width: 35,
-                                                height: 35))),
-                              ),
-                            ),
-                            const SizedBox(width: 5),
-                            GestureDetector(
-                              onTap: () async {
-                                FocusManager.instance.primaryFocus!.unfocus();
-
-                                if (widget.mapData!['groupId'].toString() !=
-                                    '0') {
-                                  Map<String, dynamic> mapping = {
-                                    'groupId':
-                                        widget.mapData!['groupId'].toString(),
-                                  };
-
-                                  Map<String, String>? res =
-                                      await Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  GroupInfoScreen(
-                                                      mapData: mapping)));
-
-                                  if (res != null) {
-                                    setState(() {
-                                      widget.mapData!['totalMember'] =
-                                          res['totalMember'].toString();
-                                      widget.mapData!['userName'] =
-                                          res['userName'].toString();
-                                      if (res['userImage']
-                                          .toString()
-                                          .isNotEmpty) {
-                                        widget.mapData!['userImage'] =
-                                            res['userImage'].toString();
-                                      }
-                                    });
-                                  }
-                                } else {
-                                  Map<String, dynamic> mapData = {
-                                    'userID':
-                                        widget.mapData!['userId'].toString()
-                                  };
-                                  Navigator.pushNamed(
-                                      context, RoutesName.myProfile,
-                                      arguments: mapData);
-                                }
-                              },
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Container(
-                                      width: MediaQuery.of(context).size.width *
-                                          .5,
-                                      child: MyString.boldMultiLine(
-                                          (widget.mapData!['userName']
-                                                      .toString() ==
-                                                  "null")
-                                              ? "No Name"
-                                              : widget.mapData!['userName']
-                                                  .toString(),
-                                          27,
-                                          MyColor.title,
-                                          TextAlign.start,
-                                          1)),
-                                  (widget.mapData!['groupId'].toString() != '0')
-                                      ? MyString.med(
-                                          widget.mapData!['totalMember'] != 1
-                                              ? '${'members'.tr}: ${widget.mapData!['totalMember'].toString()}'
-                                              : '${'member'.tr}: ${widget.mapData!['totalMember'].toString()}',
-                                          12,
-                                          MyColor.white,
-                                          TextAlign.start)
-                                      : typingCheck.typing == 1 &&
-                                              typingCheck.id.toString() !=
-                                                  sharedPref
-                                                      .getString(
-                                                          SharedKey.userId)
-                                                      .toString()
-                                          ? MyString.med('typing...', 12,
-                                              MyColor.white, TextAlign.start)
-                                          : MyString.med(
-                                              widget.mapData!['online'] == 0
-                                                  ? 'offline'.tr
-                                                  : 'online'.tr,
-                                              12,
-                                              MyColor.textBlack0,
-                                              TextAlign.start),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        PopupMenuButton<SampleItem>(
-                          shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20.0))),
-                          color: MyColor.white,
-                          icon: Icon(
-                            Icons.more_vert, // Change the icon here
-                            color: MyColor.redd, // Change the color here
-                          ),
-                          initialValue: selectedItem,
-                          onSelected: (SampleItem item) {
-                            setState(() {
-                              FocusManager.instance.primaryFocus!.unfocus();
-                              selectedItem = item;
-                            });
-                          },
-                          itemBuilder: (BuildContext context) =>
-                              <PopupMenuEntry<SampleItem>>[
-                            PopupMenuItem<SampleItem>(
-                              onTap: () async {
-                                FocusManager.instance.primaryFocus!.unfocus();
-                                await showDialog(
-                                    context: context,
-                                    barrierDismissible: true,
-                                    builder: (_) {
-                                      return delete(1);
-                                    });
-                              },
-                              value: null,
-                              child: MyString.reg('clearConversation'.tr, 12,
-                                  MyColor.textBlack0, TextAlign.center),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  loader
-                      ? Expanded(
-                          child: Container(
-                            child: progressBar(),
-                          ),
-                        )
-                      : chatList.isNotEmpty
-                          ? Expanded(
-                              child: Container(
-                                padding:
-                                    const EdgeInsets.only(right: 10, left: 10),
-                                decoration: BoxDecoration(
-                                    color: MyColor.card,
-                                    borderRadius: BorderRadius.only(
-                                        topRight: Radius.circular(40),
-                                        topLeft: Radius.circular(40))),
-                                child: ListView.builder(
-                                  itemCount: chatList.length,
-                                  shrinkWrap: true,
-                                  reverse: true,
-                                  physics: ScrollPhysics(),
-                                  padding: EdgeInsets.only(bottom: 10, top: 10),
-                                  itemBuilder: (context, index) {
-                                    return (chatList[index].messageType == 4 ||
-                                            chatList[index].messageType == 6 ||
-                                            chatList[index].messageType == 5)
-                                        ? Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Container(
-                                                margin: EdgeInsets.only(top: 5),
-                                                padding: EdgeInsets.all(7),
-                                                decoration: BoxDecoration(
-                                                  color: MyColor.linkBlurBlue,
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                ),
-                                                child: chatList[index].messageType ==
-                                                        4
-                                                    ? MyString.med(
-                                                        (chatList[index].message.toString() ==
-                                                                "{GroupCreated}")
-                                                            ? 'groupCreated'.tr +
-                                                                " " +
-                                                                widget.mapData!['userName']
-                                                                    .toString()
-                                                            : 'newMember'.tr,
-                                                        12,
-                                                        MyColor.black,
-                                                        TextAlign.start)
-                                                    : chatList[index].messageType == 6 ||
-                                                            chatList[index].messageType ==
-                                                                5
-                                                        ? MyString.med(
-                                                            (chatList[index].message.toString() ==
-                                                                    "removed" +
-                                                                        " " +
-                                                                        chatList[index]
-                                                                            .senderName
-                                                                            .toString())
-                                                                ? 'removed'.tr
-                                                                : 'left'.tr +
-                                                                    " " +
-                                                                    chatList[index]
-                                                                        .senderName
-                                                                        .toString(),
-                                                            12,
-                                                            MyColor.black,
-                                                            TextAlign.start)
-                                                        : SizedBox(),
-                                              ),
-                                            ],
-                                          )
-                                        : Padding(
-                                            padding: EdgeInsets.all(3),
-                                            child: sharedPref
-                                                        .getString(
-                                                            SharedKey.userId)
-                                                        .toString() ==
-                                                    chatList[index]
-                                                        .senderId
-                                                        .toString()
-                                                ? senderMessage(index)
-                                                : receiverMessage(index),
-                                          );
-                                  },
-                                ),
-                              ),
-                            )
-                          : Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    'assets/images/onboard/placeholder_image.png',
-                                    width: 120,
-                                    height: 90,
-                                  ),
-                                  Container(
-                                      color: MyColor.card,
-                                      width: double.infinity,
-                                      child: MyString.bold(
-                                          'noConversation'.tr,
-                                          12,
-                                          MyColor.textBlack0,
-                                          TextAlign.center)),
-                                ],
-                              ),
-                            ),
-
-                  //messageField
-                  if (bottomMsgField && widget.mapData!['isBlock'] == 0)
-                    Container(
-                      height: 51,
-                      padding: const EdgeInsets.all(4),
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                      decoration: BoxDecoration(
-                          color: MyColor.white,
-                          border: Border.all(color: Color(0xffFFEDED)),
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(25))),
-                      child: Row(
-                        children: [
-                          const SizedBox(width: 5),
-                          Flexible(
-                            child: Container(
-                              child: TextField(
-                                minLines: 1,
-                                maxLines: 3,
-                                focusNode: _focusNode,
-                                controller: msgField,
-                                style: TextStyle(color: MyColor.black),
-                                onChanged: (value) => setState(() {
-                                  typingSocket(1);
-
-                                  searchDelay.run(() {
-                                    typingSocket(2);
-                                  });
-                                }),
-                                decoration: InputDecoration(
-                                  border: const OutlineInputBorder(
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  suffixIcon: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      if (msgField.text
-                                          .toString()
-                                          .trim()
-                                          .isEmpty)
-                                        TextButton(
-                                            onPressed: () {
-                                              _focusNode.unfocus();
-                                              Future.delayed(
-                                                  Duration(milliseconds: 200),
-                                                  () async {
-                                                // bottomCamera = !bottomCamera;
-                                                // bottomMsgField = false;
-                                                selectCameraLib(context);
-                                                setState(() {});
-                                              });
-                                            },
-                                            style: TextButton.styleFrom(
-                                                padding: EdgeInsets.zero,
-                                                minimumSize: Size(30, 30),
-                                                tapTargetSize:
-                                                    MaterialTapTargetSize
-                                                        .shrinkWrap),
-                                            child: Image.asset(
-                                                "assets/images/onboard/attach_file.png",
-                                                height: 15,
-                                                fit: BoxFit.cover)),
-                                      if (msgField.text
-                                          .toString()
-                                          .trim()
-                                          .isEmpty)
-                                        TextButton(
-                                            onPressed: () {
-                                              _openGiphyGet(0);
-                                              setState(() {});
-                                            },
-                                            style: TextButton.styleFrom(
-                                                padding: EdgeInsets.zero,
-                                                minimumSize: Size(30, 30),
-                                                tapTargetSize:
-                                                    MaterialTapTargetSize
-                                                        .shrinkWrap),
-                                            child: Image.asset(
-                                                "assets/images/onboard/gif.png",
-                                                width: 15,
-                                                height: 15,
-                                                fit: BoxFit.cover)),
-                                      TextButton(
-                                          onPressed: () {
-                                            _focusNode.unfocus();
-                                            Future.delayed(
-                                                Duration(milliseconds: 200),
-                                                () async {
-                                              isShowEmoji = true;
-                                              setState(() {});
-                                            });
-                                          },
-                                          style: TextButton.styleFrom(
-                                              padding: EdgeInsets.zero,
-                                              minimumSize: Size(35, 30),
-                                              tapTargetSize:
-                                                  MaterialTapTargetSize
-                                                      .shrinkWrap),
-                                          child: Image.asset(
-                                              "assets/images/onboard/happiness.png",
-                                              width: 20,
-                                              height: 20,
-                                              fit: BoxFit.cover)),
-                                      if (msgField.text
-                                          .toString()
-                                          .trim()
-                                          .isEmpty)
-                                        InkWell(
-                                          onTap: () {
-                                            if (msgField.text
-                                                .toString()
-                                                .trim()
-                                                .isNotEmpty) {
-                                              sendMessage(
-                                                  msgField.text
-                                                      .toString()
-                                                      .trim(),
-                                                  '',
-                                                  0); // send
-                                            }
-
-                                            setState(() {
-                                              msgField.text = '';
-                                            });
-                                          },
-                                          child: Container(
-                                            margin: EdgeInsets.only(right: 10),
-                                            decoration: BoxDecoration(
-                                                color: MyColor.orange2,
-                                                borderRadius:
-                                                    BorderRadius.circular(50)),
-                                            child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 8,
-                                                        vertical: 8),
-                                                child: Image.asset(
-                                                  "assets/images/icons/share.png",
-                                                  height: 10,
-                                                  width: 10,
-                                                  color: MyColor.white,
-                                                )),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 5, horizontal: 12),
-                                  hintText: '${'message'.tr}',
-                                  hintStyle: TextStyle(
-                                      color: MyColor.textBlack0, fontSize: 14),
-                                ),
-                                onTap: () {
-                                  if (isShowEmoji) {
-                                    setState(() => isShowEmoji = !isShowEmoji);
-                                  }
-                                },
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                  if (widget.mapData!['blockBy'].toString() ==
-                          widget.mapData!['myId'].toString() &&
-                      widget.mapData!['isBlock'] == 1)
-                    GestureDetector(
-                      onTap: () async {
-                        await showDialog(
-                            context: context,
-                            barrierDismissible: true,
-                            builder: (_) {
-                              return delete(2);
-                            });
-                      },
-                      child: Container(
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.all(12),
-                          color: MyColor.white,
-                          child: Card(
-                              color: MyColor.cardColor,
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 10, right: 10, top: 5, bottom: 5),
-                                child: MyString.med('blockedContact'.tr, 14,
-                                    MyColor.black, TextAlign.center),
-                              ))),
-                    ),
-
-                  if (isShowEmoji)
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * .4,
-                      child: EmojiPicker(
-                        textEditingController: msgField,
-                        config: Config(
-                          emojiViewConfig: EmojiViewConfig(
-                            columns: 7,
-                            emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
-                          ),
-                        ),
-                        onEmojiSelected: (category, emoji) {
-                          setState(() {});
-                        },
-                      ),
-                    ),
-
-                  if (bottomCamera)
-                    Container(
-                      decoration: BoxDecoration(
-                          color: MyColor.white,
-                          borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(15),
-                              topRight: Radius.circular(15))),
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                            bottom: MediaQuery.of(context).viewInsets.bottom),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Container(
-                                width: double.infinity,
-                                height: 60,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                    color: MyColor.orange2,
-                                    borderRadius: const BorderRadius.only(
-                                        topLeft: Radius.circular(15),
-                                        topRight: Radius.circular(15))),
-                                child: MyString.bold('chooseFiletype'.tr, 20,
-                                    MyColor.white, TextAlign.center)),
-                            const SizedBox(height: 5),
-                            ListTile(
-                              leading: SizedBox(
-                                  height: 40.0,
-                                  width: 40.0, // fixed width and height
-                                  child: Image.asset(
-                                      'assets/images/logos/camera2.png')),
-                              title: MyString.med('camera'.tr, 18,
-                                  MyColor.textBlack, TextAlign.start),
-                              onTap: () async {
-                                // 1 for camera, 2 for videos
-                                bottomMsgField = true;
-                                bottomCamera = false;
-                                await showDialog(
-                                  context: context,
-                                  barrierDismissible: true,
-                                  builder: (_) {
-                                    bottomCamera = false;
-                                    return cameraSelection();
-                                  },
-                                );
-
-                                setState(() {});
-                              },
-                            ),
-                            ListTile(
-                              leading: SizedBox(
-                                  height: 40.0,
-                                  width: 40.0, // fixed width and height
-                                  child: Image.asset(
-                                      'assets/images/logos/image.png')),
-                              title: MyString.med('phoneLibrary'.tr, 18,
-                                  MyColor.textBlack, TextAlign.start),
-                              onTap: () async {
-                                bottomMsgField = true;
-                                bottomCamera = false;
-                                _pickMedia();
-                                bottomCamera = false;
-                                setState(() {});
-                              },
-                            ),
-                            const SizedBox(height: 5),
-                          ],
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            )),
+        child: _buildChatUINEW()
+        // _buildChatUIOLD(),
       ),
     );
   }
@@ -1233,6 +588,426 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  senderMessageNew(int index) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Container(
+                alignment: Alignment.centerRight,
+                decoration: BoxDecoration(
+                  color: MyColor.orange2,
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _listChats[index].messageType == 'text'
+                        ? Container(
+                        padding: EdgeInsets.all(10),
+                        constraints:
+                        BoxConstraints(maxWidth: 250, minWidth: 40),
+                        child: SelectableText.rich(TextSpan(
+                          children: extractText(
+                              _listChats[index].message.toString(),
+                              colorM: Colors.white),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.black,
+                            fontFamily: 'poppins_medium',
+                          ),
+                        )))
+                        : _listChats[index].messageType == 'image'
+                        ? GestureDetector(
+                        onTap: () {
+                          _focusNode.unfocus();
+                          // if (!chatList[index]
+                          //     .mediaUrl
+                          //     .toString()
+                          //     .contains("giphy.com/media")) {
+                          //   Map<String, dynamic> mapping = {
+                          //     'mediaType': chatList[index].messageType,
+                          //     'image':
+                          //     '${ApiStrings.mediaURl}${chatList[index].mediaUrl.toString()}',
+                          //   };
+                          //
+                          //   debugPrint(
+                          //       'image inke 1 ${chatList[index].messageType}');
+                          //   debugPrint(
+                          //       'image inke 2 ${ApiStrings.mediaURl}${chatList[index].mediaUrl.toString()}');
+                          //   Navigator.pushNamed(
+                          //       context, RoutesName.reviewScreen,
+                          //       arguments: mapping);
+                          // }
+                        },
+                        child: Container(
+                            padding: EdgeInsets.all(15),
+                            margin: const EdgeInsets.only(
+                                top: 5, bottom: 5),
+                            child: ClipRRect(
+                              child: SizedBox(
+                                width: MediaQuery.of(context)
+                                    .size
+                                    .width *
+                                    0.65,
+                                child: Image.network(
+                                    '${_listChats[index].message}',
+                                    height: 150,
+                                    loadingBuilder: (context,
+                                        child,
+                                        loadingProgress) =>
+                                    (loadingProgress == null)
+                                        ? child
+                                        : customProgressBar()),
+                              )
+                            )
+                        ))
+                        : chatList[index].messageType == 99
+                        ? Container(
+                      width: MediaQuery.of(context).size.width *
+                          0.65,
+                      child: (chatList[index].postData != null)
+                          ? InkWell(
+                        onTap: () {
+                          Map<String, dynamic> mapData = {
+                            'from': 'home',
+                            'feedId': chatList[index]
+                                .postData!
+                                .id
+                                .toString(),
+                            'userId': chatList[index]
+                                .postData!
+                                .animal!
+                                .id
+                                .toString(),
+                          };
+                          Navigator.pushNamed(context,
+                              RoutesName.postDetail,
+                              arguments: mapData);
+                        },
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          mainAxisAlignment:
+                          MainAxisAlignment.start,
+                          children: [
+                            (chatList[index]
+                                .postData!
+                                .feedImages !=
+                                null &&
+                                chatList[index]
+                                    .postData!
+                                    .feedImages!
+                                    .isNotEmpty)
+                                ? ClipRRect(
+                              borderRadius:
+                              BorderRadius.only(
+                                  topLeft: Radius
+                                      .circular(
+                                      10),
+                                  topRight: Radius
+                                      .circular(
+                                      10)),
+                              child: chatList[index]
+                                  .postData!
+                                  .feedImages![0]
+                                  .image!
+                                  .isNotEmpty
+                                  ? Image.network(
+                                  '${ApiStrings.mediaURl}${chatList[index].postData!.feedImages![0].image.toString()}',
+                                  height: 150,
+                                  width: double
+                                      .infinity,
+                                  fit: BoxFit
+                                      .cover,
+                                  loadingBuilder: (context,
+                                      child,
+                                      loadingProgress) =>
+                                  (loadingProgress ==
+                                      null)
+                                      ? child
+                                      : customProgressBar())
+                                  : Container(
+                                  color: MyColor
+                                      .cardColor,
+                                  child: Center(
+                                      child: Image.asset('assets/images/onboard/placeholder_image.png', width: 35, height: 35))),
+                            )
+                                : Container(
+                                padding:
+                                EdgeInsets.only(
+                                    left: 15,
+                                    top: 15),
+                                child:
+                                SelectableText.rich(
+                                    TextSpan(
+                                      children: extractText(
+                                          chatList[index]
+                                              .postData!
+                                              .description
+                                              .toString(),
+                                          colorM: MyColor
+                                              .black),
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.black,
+                                        fontFamily:
+                                        'poppins_medium',
+                                      ),
+                                    ))),
+                            const SizedBox(height: 15),
+                            Padding(
+                              padding:
+                              EdgeInsets.only(left: 15),
+                              child: Column(
+                                crossAxisAlignment:
+                                CrossAxisAlignment
+                                    .start,
+                                mainAxisAlignment:
+                                MainAxisAlignment.start,
+                                children: [
+                                  RichText(
+                                    text: TextSpan(
+                                      text: 'name1'.tr,
+                                      style: TextStyle(
+                                        fontFamily:
+                                        'poppins_medium',
+                                        fontSize: 12,
+                                        fontWeight:
+                                        FontWeight.w400,
+                                        color:
+                                        MyColor.black,
+                                      ),
+                                      children: [
+                                        TextSpan(
+                                          text:
+                                          ': ${chatList[index].postData!.animal!.name.toString()}',
+                                          style: TextStyle(
+                                            fontFamily:
+                                            'poppins_medium',
+                                            fontSize: 12,
+                                            fontWeight:
+                                            FontWeight
+                                                .w400,
+                                            color: MyColor
+                                                .black,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  RichText(
+                                    text: TextSpan(
+                                      text: 'race'.tr,
+                                      style: TextStyle(
+                                        fontFamily:
+                                        'poppins_medium',
+                                        fontSize: 12,
+                                        fontWeight:
+                                        FontWeight.w400,
+                                        color:
+                                        MyColor.black,
+                                      ),
+                                      children: [
+                                        TextSpan(
+                                          text:
+                                          ': ${chatList[index].postData!.animal!.race.toString()}',
+                                          style: TextStyle(
+                                            fontFamily:
+                                            'poppins_medium',
+                                            fontSize: 12,
+                                            fontWeight:
+                                            FontWeight
+                                                .w400,
+                                            color: MyColor
+                                                .black,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  RichText(
+                                    text: TextSpan(
+                                      text: 'gender1'.tr,
+                                      style: TextStyle(
+                                        fontFamily:
+                                        'poppins_medium',
+                                        fontSize: 12,
+                                        fontWeight:
+                                        FontWeight.w400,
+                                        color:
+                                        MyColor.black,
+                                      ),
+                                      children: [
+                                        TextSpan(
+                                          text:
+                                          ': ${chatList[index].postData!.animal!.gender.toString().toLowerCase().tr}',
+                                          style: TextStyle(
+                                            fontFamily:
+                                            'poppins_medium',
+                                            fontSize: 12,
+                                            fontWeight:
+                                            FontWeight
+                                                .w400,
+                                            color: MyColor
+                                                .black,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                      height: 10),
+                                  InkWell(
+                                    onTap: () {
+                                      Map<String, dynamic>
+                                      mapData = {
+                                        'from': 'home',
+                                        'feedId':
+                                        chatList[index]
+                                            .postData!
+                                            .id
+                                            .toString(),
+                                        'userId':
+                                        chatList[index]
+                                            .postData!
+                                            .animal!
+                                            .id
+                                            .toString(),
+                                      };
+                                      Navigator.pushNamed(
+                                          context,
+                                          RoutesName
+                                              .postDetail,
+                                          arguments:
+                                          mapData);
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          color: MyColor
+                                              .orange2,
+                                          borderRadius:
+                                          BorderRadius
+                                              .circular(
+                                              50)),
+                                      child: Padding(
+                                          padding:
+                                          const EdgeInsets
+                                              .symmetric(
+                                              horizontal:
+                                              10,
+                                              vertical:
+                                              5),
+                                          child:
+                                          Image.asset(
+                                            "assets/images/icons/send_icon.png",
+                                            height: 15,
+                                            width: 15,
+                                          )),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            if (chatList[index]
+                                .message
+                                .toString()
+                                .isNotEmpty)
+                              Container(
+                                  padding: EdgeInsets.only(
+                                      left: 15),
+                                  child:
+                                  SelectableText.rich(
+                                      TextSpan(
+                                        children: extractText(
+                                            chatList[index]
+                                                .message
+                                                .toString(),
+                                            colorM:
+                                            MyColor.black),
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.black,
+                                          fontFamily:
+                                          'poppins_medium',
+                                        ),
+                                      )))
+                          ],
+                        ),
+                      )
+                          : Container(
+                        padding: EdgeInsets.only(
+                            left: 15, top: 15, right: 15),
+                        child: MyString.italic(
+                            'deleteSender'.tr,
+                            12,
+                            MyColor.black,
+                            TextAlign.start),
+                      ),
+                    )
+                        : Container(
+                        constraints: BoxConstraints(
+                            maxWidth: 250, minWidth: 40),
+                        child: SelectableText.rich(TextSpan(
+                          children: extractText(
+                              chatList[index].message.toString(),
+                              colorM: Colors.black),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.black,
+                            fontFamily: 'poppins_medium',
+                          ),
+                        ))),
+                    Padding(
+                      padding: EdgeInsets.all(5),
+                      child: MyString.medMultiLine(
+                          formatDateTime(_listChats[index].createdAt.toString()),
+                          8,
+                          MyColor.white,
+                          TextAlign.start,
+                          3),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 15),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: ClipRRect(
+              borderRadius: BorderRadius.all(Radius.circular(50)),
+              child: _listChats[index].sender != null && _listChats[index].sender!.profilePicture != null &&
+                  _listChats[index].sender!.profilePicture!.contains('http')
+                  ? Image.network(
+                '${_listChats[index].sender!.profilePicture}',
+                width: 35,
+                height: 35,
+                fit: BoxFit.cover,
+              )
+                  : Image.asset(
+                'assets/images/onboard/placeholder_image.png',
+                width: 35,
+                height: 35,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
   receiverMessage(int index) {
     return Align(
       alignment: Alignment.centerLeft,
@@ -1685,6 +1460,458 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  receiverMessageNew(int index) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          InkWell(
+            onTap: () {
+              Map<String, dynamic> mapData = {
+                'userID': chatList[index].senderId.toString()
+              };
+              Navigator.pushNamed(context, RoutesName.myProfile,
+                  arguments: mapData);
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.all(Radius.circular(50)),
+              child: _listChats[index].sender!.profilePicture != null &&
+                  _listChats[index].sender!.profilePicture!.contains('http')
+                  ? Image.network(
+                '${_listChats[index].sender!.profilePicture!}',
+                width: 35,
+                height: 35,
+                fit: BoxFit.cover,
+              )
+                  : Image.asset(
+                'assets/images/onboard/placeholder_image.png',
+                width: 35,
+                height: 35,
+              ),
+            ),
+          ),
+          const SizedBox(width: 3),
+          Container(
+            alignment: Alignment.centerRight,
+            decoration: BoxDecoration(
+              color: MyColor.white,
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _listChats[index].messageType == 'text'
+                    ? Container(
+                    padding: EdgeInsets.only(left: 15, top: 15, right: 15),
+                    constraints:
+                    BoxConstraints(maxWidth: 250, minWidth: 40),
+                    child: SelectableText.rich(TextSpan(
+                      children: extractText(
+                          _listChats[index].message.toString(),
+                          colorM: MyColor.textBlack0),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: MyColor.textBlack0,
+                        fontFamily: 'poppins_medium',
+                      ),
+                    )))
+                    : chatList[index].messageType == 1 ||
+                    chatList[index].messageType == 2 ||
+                    chatList[index].messageType == 3
+                    ? GestureDetector(
+                    onTap: () {
+                      _focusNode.unfocus();
+                      // if (!chatList[index]
+                      //     .mediaUrl
+                      //     .toString()
+                      //     .contains("giphy.com/media")) {
+                      //   Map<String, dynamic> mapping = {
+                      //     'mediaType': chatList[index].messageType,
+                      //     'image':
+                      //     '${ApiStrings.mediaURl}${chatList[index].mediaUrl.toString()}',
+                      //   };
+                      //
+                      //   debugPrint(
+                      //       'image inke 1 ${chatList[index].messageType}');
+                      //   debugPrint(
+                      //       'image inke 2 ${ApiStrings.mediaURl}${chatList[index].mediaUrl.toString()}');
+                      //   Navigator.pushNamed(
+                      //       context, RoutesName.reviewScreen,
+                      //       arguments: mapping);
+                      // }
+                    },
+                    child: Container(
+                        padding: EdgeInsets.only(
+                            left: 15, top: 15, right: 15),
+                        margin:
+                        const EdgeInsets.only(top: 5, bottom: 5),
+                        child: ClipRRect(
+                          child: chatList[index].messageType == 1 &&
+                              !chatList[index]
+                                  .mediaUrl
+                                  .toString()
+                                  .contains('giphy.com/media')
+                              ? SizedBox(
+                            width: MediaQuery.of(context)
+                                .size
+                                .width *
+                                0.65,
+                            child: Image.network(
+                                '${ApiStrings.mediaURl}${chatList[index].mediaUrl.toString()}',
+                                height: 150,
+                                loadingBuilder: (context, child,
+                                    loadingProgress) =>
+                                (loadingProgress == null)
+                                    ? child
+                                    : customProgressBar()),
+                          )
+                              : chatList[index].messageType == 3
+                              ? Container(
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  Container(
+                                    height: 80,
+                                    width: 150,
+                                    color: MyColor.cardColor,
+                                    child: Image.asset(
+                                      'assets/images/onboard/placeholder_image.png',
+                                      width: 30,
+                                      height: 30,
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.play_circle,
+                                    color: MyColor.orange2,
+                                    size: 30,
+                                  ),
+                                ],
+                              ))
+                              : SizedBox(
+                            width: MediaQuery.of(context)
+                                .size
+                                .width *
+                                0.65,
+                            child: Image.network(
+                                '${chatList[index].mediaUrl.toString()}',
+                                height: 150,
+                                loadingBuilder: (context,
+                                    child,
+                                    loadingProgress) =>
+                                (loadingProgress == null)
+                                    ? child
+                                    : customProgressBar()),
+                          ),
+                        )))
+                    : chatList[index].messageType == 99
+                    ? (chatList[index].postData != null)
+                    ? InkWell(
+                  onTap: () {
+                    Map<String, dynamic> mapData = {
+                      'from': 'home',
+                      'feedId': chatList[index]
+                          .postData!
+                          .id
+                          .toString(),
+                      'userId': chatList[index]
+                          .postData!
+                          .animal!
+                          .id
+                          .toString(),
+                    };
+                    Navigator.pushNamed(
+                        context, RoutesName.postDetail,
+                        arguments: mapData);
+                  },
+                  child: Container(
+                    width: MediaQuery.of(context).size.width *
+                        0.65,
+                    child: Column(
+                      crossAxisAlignment:
+                      CrossAxisAlignment.start,
+                      mainAxisAlignment:
+                      MainAxisAlignment.start,
+                      children: [
+                        (chatList[index]
+                            .postData!
+                            .feedImages !=
+                            null &&
+                            chatList[index]
+                                .postData!
+                                .feedImages!
+                                .isNotEmpty)
+                            ? ClipRRect(
+                          borderRadius:
+                          BorderRadius.only(
+                              topLeft:
+                              Radius.circular(
+                                  10),
+                              topRight:
+                              Radius.circular(
+                                  10)),
+                          child: chatList[index]
+                              .postData!
+                              .feedImages![0]
+                              .image!
+                              .isNotEmpty
+                              ? Image.network('${ApiStrings.mediaURl}${chatList[index].postData!.feedImages![0].image.toString()}',
+                              height: 150,
+                              width:
+                              double.infinity,
+                              fit: BoxFit.cover,
+                              loadingBuilder: (context,
+                                  child,
+                                  loadingProgress) =>
+                              (loadingProgress == null)
+                                  ? child
+                                  : customProgressBar())
+                              : Container(
+                              color:
+                              MyColor.cardColor,
+                              child: Center(
+                                  child: Image.asset(
+                                      'assets/images/onboard/placeholder_image.png',
+                                      width: 35,
+                                      height: 35))),
+                        )
+                            : Container(
+                            padding: EdgeInsets.only(
+                                left: 15, top: 15),
+                            child: SelectableText.rich(
+                                TextSpan(
+                                  children: extractText(
+                                      chatList[index]
+                                          .postData!
+                                          .description
+                                          .toString(),
+                                      colorM: MyColor.black),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.black,
+                                    fontFamily:
+                                    'poppins_medium',
+                                  ),
+                                ))),
+                        const SizedBox(height: 15),
+                        Padding(
+                          padding: EdgeInsets.only(left: 15),
+                          child: Column(
+                            crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                            mainAxisAlignment:
+                            MainAxisAlignment.start,
+                            children: [
+                              RichText(
+                                text: TextSpan(
+                                  text: 'name1'.tr,
+                                  style: TextStyle(
+                                    fontFamily:
+                                    'poppins_medium',
+                                    fontSize: 12,
+                                    fontWeight:
+                                    FontWeight.w400,
+                                    color: MyColor.divideLine,
+                                  ),
+                                  children: [
+                                    TextSpan(
+                                      text:
+                                      ': ${chatList[index].postData!.animal!.name.toString()}',
+                                      style: TextStyle(
+                                        fontFamily:
+                                        'poppins_medium',
+                                        fontSize: 12,
+                                        fontWeight:
+                                        FontWeight.w400,
+                                        color: MyColor
+                                            .divideLine,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              RichText(
+                                text: TextSpan(
+                                  text: 'race'.tr,
+                                  style: TextStyle(
+                                    fontFamily:
+                                    'poppins_medium',
+                                    fontSize: 12,
+                                    fontWeight:
+                                    FontWeight.w400,
+                                    color: MyColor.divideLine,
+                                  ),
+                                  children: [
+                                    TextSpan(
+                                      text:
+                                      ': ${chatList[index].postData!.animal!.race.toString()}',
+                                      style: TextStyle(
+                                        fontFamily:
+                                        'poppins_medium',
+                                        fontSize: 12,
+                                        fontWeight:
+                                        FontWeight.w400,
+                                        color: MyColor
+                                            .divideLine,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              RichText(
+                                text: TextSpan(
+                                  text: 'gender1'.tr,
+                                  style: TextStyle(
+                                    fontFamily:
+                                    'poppins_medium',
+                                    fontSize: 12,
+                                    fontWeight:
+                                    FontWeight.w400,
+                                    color: MyColor.divideLine,
+                                  ),
+                                  children: [
+                                    TextSpan(
+                                      text:
+                                      ': ${chatList[index].postData!.animal!.gender.toString().toLowerCase().tr}',
+                                      style: TextStyle(
+                                        fontFamily:
+                                        'poppins_medium',
+                                        fontSize: 12,
+                                        fontWeight:
+                                        FontWeight.w400,
+                                        color: MyColor
+                                            .divideLine,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              InkWell(
+                                onTap: () {
+                                  Map<String, dynamic>
+                                  mapData = {
+                                    'from': 'home',
+                                    'feedId': chatList[index]
+                                        .postData!
+                                        .id
+                                        .toString(),
+                                    'userId': chatList[index]
+                                        .postData!
+                                        .animal!
+                                        .id
+                                        .toString(),
+                                  };
+                                  Navigator.pushNamed(context,
+                                      RoutesName.postDetail,
+                                      arguments: mapData);
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color: MyColor.orange2,
+                                      borderRadius:
+                                      BorderRadius
+                                          .circular(20)),
+                                  child: Padding(
+                                    padding: const EdgeInsets
+                                        .symmetric(
+                                        horizontal: 10,
+                                        vertical: 5),
+                                    child: Row(
+                                      mainAxisSize:
+                                      MainAxisSize.min,
+                                      children: [
+                                        MyString.med(
+                                            "view".tr,
+                                            10,
+                                            Colors.white,
+                                            TextAlign.center),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Image.asset(
+                                          "assets/images/icons/send_icon.png",
+                                          height: 15,
+                                          width: 15,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        if (chatList[index]
+                            .message
+                            .toString()
+                            .isNotEmpty)
+                          Container(
+                              padding:
+                              EdgeInsets.only(left: 15),
+                              child: SelectableText.rich(
+                                  TextSpan(
+                                    children: extractText(
+                                        chatList[index]
+                                            .message
+                                            .toString(),
+                                        colorM:
+                                        MyColor.divideLine),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.black,
+                                      fontFamily:
+                                      'poppins_medium',
+                                    ),
+                                  )))
+                      ],
+                    ),
+                  ),
+                )
+                    : Container(
+                  padding: EdgeInsets.only(
+                      left: 15, top: 15, right: 15),
+                  child: MyString.italic(
+                      'deleteReveicer'.tr,
+                      12,
+                      MyColor.divideLine,
+                      TextAlign.start),
+                )
+                    : Container(
+                    constraints:
+                    BoxConstraints(maxWidth: 250, minWidth: 40),
+                    child: SelectableText.rich(TextSpan(
+                      children: extractText(
+                          chatList[index].message.toString(),
+                          colorM: MyColor.white),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.white,
+                        fontFamily: 'poppins_medium',
+                      ),
+                    ))),
+                Padding(
+                  padding:
+                  EdgeInsets.only(left: 15, bottom: 8, top: 5, right: 15),
+                  child: MyString.med(
+                      formatDateTime(_listChats[index].createdAt.toString()),
+                      8,
+                      MyColor.textBlack0,
+                      TextAlign.start),
+                )
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   _openGiphyGet(int type) async {
     GiphyGif? gif = await GiphyGet.getGif(
       context: context,
@@ -1917,12 +2144,14 @@ class _ChatScreenState extends State<ChatScreen> {
         // galleryFile = File(_croppedFile!.path.toString());
 
         LoadingDialog.show(context);
-        var res = await AllApi.onlyImage(galleryFile!.path.toString());
+        var res = await AllApi.uploadChatImage(galleryFile!.path.toString());
+        // var res = await AllApi.onlyImage(galleryFile!.path.toString());
         var result = jsonDecode(res);
         LoadingDialog.hide(context);
         debugPrint('UPLOAD_IMAGE RESULT $result');
         if (result['status'] == 200) {
-          sendMessage('', result['data'].toString(), 1); // image
+          sendIndividualMessage(result['data']['imageUrl'].toString(), 'image');
+          // sendMessage('', result['data'].toString(), 1); // image
         }
         setState(() {});
       } else {
@@ -2038,10 +2267,13 @@ class _ChatScreenState extends State<ChatScreen> {
                           onTap: () async {
                             FocusManager.instance.primaryFocus!.unfocus();
                             Navigator.pop(context);
-                            loader = true;
                             if (type == 1) {
-                              clearChatSocket();
-                              clearChatSocketListener();
+                              setState(() {
+                                loader = true;
+                              });
+                              clearIndividualChat();
+                              // clearChatSocket();
+                              // clearChatSocketListener();
                             } else {
                               // await moreOption(ApiStrings.blockUnblockUser, type);
                             }
@@ -2233,7 +2465,7 @@ class _ChatScreenState extends State<ChatScreen> {
     socket.on('delete_data', (newMessage) {
       setState(() {
         FocusManager.instance.primaryFocus!.unfocus();
-        getSingleChat();
+        // getSingleChat();
       });
     });
   }
@@ -2564,6 +2796,1223 @@ class _ChatScreenState extends State<ChatScreen> {
     );
 
     return textSpan;
+  }
+
+  void attachIndividualChatListener() {
+    socket.on('send_individual_message', (newMessage) {
+      debugPrint("CHAT_OBJECT_SEND_EVENT ==> $newMessage");
+    });
+    socket.on('receive_message', (newMessage) {
+      debugPrint("CHAT_OBJECT_RECEIVE_EVENT ==> $newMessage");
+      setState(() {
+        _listChats.insert(0,ChatModel.fromJson(newMessage));
+      });
+    });
+  }
+
+  sendIndividualMessage(String message, String type) {
+    Map chat = {
+      "senderId": int.parse(sharedPref.getString(SharedKey.userId)!),
+      "receiverId": user.id,
+      "message": message,
+      "messageType": type
+    };
+    debugPrint("CHAT_OBJECT_SEND => $chat");
+    socket.emit('send_individual_message', chat);
+    setState(() {
+      _listChats.insert(0,ChatModel.fromJson(chat));
+    });
+  }
+
+  Widget _buildChatUIOLD() {
+    return Scaffold(
+        backgroundColor: MyColor.white,
+        body: Container(
+          padding: EdgeInsets.symmetric(vertical: 25),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: HeaderWidget(),
+              ),
+              Container(
+                height: 40,
+                margin: const EdgeInsets.symmetric(
+                  vertical: 15,
+                  horizontal: 15,
+                ),
+                decoration: BoxDecoration(
+                    border: Border.all(color: Color(0xffEBEBEB)),
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(13),
+                        topRight: Radius.circular(13),
+                        bottomLeft: Radius.circular(13),
+                        bottomRight: Radius.circular(13))),
+                child: TextField(
+                  controller: searchBar,
+                  scrollPadding: const EdgeInsets.only(bottom: 50),
+                  style: TextStyle(color: MyColor.black, fontSize: 14),
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                    ),
+                    prefixIcon: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.asset(
+                          'assets/images/icons/search.png',
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 5, horizontal: 12),
+                    hintText: 'search'.tr,
+                    hintStyle: TextStyle(color: MyColor.more, fontSize: 14),
+                  ),
+                  onChanged: (value) {},
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(width: 10),
+                        GestureDetector(
+                          onTap: () async {
+                            FocusManager.instance.primaryFocus!.unfocus();
+
+                            if (widget.mapData!['groupId'].toString() !=
+                                '0') {
+                              Map<String, dynamic> mapping = {
+                                'groupId':
+                                widget.mapData!['groupId'].toString(),
+                              };
+
+                              Map<String, String>? res =
+                              await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          GroupInfoScreen(
+                                              mapData: mapping)));
+                              if (res != null) {
+                                setState(() {
+                                  widget.mapData!['totalMember'] =
+                                      res['totalMember'].toString();
+                                  widget.mapData!['userName'] =
+                                      res['userName'].toString();
+                                  if (res['userImage']
+                                      .toString()
+                                      .isNotEmpty) {
+                                    widget.mapData!['userImage'] =
+                                        res['userImage'].toString();
+                                  }
+                                });
+                              }
+                            } else {
+                              Map<String, dynamic> mapData = {
+                                'userID':
+                                widget.mapData!['userId'].toString()
+                              };
+                              Navigator.pushNamed(
+                                  context, RoutesName.myProfile,
+                                  arguments: mapData);
+                            }
+                          },
+                          child: ClipRRect(
+                            borderRadius:
+                            BorderRadius.all(Radius.circular(50)),
+                            child: widget.mapData!['userImage']
+                                .toString()
+                                .isNotEmpty
+                                ? Image.network(
+                                widget.mapData!['userImage'].toString(),
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                                loadingBuilder: (context, child,
+                                    loadingProgress) =>
+                                (loadingProgress == null)
+                                    ? child
+                                    : Container(
+                                    height: 30,
+                                    width: 30,
+                                    child: customProgressBar()))
+                                : Container(
+                                width: 50,
+                                height: 50,
+                                color: MyColor.cardColor,
+                                child: Center(
+                                    child: Image.asset(
+                                        'assets/images/onboard/placeholder_image.png',
+                                        width: 35,
+                                        height: 35))),
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                        GestureDetector(
+                          onTap: () async {
+                            FocusManager.instance.primaryFocus!.unfocus();
+
+                            if (widget.mapData!['groupId'].toString() !=
+                                '0') {
+                              Map<String, dynamic> mapping = {
+                                'groupId':
+                                widget.mapData!['groupId'].toString(),
+                              };
+
+                              Map<String, String>? res =
+                              await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          GroupInfoScreen(
+                                              mapData: mapping)));
+
+                              if (res != null) {
+                                setState(() {
+                                  widget.mapData!['totalMember'] =
+                                      res['totalMember'].toString();
+                                  widget.mapData!['userName'] =
+                                      res['userName'].toString();
+                                  if (res['userImage']
+                                      .toString()
+                                      .isNotEmpty) {
+                                    widget.mapData!['userImage'] =
+                                        res['userImage'].toString();
+                                  }
+                                });
+                              }
+                            } else {
+                              Map<String, dynamic> mapData = {
+                                'userID':
+                                widget.mapData!['userId'].toString()
+                              };
+                              Navigator.pushNamed(
+                                  context, RoutesName.myProfile,
+                                  arguments: mapData);
+                            }
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Container(
+                                  width: MediaQuery.of(context).size.width *
+                                      .5,
+                                  child: MyString.boldMultiLine(
+                                      (widget.mapData!['userName']
+                                          .toString() ==
+                                          "null")
+                                          ? "No Name"
+                                          : widget.mapData!['userName']
+                                          .toString(),
+                                      27,
+                                      MyColor.title,
+                                      TextAlign.start,
+                                      1)),
+                              (widget.mapData!['groupId'].toString() != '0')
+                                  ? MyString.med(
+                                  widget.mapData!['totalMember'] != 1
+                                      ? '${'members'.tr}: ${widget.mapData!['totalMember'].toString()}'
+                                      : '${'member'.tr}: ${widget.mapData!['totalMember'].toString()}',
+                                  12,
+                                  MyColor.white,
+                                  TextAlign.start)
+                                  : typingCheck.typing == 1 &&
+                                  typingCheck.id.toString() !=
+                                      sharedPref
+                                          .getString(
+                                          SharedKey.userId)
+                                          .toString()
+                                  ? MyString.med('typing...', 12,
+                                  MyColor.white, TextAlign.start)
+                                  : MyString.med(
+                                  widget.mapData!['online'] == 0
+                                      ? 'offline'.tr
+                                      : 'online'.tr,
+                                  12,
+                                  MyColor.textBlack0,
+                                  TextAlign.start),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    PopupMenuButton<SampleItem>(
+                      shape: RoundedRectangleBorder(
+                          borderRadius:
+                          BorderRadius.all(Radius.circular(20.0))),
+                      color: MyColor.white,
+                      icon: Icon(
+                        Icons.more_vert, // Change the icon here
+                        color: MyColor.redd, // Change the color here
+                      ),
+                      initialValue: selectedItem,
+                      onSelected: (SampleItem item) {
+                        setState(() {
+                          FocusManager.instance.primaryFocus!.unfocus();
+                          selectedItem = item;
+                        });
+                      },
+                      itemBuilder: (BuildContext context) =>
+                      <PopupMenuEntry<SampleItem>>[
+                        PopupMenuItem<SampleItem>(
+                          onTap: () async {
+                            FocusManager.instance.primaryFocus!.unfocus();
+                            await showDialog(
+                                context: context,
+                                barrierDismissible: true,
+                                builder: (_) {
+                                  return delete(1);
+                                });
+                          },
+                          value: null,
+                          child: MyString.reg('clearConversation'.tr, 12,
+                              MyColor.textBlack0, TextAlign.center),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              loader
+                  ? Expanded(
+                child: Container(
+                  child: progressBar(),
+                ),
+              )
+                  : chatList.isNotEmpty
+                  ? Expanded(
+                child: Container(
+                  padding:
+                  const EdgeInsets.only(right: 10, left: 10),
+                  decoration: BoxDecoration(
+                      color: MyColor.card,
+                      borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(40),
+                          topLeft: Radius.circular(40))),
+                  child: ListView.builder(
+                    itemCount: chatList.length,
+                    shrinkWrap: true,
+                    reverse: true,
+                    physics: ScrollPhysics(),
+                    padding: EdgeInsets.only(bottom: 10, top: 10),
+                    itemBuilder: (context, index) {
+                      return (chatList[index].messageType == 4 ||
+                          chatList[index].messageType == 6 ||
+                          chatList[index].messageType == 5)
+                          ? Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment:
+                        MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(top: 5),
+                            padding: EdgeInsets.all(7),
+                            decoration: BoxDecoration(
+                              color: MyColor.linkBlurBlue,
+                              borderRadius:
+                              BorderRadius.circular(10),
+                            ),
+                            child: chatList[index].messageType ==
+                                4
+                                ? MyString.med(
+                                (chatList[index].message.toString() ==
+                                    "{GroupCreated}")
+                                    ? 'groupCreated'.tr +
+                                    " " +
+                                    widget.mapData!['userName']
+                                        .toString()
+                                    : 'newMember'.tr,
+                                12,
+                                MyColor.black,
+                                TextAlign.start)
+                                : chatList[index].messageType == 6 ||
+                                chatList[index].messageType ==
+                                    5
+                                ? MyString.med(
+                                (chatList[index].message.toString() ==
+                                    "removed" +
+                                        " " +
+                                        chatList[index]
+                                            .senderName
+                                            .toString())
+                                    ? 'removed'.tr
+                                    : 'left'.tr +
+                                    " " +
+                                    chatList[index]
+                                        .senderName
+                                        .toString(),
+                                12,
+                                MyColor.black,
+                                TextAlign.start)
+                                : SizedBox(),
+                          ),
+                        ],
+                      )
+                          : Padding(
+                        padding: EdgeInsets.all(3),
+                        child: sharedPref
+                            .getString(
+                            SharedKey.userId)
+                            .toString() ==
+                            chatList[index]
+                                .senderId
+                                .toString()
+                            ? senderMessage(index)
+                            : receiverMessage(index),
+                      );
+                    },
+                  ),
+                ),
+              )
+                  : Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/images/onboard/placeholder_image.png',
+                      width: 120,
+                      height: 90,
+                    ),
+                    Container(
+                        color: MyColor.card,
+                        width: double.infinity,
+                        child: MyString.bold(
+                            'noConversation'.tr,
+                            12,
+                            MyColor.textBlack0,
+                            TextAlign.center)),
+                  ],
+                ),
+              ),
+
+              //messageField
+              if (bottomMsgField && widget.mapData!['isBlock'] == 0)
+                Container(
+                  height: 51,
+                  padding: const EdgeInsets.all(4),
+                  margin:
+                  EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                  decoration: BoxDecoration(
+                      color: MyColor.white,
+                      border: Border.all(color: Color(0xffFFEDED)),
+                      borderRadius:
+                      const BorderRadius.all(Radius.circular(25))),
+                  child: Row(
+                    children: [
+                      const SizedBox(width: 5),
+                      Flexible(
+                        child: Container(
+                          child: TextField(
+                            minLines: 1,
+                            maxLines: 3,
+                            focusNode: _focusNode,
+                            controller: msgField,
+                            style: TextStyle(color: MyColor.black),
+                            onChanged: (value) => setState(() {
+                              typingSocket(1);
+
+                              searchDelay.run(() {
+                                typingSocket(2);
+                              });
+                            }),
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                              ),
+                              suffixIcon: Row(
+                                crossAxisAlignment:
+                                CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (msgField.text
+                                      .toString()
+                                      .trim()
+                                      .isEmpty)
+                                    TextButton(
+                                        onPressed: () {
+                                          _focusNode.unfocus();
+                                          Future.delayed(
+                                              Duration(milliseconds: 200),
+                                                  () async {
+                                                // bottomCamera = !bottomCamera;
+                                                // bottomMsgField = false;
+                                                selectCameraLib(context);
+                                                setState(() {});
+                                              });
+                                        },
+                                        style: TextButton.styleFrom(
+                                            padding: EdgeInsets.zero,
+                                            minimumSize: Size(30, 30),
+                                            tapTargetSize:
+                                            MaterialTapTargetSize
+                                                .shrinkWrap),
+                                        child: Image.asset(
+                                            "assets/images/onboard/attach_file.png",
+                                            height: 15,
+                                            fit: BoxFit.cover)),
+                                  if (msgField.text
+                                      .toString()
+                                      .trim()
+                                      .isEmpty)
+                                    TextButton(
+                                        onPressed: () {
+                                          _openGiphyGet(0);
+                                          setState(() {});
+                                        },
+                                        style: TextButton.styleFrom(
+                                            padding: EdgeInsets.zero,
+                                            minimumSize: Size(30, 30),
+                                            tapTargetSize:
+                                            MaterialTapTargetSize
+                                                .shrinkWrap),
+                                        child: Image.asset(
+                                            "assets/images/onboard/gif.png",
+                                            width: 15,
+                                            height: 15,
+                                            fit: BoxFit.cover)),
+                                  TextButton(
+                                      onPressed: () {
+                                        _focusNode.unfocus();
+                                        Future.delayed(
+                                            Duration(milliseconds: 200),
+                                                () async {
+                                              isShowEmoji = true;
+                                              setState(() {});
+                                            });
+                                      },
+                                      style: TextButton.styleFrom(
+                                          padding: EdgeInsets.zero,
+                                          minimumSize: Size(35, 30),
+                                          tapTargetSize:
+                                          MaterialTapTargetSize
+                                              .shrinkWrap),
+                                      child: Image.asset(
+                                          "assets/images/onboard/happiness.png",
+                                          width: 20,
+                                          height: 20,
+                                          fit: BoxFit.cover)),
+                                  if (msgField.text
+                                      .toString()
+                                      .trim()
+                                      .isEmpty)
+                                    InkWell(
+                                      onTap: () {
+                                        if (msgField.text
+                                            .toString()
+                                            .trim()
+                                            .isNotEmpty) {
+                                          sendMessage(
+                                              msgField.text
+                                                  .toString()
+                                                  .trim(),
+                                              '',
+                                              0); // send
+                                        }
+
+                                        setState(() {
+                                          msgField.text = '';
+                                        });
+                                      },
+                                      child: Container(
+                                        margin: EdgeInsets.only(right: 10),
+                                        decoration: BoxDecoration(
+                                            color: MyColor.orange2,
+                                            borderRadius:
+                                            BorderRadius.circular(50)),
+                                        child: Padding(
+                                            padding:
+                                            const EdgeInsets.symmetric(
+                                                horizontal: 8,
+                                                vertical: 8),
+                                            child: Image.asset(
+                                              "assets/images/icons/share.png",
+                                              height: 10,
+                                              width: 10,
+                                              color: MyColor.white,
+                                            )),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 12),
+                              hintText: '${'message'.tr}',
+                              hintStyle: TextStyle(
+                                  color: MyColor.textBlack0, fontSize: 14),
+                            ),
+                            onTap: () {
+                              if (isShowEmoji) {
+                                setState(() => isShowEmoji = !isShowEmoji);
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+              if (widget.mapData!['blockBy'].toString() ==
+                  widget.mapData!['myId'].toString() &&
+                  widget.mapData!['isBlock'] == 1)
+                GestureDetector(
+                  onTap: () async {
+                    await showDialog(
+                        context: context,
+                        barrierDismissible: true,
+                        builder: (_) {
+                          return delete(2);
+                        });
+                  },
+                  child: Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.all(12),
+                      color: MyColor.white,
+                      child: Card(
+                          color: MyColor.cardColor,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 10, right: 10, top: 5, bottom: 5),
+                            child: MyString.med('blockedContact'.tr, 14,
+                                MyColor.black, TextAlign.center),
+                          ))),
+                ),
+
+              if (isShowEmoji)
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * .4,
+                  child: EmojiPicker(
+                    textEditingController: msgField,
+                    config: Config(
+                      emojiViewConfig: EmojiViewConfig(
+                        columns: 7,
+                        emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
+                      ),
+                    ),
+                    onEmojiSelected: (category, emoji) {
+                      setState(() {});
+                    },
+                  ),
+                ),
+
+              if (bottomCamera)
+                Container(
+                  decoration: BoxDecoration(
+                      color: MyColor.white,
+                      borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(15),
+                          topRight: Radius.circular(15))),
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Container(
+                            width: double.infinity,
+                            height: 60,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                                color: MyColor.orange2,
+                                borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(15),
+                                    topRight: Radius.circular(15))),
+                            child: MyString.bold('chooseFiletype'.tr, 20,
+                                MyColor.white, TextAlign.center)),
+                        const SizedBox(height: 5),
+                        ListTile(
+                          leading: SizedBox(
+                              height: 40.0,
+                              width: 40.0, // fixed width and height
+                              child: Image.asset(
+                                  'assets/images/logos/camera2.png')),
+                          title: MyString.med('camera'.tr, 18,
+                              MyColor.textBlack, TextAlign.start),
+                          onTap: () async {
+                            // 1 for camera, 2 for videos
+                            bottomMsgField = true;
+                            bottomCamera = false;
+                            await showDialog(
+                              context: context,
+                              barrierDismissible: true,
+                              builder: (_) {
+                                bottomCamera = false;
+                                return cameraSelection();
+                              },
+                            );
+
+                            setState(() {});
+                          },
+                        ),
+                        ListTile(
+                          leading: SizedBox(
+                              height: 40.0,
+                              width: 40.0, // fixed width and height
+                              child: Image.asset(
+                                  'assets/images/logos/image.png')),
+                          title: MyString.med('phoneLibrary'.tr, 18,
+                              MyColor.textBlack, TextAlign.start),
+                          onTap: () async {
+                            bottomMsgField = true;
+                            bottomCamera = false;
+                            _pickMedia();
+                            bottomCamera = false;
+                            setState(() {});
+                          },
+                        ),
+                        const SizedBox(height: 5),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ));
+  }
+
+  Widget _buildChatUINEW() {
+    return Scaffold(
+        backgroundColor: MyColor.white,
+        body: Container(
+          padding: EdgeInsets.symmetric(vertical: 25),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: HeaderWidget(),
+              ),
+              Container(
+                height: 40,
+                margin: const EdgeInsets.symmetric(
+                  vertical: 15,
+                  horizontal: 15,
+                ),
+                decoration: BoxDecoration(
+                    border: Border.all(color: Color(0xffEBEBEB)),
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(13),
+                        topRight: Radius.circular(13),
+                        bottomLeft: Radius.circular(13),
+                        bottomRight: Radius.circular(13))),
+                child: TextField(
+                  controller: searchBar,
+                  scrollPadding: const EdgeInsets.only(bottom: 50),
+                  style: TextStyle(color: MyColor.black, fontSize: 14),
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                    ),
+                    prefixIcon: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.asset(
+                          'assets/images/icons/search.png',
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 5, horizontal: 12),
+                    hintText: 'search'.tr,
+                    hintStyle: TextStyle(color: MyColor.more, fontSize: 14),
+                  ),
+                  onChanged: (value) {},
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(width: 10),
+                        GestureDetector(
+                          onTap: () async {
+                            FocusManager.instance.primaryFocus!.unfocus();
+
+                          },
+                          child: ClipRRect(
+                            borderRadius:
+                            BorderRadius.all(Radius.circular(50)),
+                            child: user.profilePicture != null && user.profilePicture!.contains('http')
+                                ? Image.network(
+                                user.profilePicture!,
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                                loadingBuilder: (context, child,
+                                    loadingProgress) =>
+                                (loadingProgress == null)
+                                    ? child
+                                    : Container(
+                                    height: 30,
+                                    width: 30,
+                                    child: customProgressBar()))
+                                : Container(
+                                width: 50,
+                                height: 50,
+                                color: MyColor.cardColor,
+                                child: Center(
+                                    child: Image.asset(
+                                        'assets/images/onboard/placeholder_image.png',
+                                        width: 35,
+                                        height: 35))),
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                        GestureDetector(
+                          onTap: () async {
+                            FocusManager.instance.primaryFocus!.unfocus();
+
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Container(
+                                  width: MediaQuery.of(context).size.width *
+                                      .5,
+                                  child: MyString.boldMultiLine(
+                                      (user.name == null)
+                                          ? "No Name"
+                                          : user.name!,
+                                      27,
+                                      MyColor.title,
+                                      TextAlign.start,
+                                      1)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    PopupMenuButton<SampleItem>(
+                      shape: RoundedRectangleBorder(
+                          borderRadius:
+                          BorderRadius.all(Radius.circular(20.0))),
+                      color: MyColor.white,
+                      icon: Icon(
+                        Icons.more_vert, // Change the icon here
+                        color: MyColor.redd, // Change the color here
+                      ),
+                      initialValue: selectedItem,
+                      onSelected: (SampleItem item) {
+                        setState(() {
+                          FocusManager.instance.primaryFocus!.unfocus();
+                          selectedItem = item;
+                        });
+                      },
+                      itemBuilder: (BuildContext context) =>
+                      <PopupMenuEntry<SampleItem>>[
+                        PopupMenuItem<SampleItem>(
+                          onTap: () async {
+                            FocusManager.instance.primaryFocus!.unfocus();
+                            await showDialog(
+                                context: context,
+                                barrierDismissible: true,
+                                builder: (_) {
+                                  return delete(1);
+                                });
+                          },
+                          value: null,
+                          child: MyString.reg('clearConversation'.tr, 12,
+                              MyColor.textBlack0, TextAlign.center),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              loader
+                  ? Expanded(
+                child: Container(
+                  child: progressBar(),
+                ),
+              )
+                  : _listChats.isNotEmpty
+                  ? Expanded(
+                child: Container(
+                  padding:
+                  const EdgeInsets.only(right: 10, left: 10),
+                  decoration: BoxDecoration(
+                      color: MyColor.card,
+                      borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(40),
+                          topLeft: Radius.circular(40))),
+                  child: ListView.builder(
+                    itemCount: _listChats.length,
+                    shrinkWrap: true,
+                    reverse: true,
+                    physics: ScrollPhysics(),
+                    padding: EdgeInsets.only(bottom: 10, top: 10),
+                    itemBuilder: (context, index) {
+                      final chat = _listChats[index];
+                      final userId = int.parse(sharedPref.getString(SharedKey.userId)!);
+
+                      return Padding(
+                        padding: EdgeInsets.all(3),
+                        child: chat.senderId ==
+                            userId
+                            ? senderMessageNew(index)
+                            : receiverMessageNew(index),
+                      );
+                    },
+                  ),
+                ),
+              )
+                  : Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/images/onboard/placeholder_image.png',
+                      width: 120,
+                      height: 90,
+                    ),
+                    Container(
+                        color: MyColor.card,
+                        width: double.infinity,
+                        child: MyString.bold(
+                            'noConversation'.tr,
+                            12,
+                            MyColor.textBlack0,
+                            TextAlign.center)),
+                  ],
+                ),
+              ),
+
+              //messageField
+              if (bottomMsgField)
+                Container(
+                  height: 51,
+                  padding: const EdgeInsets.all(4),
+                  margin:
+                  EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                  decoration: BoxDecoration(
+                      color: MyColor.white,
+                      border: Border.all(color: Color(0xffFFEDED)),
+                      borderRadius:
+                      const BorderRadius.all(Radius.circular(25))),
+                  child: Row(
+                    children: [
+                      const SizedBox(width: 5),
+                      Flexible(
+                        child: Container(
+                          child: TextField(
+                            minLines: 1,
+                            maxLines: 3,
+                            focusNode: _focusNode,
+                            controller: msgField,
+                            style: TextStyle(color: MyColor.black),
+                            onChanged: (value) => setState(() {
+                              // typingSocket(1);
+
+                              // searchDelay.run(() {
+                              //   typingSocket(2);
+                              // });
+                            }),
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                              ),
+                              suffixIcon: Row(
+                                crossAxisAlignment:
+                                CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                    TextButton(
+                                        onPressed: () {
+                                          _focusNode.unfocus();
+                                          Future.delayed(
+                                              Duration(milliseconds: 200),
+                                                  () async {
+                                                // bottomCamera = !bottomCamera;
+                                                // bottomMsgField = false;
+                                                selectCameraLib(context);
+                                                setState(() {});
+                                              });
+                                        },
+                                        style: TextButton.styleFrom(
+                                            padding: EdgeInsets.zero,
+                                            minimumSize: Size(30, 30),
+                                            tapTargetSize:
+                                            MaterialTapTargetSize
+                                                .shrinkWrap),
+                                        child: Image.asset(
+                                            "assets/images/onboard/attach_file.png",
+                                            height: 15,
+                                            fit: BoxFit.cover)),
+                                    // TextButton(
+                                    //     onPressed: () {
+                                    //       _openGiphyGet(0);
+                                    //       setState(() {});
+                                    //     },
+                                    //     style: TextButton.styleFrom(
+                                    //         padding: EdgeInsets.zero,
+                                    //         minimumSize: Size(30, 30),
+                                    //         tapTargetSize:
+                                    //         MaterialTapTargetSize
+                                    //             .shrinkWrap),
+                                    //     child: Image.asset(
+                                    //         "assets/images/onboard/gif.png",
+                                    //         width: 15,
+                                    //         height: 15,
+                                    //         fit: BoxFit.cover)),
+                                  // TextButton(
+                                  //     onPressed: () {
+                                  //       _focusNode.unfocus();
+                                  //       Future.delayed(
+                                  //           Duration(milliseconds: 200),
+                                  //               () async {
+                                  //             isShowEmoji = true;
+                                  //             setState(() {});
+                                  //           });
+                                  //     },
+                                  //     style: TextButton.styleFrom(
+                                  //         padding: EdgeInsets.zero,
+                                  //         minimumSize: Size(35, 30),
+                                  //         tapTargetSize:
+                                  //         MaterialTapTargetSize
+                                  //             .shrinkWrap),
+                                  //     child: Image.asset(
+                                  //         "assets/images/onboard/happiness.png",
+                                  //         width: 20,
+                                  //         height: 20,
+                                  //         fit: BoxFit.cover)),
+                                    InkWell(
+                                      onTap: () {
+                                        FocusManager.instance.primaryFocus!.unfocus();
+                                        final message = msgField.text.trim();
+                                        if(message.isEmpty) return;
+                                        sendIndividualMessage(message, "text");
+                                        msgField.clear();
+                                      },
+                                      child: Container(
+                                        margin: EdgeInsets.only(right: 10),
+                                        decoration: BoxDecoration(
+                                            color: MyColor.orange2,
+                                            borderRadius:
+                                            BorderRadius.circular(50)),
+                                        child: Padding(
+                                            padding:
+                                            const EdgeInsets.symmetric(
+                                                horizontal: 8,
+                                                vertical: 8),
+                                            child: Image.asset(
+                                              "assets/images/icons/share.png",
+                                              height: 10,
+                                              width: 10,
+                                              color: MyColor.white,
+                                            )),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 12),
+                              hintText: '${'message'.tr}',
+                              hintStyle: TextStyle(
+                                  color: MyColor.textBlack0, fontSize: 14),
+                            ),
+                            onTap: () {
+                              if (isShowEmoji) {
+                                setState(() => isShowEmoji = !isShowEmoji);
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+              if (widget.mapData!['blockBy'].toString() ==
+                  widget.mapData!['myId'].toString() &&
+                  widget.mapData!['isBlock'] == 1)
+                GestureDetector(
+                  onTap: () async {
+                    await showDialog(
+                        context: context,
+                        barrierDismissible: true,
+                        builder: (_) {
+                          return delete(2);
+                        });
+                  },
+                  child: Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.all(12),
+                      color: MyColor.white,
+                      child: Card(
+                          color: MyColor.cardColor,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 10, right: 10, top: 5, bottom: 5),
+                            child: MyString.med('blockedContact'.tr, 14,
+                                MyColor.black, TextAlign.center),
+                          ))),
+                ),
+
+              if (isShowEmoji)
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * .4,
+                  child: EmojiPicker(
+                    textEditingController: msgField,
+                    config: Config(
+                      emojiViewConfig: EmojiViewConfig(
+                        columns: 7,
+                        emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
+                      ),
+                    ),
+                    onEmojiSelected: (category, emoji) {
+                      setState(() {});
+                    },
+                  ),
+                ),
+
+              if (bottomCamera)
+                Container(
+                  decoration: BoxDecoration(
+                      color: MyColor.white,
+                      borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(15),
+                          topRight: Radius.circular(15))),
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Container(
+                            width: double.infinity,
+                            height: 60,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                                color: MyColor.orange2,
+                                borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(15),
+                                    topRight: Radius.circular(15))),
+                            child: MyString.bold('chooseFiletype'.tr, 20,
+                                MyColor.white, TextAlign.center)),
+                        const SizedBox(height: 5),
+                        ListTile(
+                          leading: SizedBox(
+                              height: 40.0,
+                              width: 40.0, // fixed width and height
+                              child: Image.asset(
+                                  'assets/images/logos/camera2.png')),
+                          title: MyString.med('camera'.tr, 18,
+                              MyColor.textBlack, TextAlign.start),
+                          onTap: () async {
+                            // 1 for camera, 2 for videos
+                            bottomMsgField = true;
+                            bottomCamera = false;
+                            await showDialog(
+                              context: context,
+                              barrierDismissible: true,
+                              builder: (_) {
+                                bottomCamera = false;
+                                return cameraSelection();
+                              },
+                            );
+
+                            setState(() {});
+                          },
+                        ),
+                        ListTile(
+                          leading: SizedBox(
+                              height: 40.0,
+                              width: 40.0, // fixed width and height
+                              child: Image.asset(
+                                  'assets/images/logos/image.png')),
+                          title: MyString.med('phoneLibrary'.tr, 18,
+                              MyColor.textBlack, TextAlign.start),
+                          onTap: () async {
+                            bottomMsgField = true;
+                            bottomCamera = false;
+                            _pickMedia();
+                            bottomCamera = false;
+                            setState(() {});
+                          },
+                        ),
+                        const SizedBox(height: 5),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ));
+  }
+
+  void registerUserListener() {
+    checkSocketConnect();
+    attachRegisterListener();
+
+    socket.emit('register', int.parse(sharedPref.getString(SharedKey.userId)!));
+  }
+
+  void attachRegisterListener() {
+    socket.on('register', (data) {
+      debugPrint("REGISTER_EVENT ==> $data");
+    });
+  }
+
+  Future<void> getUserIndividualChats() async {
+    var res = await AllApi.getMethodApi(
+        "${ApiStrings.userIndividualMessages}/${sharedPref.getString(SharedKey.userId)}/${user.id}");
+    print(res);
+    var result = jsonDecode(res.toString());
+    if (result['status'] == 200) {
+      loader = false;
+      _listChats.clear();
+      _userIndividualChatsModel = UserIndividualChatsModel.fromJson(result);
+      _listChats.addAll(_userIndividualChatsModel.data!);
+      setState(() {});
+    }
+  }
+
+  Future<void> clearIndividualChat() async {
+    var res = await AllApi.deleteMethodApi(
+        "${ApiStrings.chats}/details/${sharedPref.getString(SharedKey.userId)}/${user.id}/${ApiStrings.individual}", {});
+    print(res);
+    var result = jsonDecode(res.toString());
+    if (result['status'] == 200) {
+      _listChats.clear();
+    }
+    setState(() {
+      loader = false;
+    });
   }
 }
 

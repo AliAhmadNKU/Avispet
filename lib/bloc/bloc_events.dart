@@ -96,7 +96,7 @@ class GetCreateAnimalEvent extends CreateAnimalEvent {
 //  --createPost
 class GetCreatePostEvent extends CreatePost {
   int userId;
-  int placeId;
+  String placeId;
   String email;
   String phone;
   List<String> images;

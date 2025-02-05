@@ -1,10 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:appinio_video_player/appinio_video_player.dart';
+import 'package:avispets/models/get_all_post_modle.dart';
 import 'package:avispets/models/get_feed_comment_model.dart';
+import 'package:avispets/models/reviews/get_post_reviews_by_postid_model.dart';
 import 'package:avispets/ui/main_screen/home/like_screen.dart';
 import 'package:avispets/utils/apis/all_api.dart';
 import 'package:avispets/utils/apis/api_strings.dart';
+import 'package:avispets/utils/base_date_utils.dart';
 import 'package:avispets/utils/common_function/header_widget.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
@@ -57,6 +60,10 @@ class _PostDetailState extends State<PostDetail> {
   late VideoPlayerController videoPlayerController;
   late CustomVideoPlayerController _customVideoPlayerController;
 
+  late Post post;
+  late Map<String, dynamic> args;
+  List<Reviews> mReviews = [];
+
   List<String> items = [
     'star1'.tr,
     'star2'.tr,
@@ -64,29 +71,29 @@ class _PostDetailState extends State<PostDetail> {
     'star4'.tr,
     'star5'.tr
   ];
-  List<review> reviews = [
-    review(
-        date: '10/27/2024',
-        rate: 4,
-        reviewer: 'reviewer',
-        place: 'place',
-        description:
-            'Super lovely product. I love this product because the software is brilliantly helpful Can’t get enough!'),
-    review(
-        date: 'date',
-        rate: 3,
-        reviewer: 'reviewer',
-        place: 'place',
-        description:
-            'Super lovely product. I love this product because the software is brilliantly helpful Can’t get enough!'),
-    review(
-        date: 'date',
-        rate: 5,
-        reviewer: 'reviewer',
-        place: 'place',
-        description:
-            'Super lovely product. I love this product because the software is brilliantly helpful Can’t get enough!'),
-  ];
+  // List<review> reviews = [
+  //   review(
+  //       date: '10/27/2024',
+  //       rate: 4,
+  //       reviewer: 'reviewer',
+  //       place: 'place',
+  //       description:
+  //           'Super lovely product. I love this product because the software is brilliantly helpful Can’t get enough!'),
+  //   review(
+  //       date: 'date',
+  //       rate: 3,
+  //       reviewer: 'reviewer',
+  //       place: 'place',
+  //       description:
+  //           'Super lovely product. I love this product because the software is brilliantly helpful Can’t get enough!'),
+  //   review(
+  //       date: 'date',
+  //       rate: 5,
+  //       reviewer: 'reviewer',
+  //       place: 'place',
+  //       description:
+  //           'Super lovely product. I love this product because the software is brilliantly helpful Can’t get enough!'),
+  // ];
   List<bool> itemBool = List.generate(5, (index) => false);
 
   List<String> items1 = [
@@ -125,6 +132,10 @@ class _PostDetailState extends State<PostDetail> {
   @override
   void initState() {
     super.initState();
+    print('Received arguments: ${widget.mapData}');
+    post = widget.mapData!['post'];
+    getPostReviewsById();
+
     setState(() {
       showReviewsList = false;
     });
@@ -687,11 +698,11 @@ class _PostDetailState extends State<PostDetail> {
                                 height: 480,
                                 width: double.infinity,
                                 child: ListView.builder(
-                                    itemCount: reviews.length,
+                                    itemCount: mReviews.length,
                                     padding:
                                         EdgeInsets.only(top: 20, bottom: 30),
                                     itemBuilder: (context, index) {
-                                      var rev = reviews[index];
+                                      var rev = mReviews[index];
                                       return Column(
                                         children: [
                                           GestureDetector(
@@ -716,7 +727,7 @@ class _PostDetailState extends State<PostDetail> {
                                                 children: [
                                                   // Review header text
                                                   MyString.reg(
-                                                    'Review filed on ${rev.date}',
+                                                    'Review filed on ${BaseDateUtils.formatToMMddyyyy(rev.createdAt!)}',
                                                     12,
                                                     MyColor.textBlack0,
                                                     TextAlign.start,
@@ -727,7 +738,7 @@ class _PostDetailState extends State<PostDetail> {
                                                   // Stars
                                                   Row(
                                                     children: List.generate(
-                                                      rev.rate!,
+                                                      rev.overallRating!.toInt(),
                                                       (index) => Padding(
                                                         padding: const EdgeInsets
                                                             .only(
@@ -747,15 +758,14 @@ class _PostDetailState extends State<PostDetail> {
                                                       height:
                                                           10), // Spacing between elements
 
-                                                  MyString.bold(
-                                                    '${rev.reviewer} reviews ${rev.place}',
+                                                  if(rev.placeName != null) MyString.bold(
+                                                    '${rev.placeName}',
                                                     14,
                                                     MyColor.black,
                                                     TextAlign.start,
                                                   ),
                                                   SizedBox(height: 10), //
-                                                  SizedBox(height: 10),
-                                                  MyString.regMultiLine(
+                                                  if(rev.description != null) MyString.regMultiLine(
                                                       '${rev.description}',
                                                       12,
                                                       MyColor.black,
@@ -765,7 +775,7 @@ class _PostDetailState extends State<PostDetail> {
                                               ),
                                             ),
                                           ),
-                                          if (index != reviews.length - 1)
+                                          if (index != mReviews.length - 1)
                                             Padding(
                                               padding:
                                                   const EdgeInsets.symmetric(
@@ -792,7 +802,7 @@ class _PostDetailState extends State<PostDetail> {
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 3.0),
                                 child: MyString.reg(
-                                    'Customer ratings (8 reviews)',
+                                    'Customer ratings (${mReviews.length} reviews)',
                                     16,
                                     MyColor.redd,
                                     TextAlign.start),
@@ -816,11 +826,11 @@ class _PostDetailState extends State<PostDetail> {
                                   ),
                                 ),
                               ),
-                              Row(
+                              if(mReviews.isNotEmpty) Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  MyString.reg('4.5', 20, MyColor.textBlack,
+                                  MyString.reg('${mReviews.first.overallRating}', 20, MyColor.textBlack,
                                       TextAlign.start),
                                   SizedBox(
                                     width: 5,
@@ -835,9 +845,9 @@ class _PostDetailState extends State<PostDetail> {
                                 child: ListView.builder(
                                   padding: EdgeInsets.zero,
                                   scrollDirection: Axis.horizontal,
-                                  itemCount: reviews.length,
+                                  itemCount: mReviews.length,
                                   itemBuilder: (context, index) {
-                                    var rev = reviews[index];
+                                    var rev = mReviews[index];
                                     return GestureDetector(
                                       onTap: () async {
                                         // Handle tap here
@@ -862,7 +872,7 @@ class _PostDetailState extends State<PostDetail> {
                                           children: [
                                             // Review header text
                                             MyString.reg(
-                                              'Review filed on ${rev.date}',
+                                              'Review filed on ${BaseDateUtils.formatToMMddyyyy(rev.createdAt!)}',
                                               12,
                                               MyColor.textBlack0,
                                               TextAlign.start,
@@ -873,7 +883,7 @@ class _PostDetailState extends State<PostDetail> {
                                             // Stars
                                             Row(
                                               children: List.generate(
-                                                rev.rate!,
+                                                rev.overallRating!.toInt(),
                                                 (index) => Padding(
                                                   padding: const EdgeInsets
                                                       .only(
@@ -893,15 +903,14 @@ class _PostDetailState extends State<PostDetail> {
                                                 height:
                                                     10), // Spacing between elements
 
-                                            MyString.bold(
-                                              '${rev.reviewer} reviews ${rev.place}',
+                                            if(rev.placeName != null) MyString.bold(
+                                              '${rev.placeName}',
                                               14,
                                               MyColor.black,
                                               TextAlign.start,
                                             ),
                                             SizedBox(height: 10), //
-                                            SizedBox(height: 10),
-                                            MyString.regMultiLine(
+                                            if(rev.description != null) MyString.regMultiLine(
                                                 '${rev.description}',
                                                 12,
                                                 MyColor.black,
@@ -1100,6 +1109,25 @@ class _PostDetailState extends State<PostDetail> {
         );
       },
     );
+  }
+
+  getPostReviewsById() async {
+    try {
+      var res = await AllApi.getMethodApi("${ApiStrings.getPostReviewsByPostId}${post.id}");
+      var result = jsonDecode(res.toString());
+      print(result);
+      if (result['status'] == 200) {
+        mReviews = (result['data'] as List).map((reviewItem) => Reviews.fromJson(reviewItem)).toList();
+        if(this.mounted){
+          setState(() {
+
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint("Error: $e");
+      toaster(context, "An error occurred while fetching categories.");
+    }
   }
 }
 

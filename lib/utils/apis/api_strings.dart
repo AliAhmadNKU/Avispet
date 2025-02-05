@@ -19,6 +19,7 @@ class ApiStrings {
   static const String feedComment = 'feed-comment';
   static const String reportfeed = 'report-feed';
   static const String likefeedComment = 'like-feed-comment';
+  static const String events = baseURl +'events/pets';
   static const String feeds = 'feeds';
   static const String feed = 'feed';
   static const String feedComments = 'feed-comments';
@@ -36,16 +37,21 @@ class ApiStrings {
   // POST METHODS
   static const String signup = 'auth/signup';
   static const String emailOtp = 'request-email-otp';
+  static const String resendOTP = 'auth/resend-otp';
   static const String addAnimal = 'animal/add-animal';
   static const String updateAnimal = 'animal/update-animal';
   static const String login = 'auth/login';
+  static const String verifyOtp = 'auth/verify';
   static const String forgotPasswordOtp = 'auth/verify-forgot-password';
   static const String socialLogin = 'auth/social-login';
   static const String forgotPassword = 'auth/forgot-password';
   static const String logout = 'logout';
+  static const String chats = 'chats';
   static const String contactUs = 'contact-us';
   static const String followUnfollowUser = 'follow-unfollow-user';
+  static const String upload = 'upload';
   static const String uploadImage = 'upload-image';
+  static const String postChatImage = upload + '/post-chat-image';
   static const String readNotification = 'read_notification';
   static const String clearConversation = 'clear-conversation';
   static const String blockUnblockUser = 'block-unblock-user';
@@ -58,10 +64,10 @@ class ApiStrings {
       'enable-disable-forum-notification';
 
   // PUT METHODS
-  static const String changePassword = 'change-password';
+  static const String changePassword = 'auth/change-password';
   static const String resetPassword = 'auth/reset-password';
 
-  static const String updateProfile = 'update-profile';
+  static const String updateProfile =  'user'; //'update-profile';
   static const String updateProfilePicture = 'update-profile-picture';
 
   //GET METHODS
@@ -71,6 +77,7 @@ class ApiStrings {
   static const String pointHistory = 'point-history';
   static const String ranking = 'leaderboards';
   static const String myAnimals = 'animal/get-all-animal';
+  static const String myAnimalsNew = 'animal/get-animals-by-user';
   static const String animalById = 'animal/get-animal';
 
   static const String departments = 'departments';
@@ -81,7 +88,23 @@ class ApiStrings {
   static const String subCategories = 'sub-categories';
   static const String followersFollowing = 'followers-following';
   static const String allUsers = 'users';
+  static const String allUsersDiscussion = 'user';
+  static const String followingSuggestions = allUsersDiscussion +'/following_suggestions';
+  static const String groups = 'groups';
+  static const String messages = 'messages';
+  static const String individual = 'individual';
+  static const String userActivitiesGamification = 'gamification/user-activities';
+  static const String allGamificationLevels = 'gamification/levels';
+  static const String group = 'group';
+  static const String userAllChats = chats + '/user-all-chats';
+  static const String userIndividualMessages = chats + '/user-individual-messages';
+  static const String userGroupChats = chats + '/user-groups';
+  static const String fetchOnlineStores = 'location/fetch-online-stores';
+  static const String groupMessages = chats + '/$groups';
   static const String notifications = 'notifications';
+  static const String getFollowingUsers = 'user/get-following-user';
+  static const String getFollowerUsers = 'user/get-follower-user';
+  static const String followUser = 'user/follow';
   static const String suggestedFriends = 'suggested-friends';
   static const String forums = 'forums';
   static const String forumTopics = 'forum-topics';
@@ -91,10 +114,14 @@ class ApiStrings {
   static const String dogBreeds = 'breeds/dog-breeds';
   static const String catBreeds = 'breeds/cat-breeds';
   static const String getAllCategories = 'category';
+  static const String review = 'review/';
+  static const String getPostReviewsById = review + 'get-post-reviews-by-id/';
+  static const String getPostReviewsByPostId = review + 'get-post-reviews-by-postId/';
 
   //DELETE
-  static const String deleteAccount = 'delete-account';
-  static const String deactivateAccount = 'deactivate-account';
+
+  static const String deleteAccount ='user';    //'delete-account';
+  static const String deactivateAccount = 'user/deactivate-account';
   static const String deleteAnimal = 'animal/delete-animal';
   static const String removeFollowing = 'remove-following';
   static const String deleteForumReply = 'delete-forum-reply';

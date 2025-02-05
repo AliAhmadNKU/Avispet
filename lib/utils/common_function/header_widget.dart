@@ -5,16 +5,20 @@ import '../my_routes/route_name.dart';
 import 'dialogs/bottom_language.dart';
 
 class HeaderWidget extends StatelessWidget {
-  const HeaderWidget({Key? key}) : super(key: key);
+  final bool backIcon;
+  const HeaderWidget({
+    Key? key,
+    this.backIcon = true
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 15),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: backIcon ? MainAxisAlignment.spaceBetween : MainAxisAlignment.end,
         children: [
-          GestureDetector(
+          if(backIcon) GestureDetector(
             onTap: () => Navigator.pop(context),
             child: Container(
               width: 31,
@@ -98,7 +102,8 @@ class HeaderWidget extends StatelessWidget {
                   width: 25,
                   height: 25,
                   child: Image.asset(
-                    'assets/images/icons/translation_login.png',
+                    'assets/images/icons/translation.png',
+                    // 'assets/images/icons/translation_login.png',
                     color: const Color(0xff4F2020),
                   ),
                 ),

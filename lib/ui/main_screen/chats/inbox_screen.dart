@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:avispets/models/chats/all_users_discussion_model.dart';
+import 'package:avispets/models/chats/user_all_chats_model.dart';
+import 'package:avispets/models/chats/user_group_model.dart';
 import 'package:avispets/utils/common_function/header_widget.dart';
 import 'package:avispets/utils/my_routes/route_name.dart';
 import 'package:avispets/utils/shared_pref.dart';
@@ -41,17 +44,25 @@ class _InboxScreenState extends State<InboxScreen> {
 
   late Future<GetForum> futureForumData;
 
+  UserAllChatsModel _userAllChatsModel = UserAllChatsModel();
+  List<IndividualChats> _listChats = [];
+
+  UserGroupModel _userGroupModel = UserGroupModel();
+  List<GroupChatModel> _listGroupChats = [];
+
   @override
   void initState() {
     super.initState();
-    GetApi.getNotify(context, '');
+    // GetApi.getNotify(context, '');
     futureForumData = fetchForumData();
     Future.delayed(Duration.zero, () async {
-      connectSocket();
-      inbox();
-      inboxListener();
-      sendMessageListener();
-      sendMessageListener1();
+      getAllUserChats();
+      getAllGroupChats();
+      // connectSocket();
+      // inbox();
+      // inboxListener();
+      // sendMessageListener();
+      // sendMessageListener1();
     });
   }
 
@@ -59,9 +70,9 @@ class _InboxScreenState extends State<InboxScreen> {
   void dispose() {
     super.dispose();
     // socketOff('inbox_listener');
-    socketOff('new_group_message');
-    socketOff('new_message');
-    checkSocketConnect();
+    // socketOff('new_group_message');
+    // socketOff('new_message');
+    // checkSocketConnect();
   }
 
   @override
@@ -112,7 +123,7 @@ class _InboxScreenState extends State<InboxScreen> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(top: 30),
-                        child: HeaderWidget(),
+                        child: HeaderWidget(backIcon: false,),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 15),
@@ -357,15 +368,21 @@ class _InboxScreenState extends State<InboxScreen> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8.0, vertical: 8),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            MyString.bold('Individual ${'chats'.tr}',
+                                27, MyColor.title, TextAlign.center),
                             GestureDetector(
                               onTap: () {
                                 FocusManager.instance.primaryFocus!.unfocus();
                                 Future.delayed(Duration(milliseconds: 100),
                                     () async {
                                   Navigator.pushNamed(
-                                      context, RoutesName.messagesScreen);
+                                      context, RoutesName.messagesScreen,
+                                      arguments: {
+                                        'group': false
+                                      }
+                                  );
                                 });
                               },
                               child: Container(
@@ -377,355 +394,39 @@ class _InboxScreenState extends State<InboxScreen> {
                           ],
                         ),
                       ),
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 5),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              inboxList.isNotEmpty
-                                  ? Expanded(
-                                      child: ListView.builder(
-                                        shrinkWrap: true,
-                                        itemCount: inboxList.length,
-                                        itemBuilder: (context, index) {
-                                          return GestureDetector(
-                                            onLongPressStart: (value) {
-                                              _showCustomMenu(context,
-                                                  value.globalPosition, index);
-                                            },
-                                            child: InkWell(
-                                              onTap: () async {
-                                                socketOff('new_group_message');
-                                                socketOff('new_message');
-
-                                                FocusManager
-                                                    .instance.primaryFocus!
-                                                    .unfocus();
-
-                                                Map<String, dynamic> mapData = {
-                                                  'userId': inboxList[index]
-                                                              .senderId!
-                                                              .toString() ==
-                                                          sharedPref
-                                                              .getString(
-                                                                  SharedKey
-                                                                      .userId)
-                                                              .toString()
-                                                      ? '${inboxList[index].receiverId!.toString()}'
-                                                      : '${inboxList[index].senderId!.toString()}',
-                                                  'userName': (inboxList[index]
-                                                              .groupId!
-                                                              .toString() !=
-                                                          "0")
-                                                      ? inboxList[index]
-                                                          .groupInfo!
-                                                          .groupName
-                                                      : inboxList[index]
-                                                                  .senderId!
-                                                                  .toString() ==
-                                                              sharedPref
-                                                                  .getString(
-                                                                      SharedKey
-                                                                          .userId)
-                                                                  .toString()
-                                                          ? inboxList[index]
-                                                              .name
-                                                              .toString()
-                                                          : inboxList[index]
-                                                              .senderName
-                                                              .toString(),
-                                                  'userImage': inboxList[index]
-                                                                  .groupId!
-                                                                  .toString() !=
-                                                              "0" &&
-                                                          inboxList[index]
-                                                                  .groupInfo!
-                                                                  .groupIcon !=
-                                                              null &&
-                                                          inboxList[index]
-                                                              .groupInfo!
-                                                              .groupIcon
-                                                              .toString()
-                                                              .isNotEmpty
-                                                      ? '${ApiStrings.mediaURl}${inboxList[index].groupInfo!.groupIcon.toString()}'
-                                                      : inboxList[index]
-                                                                      .userImage !=
-                                                                  null &&
-                                                              inboxList[index]
-                                                                  .userImage
-                                                                  .toString()
-                                                                  .isNotEmpty &&
-                                                              inboxList[index]
-                                                                      .groupId!
-                                                                      .toString() ==
-                                                                  "0"
-                                                          ? '${ApiStrings.mediaURl}${inboxList[index].userImage.toString()}'
-                                                          : '',
-                                                  'myId': inboxList[index]
-                                                              .senderId!
-                                                              .toString() ==
-                                                          sharedPref
-                                                              .getString(
-                                                                  SharedKey
-                                                                      .userId)
-                                                              .toString()
-                                                      ? '${inboxList[index].senderId!.toString()}'
-                                                      : '${inboxList[index].receiverId!.toString()}',
-                                                  'myImage': sharedPref
-                                                          .getString(SharedKey
-                                                              .userprofilePic)
-                                                          .toString()
-                                                          .isEmpty
-                                                      ? ""
-                                                      : sharedPref
-                                                          .getString(SharedKey
-                                                              .userprofilePic)
-                                                          .toString(),
-                                                  'blockBy': '0',
-                                                  'isBlock': inboxList[index]
-                                                      .isBlocked,
-                                                  'online': inboxList[index]
-                                                      .onlineStatus,
-                                                  'groupId': inboxList[index]
-                                                      .groupId
-                                                      .toString(),
-                                                  'totalMember':
-                                                      inboxList[index]
-                                                                  .groupId !=
-                                                              0
-                                                          ? inboxList[index]
-                                                              .groupInfo!
-                                                              .members!
-                                                              .length
-                                                          : ''
-                                                };
-                                                FocusManager
-                                                    .instance.primaryFocus!
-                                                    .unfocus();
-                                                Future.delayed(
-                                                    Duration(milliseconds: 100),
-                                                    () async {
-                                                  await Navigator.pushNamed(
-                                                      context,
-                                                      RoutesName.chatScreen,
-                                                      arguments: mapData);
-                                                  inbox();
-                                                });
-
-                                                loader = true;
-                                                inbox();
-                                              },
-                                              child: Container(
-                                                margin:
-                                                    EdgeInsets.only(bottom: 20),
-                                                decoration: BoxDecoration(
-                                                    color: MyColor.card,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15)),
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 10,
-                                                    vertical: 15),
-                                                child: Column(
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        Expanded(
-                                                          flex: 15,
-                                                          child: Stack(
-                                                            alignment: Alignment
-                                                                .bottomRight,
-                                                            children: [
-                                                              Container(
-                                                                width: 40,
-                                                                height: 40,
-                                                                child: inboxList[index].userImage !=
-                                                                            null &&
-                                                                        inboxList[index]
-                                                                            .userImage
-                                                                            .toString()
-                                                                            .isNotEmpty
-                                                                    ? Center(
-                                                                        child:
-                                                                            ClipRRect(
-                                                                          borderRadius:
-                                                                              BorderRadius.circular(50),
-                                                                          child: Image.network(
-                                                                              '${ApiStrings.mediaURl}${inboxList[index].userImage.toString()}',
-                                                                              fit: BoxFit.cover,
-                                                                              width: 42,
-                                                                              height: 42,
-                                                                              loadingBuilder: (context, child, loadingProgress) => (loadingProgress == null) ? child : customProgressBar()),
-                                                                        ),
-                                                                      )
-                                                                    : Image.asset(
-                                                                        'assets/images/onboard/placeholder_image.png',
-                                                                        width:
-                                                                            42,
-                                                                        height:
-                                                                            42),
-                                                              ),
-                                                              if (inboxList[
-                                                                          index]
-                                                                      .onlineStatus ==
-                                                                  1)
-                                                                Container(
-                                                                  width: 12,
-                                                                  height: 12,
-                                                                  decoration: BoxDecoration(
-                                                                      color: Colors
-                                                                          .green,
-                                                                      borderRadius:
-                                                                          BorderRadius.all(
-                                                                              Radius.circular(50))),
-                                                                )
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        SizedBox(
-                                                          width: 10,
-                                                        ),
-                                                        Expanded(
-                                                          flex: 70,
-                                                          child: Column(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              SizedBox(
-                                                                  width: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width *
-                                                                      0.5,
-                                                                  child:
-                                                                      MyString
-                                                                          .med(
-                                                                    inboxList[
-                                                                            index]
-                                                                        .name
-                                                                        .toString(),
-                                                                    14,
-                                                                    MyColor
-                                                                        .redd,
-                                                                    TextAlign
-                                                                        .start,
-                                                                  )),
-                                                              (inboxList[index]
-                                                                          .lastMessage !=
-                                                                      null)
-                                                                  ? Container(
-                                                                      width:
-                                                                          200,
-                                                                      child: MyString.medMultiLine(
-                                                                          (inboxList[index].lastMessage.toString() == "{GroupCreated}")
-                                                                              ? 'groupCreated'.tr
-                                                                              : (inboxList[index].lastMessage.toString() == "{NewMemberAdded}")
-                                                                                  ? 'newMember'.tr
-                                                                                  : (inboxList[index].lastMessage.toString() == "removed")
-                                                                                      ? 'removed'.tr
-                                                                                      : (inboxList[index].lastMessage.toString() == "left")
-                                                                                          ? 'left'.tr
-                                                                                          : (inboxList[index].messageType.toString() == '99')
-                                                                                              ? 'sharePost'.tr
-                                                                                              : inboxList[index].lastMessage.toString(),
-                                                                          12,
-                                                                          MyColor.textBlack0,
-                                                                          TextAlign.start,
-                                                                          1))
-                                                                  : SizedBox(),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        Expanded(
-                                                          flex: 30,
-                                                          child: (inboxList[
-                                                                          index]
-                                                                      .lastMessage !=
-                                                                  null)
-                                                              ? Column(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .start,
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .center,
-                                                                  children: [
-                                                                    MyString.med(
-                                                                        timeValues(inboxList[index]
-                                                                            .createdAt
-                                                                            .toString()),
-                                                                        8,
-                                                                        MyColor
-                                                                            .textBlack0,
-                                                                        TextAlign
-                                                                            .center),
-                                                                    if (inboxList[index]
-                                                                            .unreadcount !=
-                                                                        0)
-                                                                      Container(
-                                                                        margin: EdgeInsets.only(
-                                                                            top:
-                                                                                3),
-                                                                        width:
-                                                                            20,
-                                                                        height:
-                                                                            20,
-                                                                        alignment:
-                                                                            Alignment.center,
-                                                                        decoration: BoxDecoration(
-                                                                            color:
-                                                                                MyColor.orange2,
-                                                                            borderRadius: const BorderRadius.all(Radius.circular(50))),
-                                                                        child: MyString.med(
-                                                                            inboxList[index].unreadcount.toString(),
-                                                                            12,
-                                                                            MyColor.white,
-                                                                            TextAlign.center),
-                                                                      ),
-                                                                  ],
-                                                                )
-                                                              : SizedBox(),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    )
-                                  : Transform(
-                                      transform:
-                                          Matrix4.translationValues(0, 120, 0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Image.asset(
-                                            'assets/images/onboard/placeholder_image.png',
-                                            width: 120,
-                                            height: 90,
-                                          ),
-                                          Container(
-                                              width: double.infinity,
-                                              child: MyString.reg(
-                                                  'noDataFound'.tr,
-                                                  12,
-                                                  MyColor.textBlack0,
-                                                  TextAlign.center)),
-                                        ],
-                                      ),
-                                    ),
-                            ],
-                          ),
+                      // _buildAllChatsUIOLD(),
+                      _buildAllChatsUINEW(),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0, vertical: 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            MyString.bold('Group ${'chats'.tr}',
+                                27, MyColor.title, TextAlign.center),
+                            GestureDetector(
+                              onTap: () {
+                                FocusManager.instance.primaryFocus!.unfocus();
+                                Future.delayed(Duration(milliseconds: 100),
+                                        () async {
+                                      Navigator.pushNamed(
+                                          context, RoutesName.messagesScreen,
+                                        arguments: {
+                                            'group': true
+                                        }
+                                      );
+                                    });
+                              },
+                              child: Container(
+                                alignment: Alignment.center,
+                                child: MyString.med('more'.tr, 12,
+                                    MyColor.orange2, TextAlign.center),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
+                      _buildAllGroupChatsUINEW(),
                       if (stackLoader) progressBar()
                     ],
                   )),
@@ -752,7 +453,7 @@ class _InboxScreenState extends State<InboxScreen> {
     setState(() {});
   }
 
-  delete(int index) {
+  delete(int index, int type) {
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
@@ -809,37 +510,45 @@ class _InboxScreenState extends State<InboxScreen> {
                           onTap: () async {
                             FocusManager.instance.primaryFocus!.unfocus();
                             Navigator.pop(context);
-
-                            if (inboxList[index].groupId != 0) {
-                              Map<String, dynamic> mapData = {
-                                "userId": sharedPref
-                                    .getString(SharedKey.userId)
-                                    .toString(),
-                                "members": sharedPref
-                                    .getString(SharedKey.userId)
-                                    .toString(),
-                                "groupId": inboxList[index].groupId.toString()
-                              };
-                              socket.emit('leave_group', mapData);
-                              deleteUserGroupListener();
-                              deleteUserGroupListener1();
-                            } else {
-                              Map<String, dynamic> mapData = {
-                                "userId": sharedPref
-                                    .getString(SharedKey.userId)
-                                    .toString(),
-                                "user2Id": inboxList[index]
-                                            .senderId!
-                                            .toString() ==
-                                        sharedPref
-                                            .getString(SharedKey.userId)
-                                            .toString()
-                                    ? '${inboxList[index].receiverId!.toString()}'
-                                    : '${inboxList[index].senderId!.toString()}',
-                              };
-                              socket.emit('delete_chat_listing', mapData);
-                              deleteUserListListener();
+                            setState(() {
+                              loader = true;
+                            });
+                            if(type == 1){
+                              clearIndividualChat(index);
                             }
+                            else if(type == 2){
+                              clearGroupChat(index);
+                            }
+                            // if (inboxList[index].groupId != 0) {
+                            //   Map<String, dynamic> mapData = {
+                            //     "userId": sharedPref
+                            //         .getString(SharedKey.userId)
+                            //         .toString(),
+                            //     "members": sharedPref
+                            //         .getString(SharedKey.userId)
+                            //         .toString(),
+                            //     "groupId": inboxList[index].groupId.toString()
+                            //   };
+                            //   socket.emit('leave_group', mapData);
+                            //   deleteUserGroupListener();
+                            //   deleteUserGroupListener1();
+                            // } else {
+                            //   Map<String, dynamic> mapData = {
+                            //     "userId": sharedPref
+                            //         .getString(SharedKey.userId)
+                            //         .toString(),
+                            //     "user2Id": inboxList[index]
+                            //                 .senderId!
+                            //                 .toString() ==
+                            //             sharedPref
+                            //                 .getString(SharedKey.userId)
+                            //                 .toString()
+                            //         ? '${inboxList[index].receiverId!.toString()}'
+                            //         : '${inboxList[index].senderId!.toString()}',
+                            //   };
+                            //   socket.emit('delete_chat_listing', mapData);
+                            //   deleteUserListListener();
+                            // }
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -867,7 +576,7 @@ class _InboxScreenState extends State<InboxScreen> {
     );
   }
 
-  void _showCustomMenu(BuildContext context, Offset offset, int index) {
+  void _showCustomMenu(BuildContext context, Offset offset, int index, int type) {
     final RenderObject overlay =
         Overlay.of(context).context.findRenderObject()!;
     showMenu(
@@ -883,7 +592,7 @@ class _InboxScreenState extends State<InboxScreen> {
                   context: context,
                   barrierDismissible: true,
                   builder: (_) {
-                    return delete(index);
+                    return delete(index, type);
                   });
             },
             child:
@@ -1044,5 +753,896 @@ class _InboxScreenState extends State<InboxScreen> {
     } catch (e) {
       throw Exception('Error fetching forum data: $e');
     }
+  }
+
+  Future getAllUserChats() async {
+    try {
+      var res = await AllApi.getMethodApi(
+          "${ApiStrings.userAllChats}/${sharedPref.getString(SharedKey.userId)}");
+      var result = jsonDecode(res.toString());
+
+      if (result['status'] == 200) {
+        _userAllChatsModel = UserAllChatsModel.fromJson(result);
+        _listChats.addAll(_userAllChatsModel.data!.individualChats!);
+        setState(() {
+
+        });
+      }
+    } catch (e) {
+      throw Exception('Error fetching forum data: $e');
+    }
+  }
+
+  Future getAllGroupChats() async {
+    try {
+      var res = await AllApi.getMethodApi(
+          "${ApiStrings.userGroupChats}/${sharedPref.getString(SharedKey.userId)}");
+      var result = jsonDecode(res.toString());
+
+      if (result['status'] == 200) {
+        _userGroupModel = UserGroupModel.fromJson(result);
+        _listGroupChats.addAll(_userGroupModel.data!);
+        setState(() {
+
+        });
+      }
+    } catch (e) {
+      throw Exception('Error fetching forum data: $e');
+    }
+  }
+
+  Widget _buildAllChatsUIOLD() {
+    return Expanded(
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 5),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            inboxList.isNotEmpty
+                ? Expanded(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: inboxList.length,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onLongPressStart: (value) {
+                      _showCustomMenu(context,
+                          value.globalPosition, index, 1);
+                    },
+                    child: InkWell(
+                      onTap: () async {
+                        socketOff('new_group_message');
+                        socketOff('new_message');
+
+                        FocusManager
+                            .instance.primaryFocus!
+                            .unfocus();
+
+                        Map<String, dynamic> mapData = {
+                          'userId': inboxList[index]
+                              .senderId!
+                              .toString() ==
+                              sharedPref
+                                  .getString(
+                                  SharedKey
+                                      .userId)
+                                  .toString()
+                              ? '${inboxList[index].receiverId!.toString()}'
+                              : '${inboxList[index].senderId!.toString()}',
+                          'userName': (inboxList[index]
+                              .groupId!
+                              .toString() !=
+                              "0")
+                              ? inboxList[index]
+                              .groupInfo!
+                              .groupName
+                              : inboxList[index]
+                              .senderId!
+                              .toString() ==
+                              sharedPref
+                                  .getString(
+                                  SharedKey
+                                      .userId)
+                                  .toString()
+                              ? inboxList[index]
+                              .name
+                              .toString()
+                              : inboxList[index]
+                              .senderName
+                              .toString(),
+                          'userImage': inboxList[index]
+                              .groupId!
+                              .toString() !=
+                              "0" &&
+                              inboxList[index]
+                                  .groupInfo!
+                                  .groupIcon !=
+                                  null &&
+                              inboxList[index]
+                                  .groupInfo!
+                                  .groupIcon
+                                  .toString()
+                                  .isNotEmpty
+                              ? '${ApiStrings.mediaURl}${inboxList[index].groupInfo!.groupIcon.toString()}'
+                              : inboxList[index]
+                              .userImage !=
+                              null &&
+                              inboxList[index]
+                                  .userImage
+                                  .toString()
+                                  .isNotEmpty &&
+                              inboxList[index]
+                                  .groupId!
+                                  .toString() ==
+                                  "0"
+                              ? '${ApiStrings.mediaURl}${inboxList[index].userImage.toString()}'
+                              : '',
+                          'myId': inboxList[index]
+                              .senderId!
+                              .toString() ==
+                              sharedPref
+                                  .getString(
+                                  SharedKey
+                                      .userId)
+                                  .toString()
+                              ? '${inboxList[index].senderId!.toString()}'
+                              : '${inboxList[index].receiverId!.toString()}',
+                          'myImage': sharedPref
+                              .getString(SharedKey
+                              .userprofilePic)
+                              .toString()
+                              .isEmpty
+                              ? ""
+                              : sharedPref
+                              .getString(SharedKey
+                              .userprofilePic)
+                              .toString(),
+                          'blockBy': '0',
+                          'isBlock': inboxList[index]
+                              .isBlocked,
+                          'online': inboxList[index]
+                              .onlineStatus,
+                          'groupId': inboxList[index]
+                              .groupId
+                              .toString(),
+                          'totalMember':
+                          inboxList[index]
+                              .groupId !=
+                              0
+                              ? inboxList[index]
+                              .groupInfo!
+                              .members!
+                              .length
+                              : ''
+                        };
+                        FocusManager
+                            .instance.primaryFocus!
+                            .unfocus();
+                        Future.delayed(
+                            Duration(milliseconds: 100),
+                                () async {
+                              await Navigator.pushNamed(
+                                  context,
+                                  RoutesName.chatScreen,
+                                  arguments: mapData);
+                              inbox();
+                            });
+
+                        loader = true;
+                        inbox();
+                      },
+                      child: Container(
+                        margin:
+                        EdgeInsets.only(bottom: 20),
+                        decoration: BoxDecoration(
+                            color: MyColor.card,
+                            borderRadius:
+                            BorderRadius.circular(
+                                15)),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 15),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  flex: 15,
+                                  child: Stack(
+                                    alignment: Alignment
+                                        .bottomRight,
+                                    children: [
+                                      Container(
+                                        width: 40,
+                                        height: 40,
+                                        child: inboxList[index].userImage !=
+                                            null &&
+                                            inboxList[index]
+                                                .userImage
+                                                .toString()
+                                                .isNotEmpty
+                                            ? Center(
+                                          child:
+                                          ClipRRect(
+                                            borderRadius:
+                                            BorderRadius.circular(50),
+                                            child: Image.network(
+                                                '${ApiStrings.mediaURl}${inboxList[index].userImage.toString()}',
+                                                fit: BoxFit.cover,
+                                                width: 42,
+                                                height: 42,
+                                                loadingBuilder: (context, child, loadingProgress) => (loadingProgress == null) ? child : customProgressBar()),
+                                          ),
+                                        )
+                                            : Image.asset(
+                                            'assets/images/onboard/placeholder_image.png',
+                                            width:
+                                            42,
+                                            height:
+                                            42),
+                                      ),
+                                      if (inboxList[
+                                      index]
+                                          .onlineStatus ==
+                                          1)
+                                        Container(
+                                          width: 12,
+                                          height: 12,
+                                          decoration: BoxDecoration(
+                                              color: Colors
+                                                  .green,
+                                              borderRadius:
+                                              BorderRadius.all(
+                                                  Radius.circular(50))),
+                                        )
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(
+                                  flex: 70,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment
+                                        .start,
+                                    children: [
+                                      SizedBox(
+                                          width: MediaQuery.of(
+                                              context)
+                                              .size
+                                              .width *
+                                              0.5,
+                                          child:
+                                          MyString
+                                              .med(
+                                            inboxList[
+                                            index]
+                                                .name
+                                                .toString(),
+                                            14,
+                                            MyColor
+                                                .redd,
+                                            TextAlign
+                                                .start,
+                                          )),
+                                      (inboxList[index]
+                                          .lastMessage !=
+                                          null)
+                                          ? Container(
+                                          width:
+                                          200,
+                                          child: MyString.medMultiLine(
+                                              (inboxList[index].lastMessage.toString() == "{GroupCreated}")
+                                                  ? 'groupCreated'.tr
+                                                  : (inboxList[index].lastMessage.toString() == "{NewMemberAdded}")
+                                                  ? 'newMember'.tr
+                                                  : (inboxList[index].lastMessage.toString() == "removed")
+                                                  ? 'removed'.tr
+                                                  : (inboxList[index].lastMessage.toString() == "left")
+                                                  ? 'left'.tr
+                                                  : (inboxList[index].messageType.toString() == '99')
+                                                  ? 'sharePost'.tr
+                                                  : inboxList[index].lastMessage.toString(),
+                                              12,
+                                              MyColor.textBlack0,
+                                              TextAlign.start,
+                                              1))
+                                          : SizedBox(),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 30,
+                                  child: (inboxList[
+                                  index]
+                                      .lastMessage !=
+                                      null)
+                                      ? Column(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .start,
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment
+                                        .center,
+                                    children: [
+                                      MyString.med(
+                                          timeValues(inboxList[index]
+                                              .createdAt
+                                              .toString()),
+                                          8,
+                                          MyColor
+                                              .textBlack0,
+                                          TextAlign
+                                              .center),
+                                      if (inboxList[index]
+                                          .unreadcount !=
+                                          0)
+                                        Container(
+                                          margin: EdgeInsets.only(
+                                              top:
+                                              3),
+                                          width:
+                                          20,
+                                          height:
+                                          20,
+                                          alignment:
+                                          Alignment.center,
+                                          decoration: BoxDecoration(
+                                              color:
+                                              MyColor.orange2,
+                                              borderRadius: const BorderRadius.all(Radius.circular(50))),
+                                          child: MyString.med(
+                                              inboxList[index].unreadcount.toString(),
+                                              12,
+                                              MyColor.white,
+                                              TextAlign.center),
+                                        ),
+                                    ],
+                                  )
+                                      : SizedBox(),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            )
+                : Transform(
+              transform:
+              Matrix4.translationValues(0, 120, 0),
+              child: Column(
+                crossAxisAlignment:
+                CrossAxisAlignment.center,
+                mainAxisAlignment:
+                MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/images/onboard/placeholder_image.png',
+                    width: 120,
+                    height: 90,
+                  ),
+                  Container(
+                      width: double.infinity,
+                      child: MyString.reg(
+                          'noDataFound'.tr,
+                          12,
+                          MyColor.textBlack0,
+                          TextAlign.center)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAllChatsUINEW() {
+    return Expanded(
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 5),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _listChats.isNotEmpty
+                ? Expanded(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: _listChats.length > 10 ? 10 : _listChats.length,
+                itemBuilder: (context, index) {
+                  final user = _listChats[index];
+                  final currentUserID = int.parse(sharedPref.getString(SharedKey.userId)!);
+                  final senderIsMe = currentUserID == user.senderId!;
+                  final receiverIsMe = currentUserID == user.receiverId!;
+                  final profileImage = senderIsMe
+                      ? user.receiver != null
+                      && user.receiver!.profilePicture != null
+                      && user.receiver!.profilePicture!.contains('http')
+                      ? user.receiver!.profilePicture!
+                      : receiverIsMe
+                      ? user.sender != null
+                      && user.sender!.profilePicture != null
+                      && user.sender!.profilePicture!.contains('http')
+                      ? user.receiver!.profilePicture!
+                      : ''
+                      : ''
+                      : '';
+                  return GestureDetector(
+                    onLongPressStart: (value) {
+                      _showCustomMenu(context, value.globalPosition, index, 1);
+                    },
+                    child: InkWell(
+                      onTap: () async {
+
+                        FocusManager
+                            .instance.primaryFocus!
+                            .unfocus();
+
+                        Future.delayed(
+                            Duration(milliseconds: 100),
+                                () async {
+                              await Navigator.pushNamed(
+                                  context,
+                                  RoutesName.chatScreen,
+                                  arguments: {
+                                    'user': UserDiscussion(
+                                      id: senderIsMe ? user.receiverId! : user.senderId,
+                                      name: senderIsMe ? user.sender!.name : user.receiver!.name,
+                                      email: '',
+                                      profilePicture: senderIsMe ? user.sender!.profilePicture : user.receiver!.profilePicture,
+                                    )
+                                  }
+                              );
+                            });
+                      },
+                      child: Container(
+                        margin:
+                        EdgeInsets.only(bottom: 20),
+                        decoration: BoxDecoration(
+                            color: MyColor.card,
+                            borderRadius:
+                            BorderRadius.circular(
+                                15)),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 15),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  flex: 15,
+                                  child: Stack(
+                                    alignment: Alignment
+                                        .bottomRight,
+                                    children: [
+                                      Container(
+                                        width: 40,
+                                        height: 40,
+                                        child: profileImage.isNotEmpty ?
+                                        Center(
+                                          child:
+                                          ClipRRect(
+                                            borderRadius:
+                                            BorderRadius.circular(50),
+                                            child: Image.network(
+                                                '${profileImage}',
+                                                fit: BoxFit.cover,
+                                                width: 42,
+                                                height: 42,
+                                                loadingBuilder: (context, child, loadingProgress) => (loadingProgress == null) ? child : customProgressBar()),
+                                          ),
+                                        )
+                                            : Image.asset(
+                                            'assets/images/onboard/placeholder_image.png',
+                                            width:
+                                            42,
+                                            height:
+                                            42),
+                                      ),
+                                      // if (inboxList[
+                                      // index]
+                                      //     .onlineStatus ==
+                                      //     1)
+                                      //   Container(
+                                      //     width: 12,
+                                      //     height: 12,
+                                      //     decoration: BoxDecoration(
+                                      //         color: Colors
+                                      //             .green,
+                                      //         borderRadius:
+                                      //         BorderRadius.all(
+                                      //             Radius.circular(50))),
+                                      //   )
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(
+                                  flex: 70,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment
+                                        .start,
+                                    children: [
+                                      SizedBox(
+                                          width: MediaQuery.of(
+                                              context)
+                                              .size
+                                              .width *
+                                              0.5,
+                                          child:
+                                          MyString
+                                              .med(
+                                            senderIsMe
+                                                ? _listChats[index].receiver!.name!
+                                                : _listChats[index].sender!.name!,
+                                            14,
+                                            MyColor
+                                                .redd,
+                                            TextAlign
+                                                .start,
+                                          )),
+                                      (_listChats[index]
+                                          .lastMessage !=
+                                          null)
+                                          ? Container(
+                                          width:
+                                          200,
+                                          child: MyString.medMultiLine(
+                                              _listChats[index]
+                                                  .lastMessage!.message!,
+                                              12,
+                                              MyColor.textBlack0,
+                                              TextAlign.start,
+                                              1))
+                                          : SizedBox(),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 30,
+                                  child: (_listChats[
+                                  index]
+                                      .lastMessage !=
+                                      null)
+                                      ? Column(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .start,
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment
+                                        .center,
+                                    children: [
+                                      MyString.med(
+                                          formatDateTime(_listChats[index]
+                                              .createdAt
+                                              .toString()),
+                                          8,
+                                          MyColor
+                                              .textBlack0,
+                                          TextAlign
+                                              .center),
+                                      // if (inboxList[index]
+                                      //     .unreadcount !=
+                                      //     0)
+                                      //   Container(
+                                      //     margin: EdgeInsets.only(
+                                      //         top:
+                                      //         3),
+                                      //     width:
+                                      //     20,
+                                      //     height:
+                                      //     20,
+                                      //     alignment:
+                                      //     Alignment.center,
+                                      //     decoration: BoxDecoration(
+                                      //         color:
+                                      //         MyColor.orange2,
+                                      //         borderRadius: const BorderRadius.all(Radius.circular(50))),
+                                      //     child: MyString.med(
+                                      //         inboxList[index].unreadcount.toString(),
+                                      //         12,
+                                      //         MyColor.white,
+                                      //         TextAlign.center),
+                                      //   ),
+                                    ],
+                                  )
+                                      : SizedBox(),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            )
+                : Transform(
+              transform:
+              Matrix4.translationValues(0, 120, 0),
+              child: Column(
+                crossAxisAlignment:
+                CrossAxisAlignment.center,
+                mainAxisAlignment:
+                MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/images/onboard/placeholder_image.png',
+                    width: 120,
+                    height: 90,
+                  ),
+                  Container(
+                      width: double.infinity,
+                      child: MyString.reg(
+                          'noDataFound'.tr,
+                          12,
+                          MyColor.textBlack0,
+                          TextAlign.center)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAllGroupChatsUINEW() {
+    return Expanded(
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 5),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _listGroupChats.isNotEmpty
+                ? Expanded(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: _listGroupChats.length > 10 ? 10 : _listGroupChats.length,
+                itemBuilder: (context, index) {
+                  final user = _listGroupChats[index];
+                  final currentUserID = int.parse(sharedPref.getString(SharedKey.userId)!);
+
+                  final profileImage = user.groupIcon!;
+                  return GestureDetector(
+                    onLongPressStart: (value) {
+                      _showCustomMenu(context,
+                          value.globalPosition, index, 2);
+                    },
+                    child: InkWell(
+                      onTap: () async {
+
+                        FocusManager
+                            .instance.primaryFocus!
+                            .unfocus();
+
+                        Future.delayed(
+                            Duration(milliseconds: 100),
+                                () async {
+                              await Navigator.pushNamed(
+                                  context,
+                                  RoutesName.groupChatScreen,
+                                  arguments: {
+                                    'group': user
+                                  }
+                              );
+                            });
+                      },
+                      child: Container(
+                        margin:
+                        EdgeInsets.only(bottom: 20),
+                        decoration: BoxDecoration(
+                            color: MyColor.card,
+                            borderRadius:
+                            BorderRadius.circular(
+                                15)),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 15),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  flex: 15,
+                                  child: Stack(
+                                    alignment: Alignment
+                                        .bottomRight,
+                                    children: [
+                                      Container(
+                                        width: 40,
+                                        height: 40,
+                                        child: profileImage.isNotEmpty ?
+                                        Center(
+                                          child:
+                                          ClipRRect(
+                                            borderRadius:
+                                            BorderRadius.circular(50),
+                                            child: Image.network(
+                                                '${profileImage}',
+                                                fit: BoxFit.cover,
+                                                width: 42,
+                                                height: 42,
+                                                loadingBuilder: (context, child, loadingProgress) => (loadingProgress == null) ? child : customProgressBar()),
+                                          ),
+                                        )
+                                            : Image.asset(
+                                            'assets/images/onboard/placeholder_image.png',
+                                            width:
+                                            42,
+                                            height:
+                                            42),
+                                      ),
+                                      // if (inboxList[
+                                      // index]
+                                      //     .onlineStatus ==
+                                      //     1)
+                                      //   Container(
+                                      //     width: 12,
+                                      //     height: 12,
+                                      //     decoration: BoxDecoration(
+                                      //         color: Colors
+                                      //             .green,
+                                      //         borderRadius:
+                                      //         BorderRadius.all(
+                                      //             Radius.circular(50))),
+                                      //   )
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(
+                                  flex: 70,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment
+                                        .start,
+                                    children: [
+                                      SizedBox(
+                                          width: MediaQuery.of(
+                                              context)
+                                              .size
+                                              .width *
+                                              0.5,
+                                          child:
+                                          MyString
+                                              .med(
+                                            user.groupName!,
+                                            14,
+                                            MyColor
+                                                .redd,
+                                            TextAlign
+                                                .start,
+                                          )),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 30,
+                                  child: (_listGroupChats[
+                                  index]
+                                      .createdAt !=
+                                      null)
+                                      ? Column(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .start,
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment
+                                        .center,
+                                    children: [
+                                      MyString.med(
+                                          formatDateTime(_listGroupChats[index]
+                                              .createdAt
+                                              .toString()),
+                                          8,
+                                          MyColor
+                                              .textBlack0,
+                                          TextAlign
+                                              .center),
+                                      // if (inboxList[index]
+                                      //     .unreadcount !=
+                                      //     0)
+                                      //   Container(
+                                      //     margin: EdgeInsets.only(
+                                      //         top:
+                                      //         3),
+                                      //     width:
+                                      //     20,
+                                      //     height:
+                                      //     20,
+                                      //     alignment:
+                                      //     Alignment.center,
+                                      //     decoration: BoxDecoration(
+                                      //         color:
+                                      //         MyColor.orange2,
+                                      //         borderRadius: const BorderRadius.all(Radius.circular(50))),
+                                      //     child: MyString.med(
+                                      //         inboxList[index].unreadcount.toString(),
+                                      //         12,
+                                      //         MyColor.white,
+                                      //         TextAlign.center),
+                                      //   ),
+                                    ],
+                                  )
+                                      : SizedBox(),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            )
+                : Transform(
+              transform:
+              Matrix4.translationValues(0, 120, 0),
+              child: Column(
+                crossAxisAlignment:
+                CrossAxisAlignment.center,
+                mainAxisAlignment:
+                MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/images/onboard/placeholder_image.png',
+                    width: 120,
+                    height: 90,
+                  ),
+                  Container(
+                      width: double.infinity,
+                      child: MyString.reg(
+                          'noDataFound'.tr,
+                          12,
+                          MyColor.textBlack0,
+                          TextAlign.center)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> clearIndividualChat(int index) async {
+    var res = await AllApi.deleteMethodApi(
+        "${ApiStrings.chats}/${sharedPref.getString(SharedKey.userId)}/${_listChats[index].id}/${ApiStrings.individual}", {});
+    print(res);
+    var result = jsonDecode(res.toString());
+    if (result['status'] == 200) {
+      _listChats.remove(_listChats[index]);
+    }
+    setState(() {
+      loader = false;
+    });
+  }
+
+  Future<void> clearGroupChat(int index) async {
+    var res = await AllApi.deleteMethodApi(
+        "${ApiStrings.chats}/${sharedPref.getString(SharedKey.userId)}/${_listGroupChats[index].id}/${ApiStrings.group}", {});
+    print(res);
+    var result = jsonDecode(res.toString());
+    if (result['status'] == 200) {
+      _listGroupChats.remove(_listGroupChats[index]);
+    }
+    setState(() {
+      loader = false;
+    });
   }
 }

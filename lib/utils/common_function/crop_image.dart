@@ -10,6 +10,7 @@ import 'my_string.dart';
 XFile? _pickedFile;
 CroppedFile? _croppedFile;
 
+
 cameraPhoto(BuildContext context, String from) async {
   return showModalBottomSheet<String>(
     isScrollControlled: true,
@@ -52,7 +53,7 @@ cameraPhoto(BuildContext context, String from) async {
                                     : (from == "editGroup")
                                         ? 'editGroupPhoto'.tr
                                         : (from == "create_animal")
-                                            ? 'animalPhoto'.tr
+                                            ? 'animalPhotoCreate'.tr
                                             : 'cameraGallery1'.tr,
                         16,
                         MyColor.black,

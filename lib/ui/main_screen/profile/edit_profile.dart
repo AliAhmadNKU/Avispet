@@ -43,7 +43,7 @@ class _EditProfileState extends State<EditProfile> {
   @override
   void initState() {
     super.initState();
-    _getDepartment();
+    // _getDepartment();
     Future.delayed(Duration.zero, () async {
       await GetApi.getProfileApi(
           context, sharedPref.getString(SharedKey.userId).toString());
@@ -233,7 +233,7 @@ class _EditProfileState extends State<EditProfile> {
                           Container(
                             child: TextField(
                               controller: email,
-                              readOnly: true,
+                              enabled: false, // This fully disables the field
                               scrollPadding: const EdgeInsets.only(bottom: 50),
                               style: TextStyle(color: MyColor.black),
                               decoration: InputDecoration(
@@ -241,22 +241,25 @@ class _EditProfileState extends State<EditProfile> {
                                   borderSide: BorderSide.none,
                                 ),
                                 prefixIcon: SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(12.0),
-                                      child: Image.asset(
-                                        'assets/images/icons/email.png',
-                                        width: 20,
-                                        height: 20,
-                                      ),
-                                    )),
-                                contentPadding: const EdgeInsets.symmetric(
-                                    vertical: 5, horizontal: 12),
+                                  width: 20,
+                                  height: 20,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: Image.asset(
+                                      'assets/images/icons/email.png',
+                                      width: 20,
+                                      height: 20,
+                                    ),
+                                  ),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
                                 hintText: 'email'.tr,
                                 hintStyle: TextStyle(
-                                    color: MyColor.textFieldBorder,
-                                    fontSize: 14),
+                                  color: MyColor.textFieldBorder,
+                                  fontSize: 14,
+                                ),
+                                filled: true, // Helps visually show it's disabled
+                                fillColor: Colors.grey[200], // Light grey background to indicate disabled
                               ),
                             ),
                           ),
@@ -542,6 +545,15 @@ class _EditProfileState extends State<EditProfile> {
     city.text = GetApi.getProfileModel.data!.city != null
         ? GetApi.getProfileModel.data!.city.toString()
         : '';
+
+    bio.text = GetApi.getProfileModel.data!.biography != null
+        ? GetApi.getProfileModel.data!.biography.toString()
+        : '';
+
+    address.text = GetApi.getProfileModel.data!.area != null
+        ? GetApi.getProfileModel.data!.area.toString()
+        : '';
+
     // address.text = GetApi.getProfileModel.data!.address != null
     //     ? GetApi.getProfileModel.data!.address.toString()
     //     : '';

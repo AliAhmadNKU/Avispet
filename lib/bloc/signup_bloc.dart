@@ -113,6 +113,8 @@ import 'package:avispets/bloc/bloc_events.dart';
 import 'package:avispets/bloc/bloc_states.dart';
 import 'package:avispets/models/signup_model.dart';
 import 'package:avispets/utils/apis/all_api.dart';
+import 'package:avispets/utils/common_function/loader_screen.dart';
+import 'package:avispets/utils/common_function/toaster.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../utils/my_routes/route_name.dart';
@@ -124,7 +126,7 @@ class SignUpBlock extends Bloc<CreateProfileEvent, BlocStates> {
   SignUpBlock(BuildContext context) : super(Initial()) {
     on((event, emit) async {
       if (event is GetCreateProfileEvent) {
-        emit(Loading());
+        LoadingDialog.show(context);
         await Future.delayed(Duration.zero, () async {
           try {
             final mapData = {
@@ -135,7 +137,7 @@ class SignUpBlock extends Bloc<CreateProfileEvent, BlocStates> {
               'password': event.password!.trim(),
               'timezone': event.timeZone!,
               'latitude': event.latitude.toString(),
-              //// 'longitude': event.longitude.toString(),
+              'longitude': event.longitude.toString(),
               // 'deviceToken':
               //     sharedPref.getString(SharedKey.deviceToken).toString(),
               // 'deviceType': event.deviceType!,
@@ -153,10 +155,10 @@ class SignUpBlock extends Bloc<CreateProfileEvent, BlocStates> {
             print(jsonEncode(res));
             var result = jsonDecode(res.toString());
             // Deserialize response
-            _signUpModel = SignUpModel.fromJson(result);
-            emit(Loaded());
+            LoadingDialog.hide(context);
 
             if (result['status'] == 201) {
+              _signUpModel = SignUpModel.fromJson(result);
               // sharedPref.setString(
               //     SharedKey.auth, _signUpModel.data!.token.toString());
               sharedPref.setString(SharedKey.deviceToken,
@@ -172,21 +174,32 @@ class SignUpBlock extends Bloc<CreateProfileEvent, BlocStates> {
                   'SIGNUP SUCCESS - DEVICE TOKEN: ${sharedPref.getString(SharedKey.deviceToken)}');
 
               emit(ValidationCheck(result['message'].toString()));
+              Navigator.pushNamed(
+                  context,
+                  RoutesName.otpScreen,
+                  arguments: {
+                    'data': mapData,
+                    'screen': 'signup',
+                  }
+              );
 
               // Navigate to OTP screen
-              Navigator.pushNamed(context, RoutesName.otpScreen, arguments: {
-                'phoneNumber': event.phoneNumber!.trim(),
-              });
+              // Navigator.pushNamed(context, RoutesName.otpScreen, arguments: {
+              //   'phoneNumber': event.phoneNumber!.trim(),
+              // });
 
-              emit(NextScreen());
+              // emit(NextScreen());
             } else if (result['status'] == 401) {
               // Clear shared preferences and navigate to login
               sharedPref.clear();
               sharedPref.setString(SharedKey.onboardScreen, 'OFF');
               Navigator.pushNamedAndRemoveUntil(
                   context, RoutesName.loginScreen, (route) => false);
-            } else {
-              emit(ValidationCheck(result['message'].toString()));
+            }else if (result['status'] == 403) {
+              toaster(context, (result['data'] as List).first);
+            }
+            else {
+              toaster(context, result['message']);
             }
           } catch (error) {
             print(error);
