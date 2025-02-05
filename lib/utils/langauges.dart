@@ -383,13 +383,15 @@ class Lang extends Translations {
 
           //createAnimal
           'animalName': 'Please enter the pet name',
-          'animalWeight': 'Please enter the pet name',
+          'animalWeight': 'Please enter the animal weight',
           'animalType': 'Please enter the pet type',
           'animalType1': 'Please select the pet',
           'animalRace': 'Please enter pet species',
           'animalbreed': 'Please enter the pet species',
           'animalDob': 'Please enter the Dob',
           'animalGender': 'Please enter the gender',
+          'animalAge': 'Please enter the age',
+
           'animalSterilized': 'Please enter the Sterilized',
           'animalImage': 'Please upload pet\'s image',
 

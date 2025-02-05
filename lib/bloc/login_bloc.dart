@@ -37,6 +37,9 @@ class LoginBloc extends Bloc<LoginEvent, BlocStates> {
             var res = await AllApi.postMethodApi(ApiStrings.login, mapData);
 
             var result = jsonDecode(res.toString());
+
+            debugPrint(" LOGIN result ${result}");
+
             if (result['status'] == 200) {
               _loginModel = LoginModel.fromJson(result);
               emit(ValidationCheck(result['message'].toString()));
@@ -60,10 +63,13 @@ class LoginBloc extends Bloc<LoginEvent, BlocStates> {
               emit(Loaded());
               emit(NextScreen());
             } else if (result['status'] == 401) {
-              sharedPref.clear();
-              sharedPref.setString(SharedKey.onboardScreen, 'OFF');
-              Navigator.pushNamedAndRemoveUntil(
-                  context, RoutesName.loginScreen, (route) => false);
+
+              emit(ValidationCheck(result['message'].toString()));
+              emit(Loaded());
+              // sharedPref.clear();
+              // sharedPref.setString(SharedKey.onboardScreen, 'OFF');
+              // Navigator.pushNamedAndRemoveUntil(
+              //     context, RoutesName.loginScreen, (route) => false);
             } else {
               emit(ValidationCheck(result['message'].toString()));
               emit(Loaded());

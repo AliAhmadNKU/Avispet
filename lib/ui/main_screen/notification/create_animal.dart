@@ -115,6 +115,10 @@ class _CreateAnimalState extends State<CreateAnimal> {
     }
   }
 
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -500,41 +504,51 @@ class _CreateAnimalState extends State<CreateAnimal> {
                                   return GestureDetector(
                                     onTap: () async {
                                       print('==============================');
-
-                                      String? result =
+                                      if(imageList.length<5)
+                                        {
+                                          String? result =
                                           await cameraPhoto(context, "create_animal");
-                                      File? returnImage;
+                                          File? returnImage;
 
-                                      // Pick image from Camera or Gallery
-                                      if (result == '0') {
-                                        returnImage = await pickImage(
-                                            context, ImageSource.camera);
-                                      } else if (result == '1') {
-                                        returnImage = await pickImage(
-                                            context, ImageSource.gallery);
-                                      }
+                                          // Pick image from Camera or Gallery
+                                          if (result == '0') {
+                                            returnImage = await pickImage(
+                                                context, ImageSource.camera);
+                                          } else if (result == '1') {
+                                            returnImage = await pickImage(
+                                                context, ImageSource.gallery);
+                                          }
 
-                                      print(returnImage);
-                                      if (returnImage != null) {
-                                        fileImage = returnImage;
+                                          print(returnImage);
+                                          if (returnImage != null) {
+                                            fileImage = returnImage;
+                                            imageList.add(File(fileImage!.path));
 
-                                        print(returnImage);
-                                        String? uploadedImageUrl =
+
+                                            String? uploadedImageUrl =
                                             await uploadImage(fileImage!);
 
-                                        if (uploadedImageUrl != null) {
-                                          setState(() {
-                                            imageList.add(File(fileImage!.path));
-                                            imageUrlList.add(uploadedImageUrl);
-                                          });
-                                          print(
-                                              "Image uploaded successfully: $uploadedImageUrl");
-                                        } else {
-                                          print("Image upload failed.");
+                                            if (uploadedImageUrl != null) {
+                                              setState(() {
+
+                                                imageUrlList.add(uploadedImageUrl);
+                                              });
+                                              print(
+                                                  "Image uploaded successfully: $uploadedImageUrl");
+                                            } else {
+                                              print("Image upload failed.");
+                                            }
+                                          }
+
+                                          setState(() {});
+
                                         }
+                                      else{
+
+                                        toaster(context,"You can upload a maximum of 5 images.");
+
                                       }
 
-                                      setState(() {});
                                     },
                                     child: Container(
                                       alignment: Alignment.center,
@@ -661,12 +675,16 @@ class _CreateAnimalState extends State<CreateAnimal> {
                             onTap: () async {
                               setState(() {
                                 FocusManager.instance.primaryFocus!.unfocus();
+
+
+
+
                                 _animalBloc.add(GetCreateAnimalEvent(
                                     name.text.trim().toString(),
                                     type == 1 ? 'Dog' : 'Cat',
                                     doNotKnowBreed ? 'N/A' : sendRace,
-                                    int.parse(weight.text),
-                                    int.parse(age.text),
+                                    weight.text.isNotEmpty? int.parse(weight.text):0,
+                                    age.text.isNotEmpty? int.parse(age.text):0,
                                     gender == 1 ? 'Female' : 'Male',
                                     sterilized == 1 ? 'Yes' : 'No',
                                     imageUrlList));

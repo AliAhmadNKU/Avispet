@@ -1258,7 +1258,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                                 width: 25,
                                 height: 25,
                                 child: Image.asset(
-                                  'assets/images/icons/translation_login.png',
+                                 'assets/images/icons/translation.png',
                                   color:
                                   const Color(0xff4F2020),
                                 ),
