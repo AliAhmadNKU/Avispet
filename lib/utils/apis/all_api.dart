@@ -354,14 +354,27 @@ class AllApi {
 
   static Future<Object> deactivate(String endPoint) async {
 
-
-
+    debugPrint(" deactivate account ${sharedPref.getString(SharedKey.auth).toString()}");
+    debugPrint(" deactivate account ${sharedPref.getString(SharedKey.auth).toString()}");
     var url = Uri.parse(ApiStrings.baseURl + endPoint);
-    var response = await http.post(url, headers: {
-      ApiStrings.headerKey: ApiStrings.headerValue,
-      'Accept-Language': sharedPref.getString(SharedKey.languageValue).toString(),
-      "x-access-token": sharedPref.getString(SharedKey.auth).toString()
-    });
+    var response = await http.post(url,
+
+        headers: {
+          'Authorization':
+          "Bearer  ${sharedPref.getString(SharedKey.auth).toString()}",
+          'Content-Type': 'application/json',
+          'Accept-Language':
+          sharedPref.getString(SharedKey.languageValue).toString(),
+          "x-access-token": sharedPref.getString(SharedKey.auth).toString()
+        },
+    //     headers: {
+    //   ApiStrings.headerKey: "Bearer ${ApiStrings.headerValue}",
+    //   'Accept-Language': sharedPref.getString(SharedKey.languageValue).toString(),
+    //   "x-access-token": sharedPref.getString(SharedKey.auth).toString()
+    // }
+
+
+    );
 
     debugPrint(" deactivate account ${response.body}");
 
@@ -370,17 +383,18 @@ class AllApi {
 
   static Future<Object> delete(String endPoint) async {
 
-
-
     var url = Uri.parse(ApiStrings.baseURl + endPoint);
-    var response = await http.delete(url, headers: {
-      ApiStrings.headerKey: ApiStrings.headerValue,
-      'Accept-Language': sharedPref.getString(SharedKey.languageValue).toString(),
-      "x-access-token": sharedPref.getString(SharedKey.auth).toString()
-    });
-
-    debugPrint(" deactivate account ${response.body}");
-
+    var response = await http.delete(url,
+      headers: {
+        'Authorization':
+        "Bearer  ${sharedPref.getString(SharedKey.auth).toString()}",
+        'Content-Type': 'application/json',
+        'Accept-Language':
+        sharedPref.getString(SharedKey.languageValue).toString(),
+        "x-access-token": sharedPref.getString(SharedKey.auth).toString()
+      },
+    );
+    debugPrint(" delete account ${response.body}");
     return response.body;
   }
 

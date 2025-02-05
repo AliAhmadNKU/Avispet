@@ -25,6 +25,8 @@ class GetApi {
 
   // get-profile ////HOME_PAGE
   static GetProfileModel getProfileModel = GetProfileModel();
+
+
   static Future<GetProfileModel?> getProfileApi(
       BuildContext context, String userId) async {
     var res = await AllApi.getMethodApi("user/$userId");
@@ -50,6 +52,13 @@ class GetApi {
     }
     return null;
   }
+
+
+
+
+
+
+
 
   //get-all-post
   static GetAllPostModel _allPostModel = GetAllPostModel();

@@ -57,7 +57,9 @@ class EditProfileBloc extends Bloc<GetEditProfileEvent, BlocStates> {
               emit(Loaded());
               emit(ValidationCheck(result['message'].toString()));
               emit(NextScreen());
-            } else if (result['status'] == 401) {
+            }
+
+            else if (result['status'] == 401) {
               sharedPref.clear();
               sharedPref.setString(SharedKey.onboardScreen, 'OFF');
               Navigator.pushNamedAndRemoveUntil(
@@ -66,7 +68,8 @@ class EditProfileBloc extends Bloc<GetEditProfileEvent, BlocStates> {
               emit(Loaded());
               emit(ValidationCheck(result['message'].toString()));
             }
-          }).onError((error, stackTrace) {
+          })
+              .onError((error, stackTrace) {
             emit(Error(error.toString()));
           });
         }

@@ -10,6 +10,7 @@ import 'my_string.dart';
 XFile? _pickedFile;
 CroppedFile? _croppedFile;
 
+
 cameraPhoto(BuildContext context, String from) async {
   return showModalBottomSheet<String>(
     isScrollControlled: true,
