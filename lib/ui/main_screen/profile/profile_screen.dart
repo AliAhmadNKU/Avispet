@@ -256,8 +256,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               child:
 
-                              GetApi.getProfileModel.data!.profilePicture != null &&
-                                  GetApi.getProfileModel.data!.profilePicture!.contains('http') && loader==false || fileImage != null || fileImage == null ?
+
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -508,8 +507,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ),
                                   ),
                                 ],
-                              ):
-                              customProgressBar()
+                              )
+
 
                             ),
                             SizedBox(

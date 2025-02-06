@@ -33,6 +33,7 @@ main() async {
   // }else{
   //   await Firebase.initializeApp();
   // }
+  
   await LocalNotificationService.initMainFCM();
 
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(

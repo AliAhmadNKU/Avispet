@@ -1,5 +1,5 @@
 class ApiStrings {
-  static const String serverURl = 'http://16.171.146.189:8001/';
+  static const String serverURl = 'http://13.60.217.149:8001/';
   // static const String serverURl = 'https://9a67-110-39-187-178.ngrok-free.app/';
 
   static const String baseURl = serverURl + 'api/v1/';

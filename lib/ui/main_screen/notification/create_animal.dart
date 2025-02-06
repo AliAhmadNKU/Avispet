@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:avispets/bloc/bloc_events.dart';
 import 'package:avispets/bloc/bloc_states.dart';
+import 'package:avispets/utils/apis/api_strings.dart';
 import 'package:avispets/utils/common_function/header_widget2.dart';
 import 'package:avispets/utils/shared_pref.dart';
 import 'package:flutter/material.dart';
@@ -74,7 +75,7 @@ class _CreateAnimalState extends State<CreateAnimal> {
       // Create a multipart request
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse("http://16.171.146.189:8001/api/v1/upload/post-animal-image"),
+        Uri.parse("${ApiStrings.serverURl}api/v1/upload/post-animal-image"),
       );
 
       // Add headers
@@ -523,10 +524,7 @@ class _CreateAnimalState extends State<CreateAnimal> {
                                           if (returnImage != null) {
                                             fileImage = returnImage;
                                             imageList.add(File(fileImage!.path));
-
-
-                                            String? uploadedImageUrl =
-                                            await uploadImage(fileImage!);
+                                            String? uploadedImageUrl = await uploadImage(fileImage!);
 
                                             if (uploadedImageUrl != null) {
                                               setState(() {
@@ -677,6 +675,8 @@ class _CreateAnimalState extends State<CreateAnimal> {
                                 FocusManager.instance.primaryFocus!.unfocus();
 
 
+
+                                 print("imageUrlList ${  imageUrlList.length}");
 
 
                                 _animalBloc.add(GetCreateAnimalEvent(

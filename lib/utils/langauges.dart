@@ -388,7 +388,7 @@ class Lang extends Translations {
           'animalType1': 'Please select the pet',
           'animalRace': 'Please enter pet species',
           'animalbreed': 'Please enter the pet species',
-          'animalDob': 'Please enter the Dob',
+          'animalDob': 'Please enter the age',
           'animalGender': 'Please enter the gender',
           'animalAge': 'Please enter the age',
 

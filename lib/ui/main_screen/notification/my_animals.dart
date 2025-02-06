@@ -283,14 +283,10 @@ class _MyAnimalsState extends State<MyAnimals> {
                                                             // 'specices':
                                                             //     '${ApiStrings.mediaURl}${GetApi.getAnimal[index].specices.toString()}',
                                                             'image':
-                                                                '${GetApi.getAnimal[index].images![0].toString()}',
+                                                                '${GetApi.getAnimal[index].images!.toString()}',
                                                           };
 
-                                                          debugPrint(
-                                                              'MY-ANIMAL MAP-DATA IS : ${GetApi
-                                                                  .getAnimal[
-                                                              index]
-                                                                  .type}');
+                                                          debugPrint('MY-ANIMAL MAP-DATA IS : ${GetApi.getAnimal[index].type}');
                                                           debugPrint(
                                                               'MY-ANIMAL MAP-DATA IS : $mapData');
                                                           await Navigator.pushNamed(

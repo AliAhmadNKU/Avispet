@@ -67,7 +67,7 @@ class CreateAnimalBloc extends Bloc<CreateAnimalEvent, BlocStates> {
 
   String? checkValidation(GetCreateAnimalEvent data) {
 
-       print("data.age.toString() ${data.age.toString()}");
+       print("data.age.toString() ${data.image}");
 
     if (data.image == null || data.image!.isEmpty) {
       return StringKey.animalImage;

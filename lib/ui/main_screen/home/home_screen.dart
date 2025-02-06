@@ -582,7 +582,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                ))));
+                )
+
+
+            )
+
+
+        ));
   }
 
   getForumApi(int page, String search, int type) async {
