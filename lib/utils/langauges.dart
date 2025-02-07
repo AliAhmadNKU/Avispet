@@ -432,8 +432,8 @@ class Lang extends Translations {
           //toaster
           'enterEmail': 'Please enter the email',
           'enterPhone': 'Please enter the phone number',
-          'enterAddress': 'Please enter the address',
-          'enterCity': 'Please enter the address',
+          'enterAddress': 'Please enter the area',
+          'enterCity': 'Please enter the city',
           'validEmail': 'Please enter your valid  email',
           'enterPassword': 'Please enter the valid password',
           'currentPassword': 'Please enter the Current password',
@@ -906,8 +906,8 @@ class Lang extends Translations {
           //toaster
           'enterEmail': 'Veuillez entrer l\'e-mail',
           'enterPhone': 'Veuillez entrer le numéro de téléphone',
-          'enterAddress': 'Veuillez entrer l\'adresse',
-          'enterCity': 'Veuillez entrer l\'adresse',
+          'enterAddress': 'Veuillez entrer dans la zone',
+          'enterCity': 'Veuillez entrer la ville',
 
           'validEmail': 'Veuillez entrer votre email valide',
           'enterPassword': 'Veuillez entrer le mot de passe valide',
