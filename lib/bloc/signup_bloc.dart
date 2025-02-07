@@ -130,7 +130,6 @@ class SignUpBlock extends Bloc<CreateProfileEvent, BlocStates> {
 
           String value = checkValidation(event);
           if (value != '') {
-            print("asdjasdjasjd ${value.tr}");
             toaster(context, value.tr);
 
              emit(ValidationCheck(value));

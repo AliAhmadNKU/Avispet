@@ -504,7 +504,14 @@ class _EditProfileState extends State<EditProfile> {
                           GestureDetector(
                             onTap: () {
 
-                              print("  ${selectedCountryCode+phone.text.trim().toString()}");
+                              String phoneNumber ="";
+                              if(selectedCountryCode.isNotEmpty && phone.text.trim().isNotEmpty)
+                              {
+                                phoneNumber= selectedCountryCode +   phone.text.trim().toString();
+                              }
+                              else{
+                                phoneNumber = "";
+                              }
 
                               FocusManager.instance.primaryFocus!.unfocus();
                               _editProfileBloc.add(GetEditProfileEvent(
@@ -512,7 +519,7 @@ class _EditProfileState extends State<EditProfile> {
                                   lastName.text.trim().toString(),
                                   email.text.trim().toString(),
                                   pseudo.text.trim().toString(),
-                                  selectedCountryCode+phone.text.trim().toString(),
+                                  phoneNumber,
                                   city.text.trim().toString(),
                                   address.text.trim().toString(),
                                   bio.text.trim().toString(),
