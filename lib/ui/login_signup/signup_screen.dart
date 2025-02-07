@@ -1038,7 +1038,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                               height: 25,
                                               width: 25),
                                           SizedBox(
-                                            width: 20,
+                                            width: 30,
                                           ),
                                           MyString.med(
                                               "signingg".tr,
@@ -1118,6 +1118,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                       //         conditionCheck));
 
                                       // Call the signup function
+
+                                      print(" conditionCheck ${ conditionCheck}");
                                       _signUpBlock.add(
                                         GetCreateProfileEvent(
                                           firstName.text.trim().toString(),

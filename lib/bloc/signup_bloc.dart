@@ -117,6 +117,7 @@ import 'package:avispets/utils/common_function/loader_screen.dart';
 import 'package:avispets/utils/common_function/toaster.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import '../../utils/my_routes/route_name.dart';
 import '../../utils/shared_pref.dart';
 
@@ -126,121 +127,183 @@ class SignUpBlock extends Bloc<CreateProfileEvent, BlocStates> {
   SignUpBlock(BuildContext context) : super(Initial()) {
     on((event, emit) async {
       if (event is GetCreateProfileEvent) {
-        LoadingDialog.show(context);
-        await Future.delayed(Duration.zero, () async {
-          try {
-            final mapData = {
-              'name': event.firstName!.trim() + ' ' + event.lastName!.trim(),
-              'first_name': event.firstName!.trim(),
-              'last_name': event.lastName!.trim(),
-              'email': event.email!.trim(),
-              'password': event.password!.trim(),
-              'timezone': event.timeZone!,
-              'latitude': event.latitude.toString(),
-              'longitude': event.longitude.toString(),
-              // 'deviceToken':
-              //     sharedPref.getString(SharedKey.deviceToken).toString(),
-              // 'deviceType': event.deviceType!,
-              'pseudo': event.pseudo!.trim(),
-              'phone_number': event.phoneNumber!.trim(),
-              'city': event.city!.trim(),
-              'area': event.address!.trim(),
-            };
-            debugPrint("SIGN-UP MAP DATA: $mapData");
 
-            var res = await AllApi.signupApi(json.encode(mapData));
+          String value = checkValidation(event);
+          if (value != '') {
+            print("asdjasdjasjd ${value.tr}");
+            toaster(context, value.tr);
 
-            debugPrint("Response: $res");
-
-            print(jsonEncode(res));
-            var result = jsonDecode(res.toString());
-            // Deserialize response
-            LoadingDialog.hide(context);
-
-            if (result['status'] == 201) {
-              _signUpModel = SignUpModel.fromJson(result);
-              // sharedPref.setString(
-              //     SharedKey.auth, _signUpModel.data!.token.toString());
-              sharedPref.setString(SharedKey.deviceToken,
-                  _signUpModel.data!.deviceToken.toString());
-              sharedPref.setString(
-                  SharedKey.userId, _signUpModel.data!.id.toString());
-              sharedPref.setString(
-                  SharedKey.userEmail, _signUpModel.data!.email.toString());
-
-              debugPrint(
-                  'SIGNUP SUCCESS - TOKEN: ${sharedPref.getString(SharedKey.auth)}');
-              debugPrint(
-                  'SIGNUP SUCCESS - DEVICE TOKEN: ${sharedPref.getString(SharedKey.deviceToken)}');
-
-              emit(ValidationCheck(result['message'].toString()));
-              Navigator.pushNamed(
-                  context,
-                  RoutesName.otpScreen,
-                  arguments: {
-                    'data': mapData,
-                    'screen': 'signup',
-                  }
-              );
-
-              // Navigate to OTP screen
-              // Navigator.pushNamed(context, RoutesName.otpScreen, arguments: {
-              //   'phoneNumber': event.phoneNumber!.trim(),
-              // });
-
-              // emit(NextScreen());
-            } else if (result['status'] == 401) {
-              // Clear shared preferences and navigate to login
-              sharedPref.clear();
-              sharedPref.setString(SharedKey.onboardScreen, 'OFF');
-              Navigator.pushNamedAndRemoveUntil(
-                  context, RoutesName.loginScreen, (route) => false);
-            }else if (result['status'] == 403) {
-              toaster(context, (result['data'] as List).first);
-            }
-            else {
-              toaster(context, result['message']);
-            }
-          } catch (error) {
-            print(error);
-            emit(Error(error.toString()));
+             emit(ValidationCheck(value));
           }
-        });
+          else{
+            LoadingDialog.show(context);
+            await Future.delayed(Duration.zero, () async {
+              try {
+                final mapData = {
+                  'name': event.firstName!.trim() + ' ' + event.lastName!.trim(),
+                  'first_name': event.firstName!.trim(),
+                  'last_name': event.lastName!.trim(),
+                  'email': event.email!.trim(),
+                  'password': event.password!.trim(),
+                  'timezone': event.timeZone!,
+                  'latitude': event.latitude.toString(),
+                  'longitude': event.longitude.toString(),
+                  // 'deviceToken':
+                  //     sharedPref.getString(SharedKey.deviceToken).toString(),
+                  // 'deviceType': event.deviceType!,
+                  'pseudo': event.pseudo!.trim(),
+                  'phone_number': event.phoneNumber!.trim(),
+                  'city': event.city!.trim(),
+                  'area': event.address!.trim(),
+                };
+                debugPrint("SIGN-UP MAP DATA: $mapData");
+
+                var res = await AllApi.signupApi(json.encode(mapData));
+
+                debugPrint("Response: $res");
+
+                print(jsonEncode(res));
+                var result = jsonDecode(res.toString());
+                // Deserialize response
+                LoadingDialog.hide(context);
+
+                if (result['status'] == 201) {
+                  _signUpModel = SignUpModel.fromJson(result);
+                  // sharedPref.setString(
+                  //     SharedKey.auth, _signUpModel.data!.token.toString());
+                  sharedPref.setString(SharedKey.deviceToken,
+                      _signUpModel.data!.deviceToken.toString());
+                  sharedPref.setString(
+                      SharedKey.userId, _signUpModel.data!.id.toString());
+                  sharedPref.setString(
+                      SharedKey.userEmail, _signUpModel.data!.email.toString());
+
+                  debugPrint(
+                      'SIGNUP SUCCESS - TOKEN: ${sharedPref.getString(SharedKey.auth)}');
+                  debugPrint(
+                      'SIGNUP SUCCESS - DEVICE TOKEN: ${sharedPref.getString(SharedKey.deviceToken)}');
+
+                  emit(ValidationCheck(result['message'].toString()));
+                  Navigator.pushNamed(
+                      context,
+                      RoutesName.otpScreen,
+                      arguments: {
+                        'data': mapData,
+                        'screen': 'signup',
+                      }
+                  );
+
+                  // Navigate to OTP screen
+                  // Navigator.pushNamed(context, RoutesName.otpScreen, arguments: {
+                  //   'phoneNumber': event.phoneNumber!.trim(),
+                  // });
+
+                  // emit(NextScreen());
+                } else if (result['status'] == 401) {
+                  // Clear shared preferences and navigate to login
+                  sharedPref.clear();
+                  sharedPref.setString(SharedKey.onboardScreen, 'OFF');
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, RoutesName.loginScreen, (route) => false);
+                }else if (result['status'] == 403) {
+                  toaster(context, (result['data'] as List).first);
+                }
+                else {
+                  toaster(context, result['message']);
+                }
+              } catch (error) {
+                print(error);
+                emit(Error(error.toString()));
+              }
+            });
+          }
+
+
+
       }
     });
   }
 
   // Validation method
   String checkValidation(GetCreateProfileEvent data) {
+
+
+
     final bool emailValid =
-        RegExp(StringKey.emailValidation).hasMatch(data.email!.trim());
-    if (data.firstName!.trim().isEmpty) {
+    RegExp(StringKey.emailValidation).hasMatch(data.email.toString());
+    if (data.firstName.toString().trim().isEmpty) {
       return StringKey.enterFirstName;
     }
-    if (data.lastName!.trim().isEmpty) {
+    if (data.lastName.toString().trim().isEmpty) {
       return StringKey.enterLastName;
     }
-    if (data.email!.trim().isEmpty) {
+    if (data.email.toString().isEmpty) {
       return StringKey.enterEmail;
     }
     if (!emailValid) {
       return StringKey.validEmail;
     }
-    if (data.password!.trim().isEmpty) {
+    if (data.password.toString().isEmpty) {
       return StringKey.enterPassword1;
     }
-    if (data.password!.trim().length < 6) {
+    if (data.password.toString().length < 6) {
       return StringKey.passwordLength;
     }
-    if (data.confirmPassword!.trim().isEmpty) {
+    if (data.confirmPassword.toString().isEmpty) {
       return StringKey.enterConfirmPassword;
     }
-    if (data.password!.trim() != data.confirmPassword!.trim()) {
+    if (data.password.toString() != data.confirmPassword.toString()) {
       return StringKey.notMatch;
     }
-    if (data.pseudo!.trim().isEmpty) {
+    if (data.pseudo.toString().isEmpty) {
       return StringKey.enterPseudo;
+    }
+    if (data.phoneNumber.toString().isEmpty) {
+      return StringKey.enterPhone;
+    }
+    if (data.address.toString().isEmpty) {
+      return StringKey.enterAddress;
+    }
+    if (data.city.toString().isEmpty) {
+      return StringKey.enterCity;
+    }
+
+    if (data.termsCondition == false) {
+
+      return StringKey.selectTermsPrivacy;
     }
     return '';
   }
+  // String checkValidation(GetCreateProfileEvent data) {
+  //   final bool emailValid =
+  //       RegExp(StringKey.emailValidation).hasMatch(data.email!.trim());
+  //   if (data.firstName!.trim().isEmpty) {
+  //     return StringKey.enterFirstName;
+  //   }
+  //   if (data.lastName!.trim().isEmpty) {
+  //     return StringKey.enterLastName;
+  //   }
+  //   if (data.email!.trim().isEmpty) {
+  //     return StringKey.enterEmail;
+  //   }
+  //   if (!emailValid) {
+  //     return StringKey.validEmail;
+  //   }
+  //   if (data.password!.trim().isEmpty) {
+  //     return StringKey.enterPassword1;
+  //   }
+  //   if (data.password!.trim().length < 6) {
+  //     return StringKey.passwordLength;
+  //   }
+  //   if (data.confirmPassword!.trim().isEmpty) {
+  //     return StringKey.enterConfirmPassword;
+  //   }
+  //   if (data.password!.trim() != data.confirmPassword!.trim()) {
+  //     return StringKey.notMatch;
+  //   }
+  //   if (data.pseudo!.trim().isEmpty) {
+  //     return StringKey.enterPseudo;
+  //   }
+  //   return '';
+  // }
 }
