@@ -503,13 +503,16 @@ class _EditProfileState extends State<EditProfile> {
                           ),
                           GestureDetector(
                             onTap: () {
+
+                              print("  ${selectedCountryCode+phone.text.trim().toString()}");
+
                               FocusManager.instance.primaryFocus!.unfocus();
                               _editProfileBloc.add(GetEditProfileEvent(
                                   firstName.text.trim().toString(),
                                   lastName.text.trim().toString(),
                                   email.text.trim().toString(),
                                   pseudo.text.trim().toString(),
-                                  phone.text.trim().toString(),
+                                  selectedCountryCode+phone.text.trim().toString(),
                                   city.text.trim().toString(),
                                   address.text.trim().toString(),
                                   bio.text.trim().toString(),
@@ -593,11 +596,12 @@ class _EditProfileState extends State<EditProfile> {
     address.text = GetApi.getProfileModel.data!.area != null
         ? GetApi.getProfileModel.data!.area.toString()
         : '';
-    selectedCountryCode= GetApi.getProfileModel.data!.phoneNumber != null
+
+    phone.text= GetApi.getProfileModel.data!.phoneNumber != null
         ? GetApi.getProfileModel.data!.phoneNumber.toString()
         : '';
     seperatePhoneAndDialCode();
-
+    print("phone.text ${phone.text}");
     // address.text = GetApi.getProfileModel.data!.address != null
     //     ? GetApi.getProfileModel.data!.address.toString()
     //     : '';
@@ -632,10 +636,9 @@ class _EditProfileState extends State<EditProfile> {
 
       selectedCountryCode = dialCode.toString();
 
-      phone.text = GetApi.getProfileModel.data!.phoneNumber != null
-          ? GetApi.getProfileModel.data!.phoneNumber.toString()
-          : '';
       phone.text = phone.text.substring(selectedCountryCode.length);
+
+
 
     }
   }
