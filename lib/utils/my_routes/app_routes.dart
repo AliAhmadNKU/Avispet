@@ -73,8 +73,9 @@ class Routes {
 
       case RoutesName.otpScreen:
         Map<String, dynamic> value = settings.arguments as Map<String, dynamic>;
+        bool screenCheck=false;
         return MaterialPageRoute(
-            builder: (BuildContext context) => OtpScreen(data: value));
+            builder: (BuildContext context) => OtpScreen(data: value, sreenCheck: screenCheck,));
 
       case RoutesName.forgetPasswordOtpScreen:
         Map<String, String> value = settings.arguments as Map<String, String>;

@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import '../ui/login_signup/otp_screen.dart';
 import '../utils/apis/all_api.dart';
 import '../utils/my_routes/route_name.dart';
 
@@ -47,9 +48,30 @@ class LoginBloc extends Bloc<LoginEvent, BlocStates> {
 
               if(result['message'].toString().contains("Your account is not verified.Please verify your account first"))
               {
-
+                print("lnumber }") ;
                  toaster(context,"Your account is not verified.Please verify your account first");
-                  Get.back();
+
+
+
+                mapData = {
+                  'data':result['data']['phoneNumber'],
+                };
+
+                Get.back();
+
+                Navigator.pushNamed(
+                    context,
+                    RoutesName.otpScreen,
+                    arguments: {
+                      'data':mapData,
+                      'screen': 'login',
+                    }
+                );
+
+
+
+
+
               }
               else{
 

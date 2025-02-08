@@ -149,7 +149,11 @@ class _HomeScreenState extends State<HomeScreen> {
     getForumApi(page, '', currentTabBreed);
     // GetApi.getNotify(context, '');
   }
-
+  // Image list
+  List<String> images = [
+    'assets/images/1dog.png',
+    'assets/images/2dog.png'
+  ];
   List<Postssss> postss = [
     Postssss(
       title: 'Bar1',
@@ -249,7 +253,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Expanded(
                                     child: ListView.builder(
                                       scrollDirection: Axis.horizontal,
-                                      itemCount: forumList.length,
+                                      itemCount: images.length, // forumList.length,
                                       itemBuilder: (context, index) {
                                         return Container(
                                           width: MediaQuery.of(context)
@@ -273,7 +277,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 double.infinity,
                                                             fit:
                                                                 BoxFit.fitWidth,
-                                                            'assets/images/chi_salon.png'))),
+                                                            images[index]))),
                                               ),
                                               Positioned(
                                                   left: 35,
@@ -282,94 +286,94 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     width: 200,
                                                     child: Row(
                                                       children: [
-                                                        Flexible(
-                                                            child: MyString.bold(
-                                                                '${forumList[index].dogBreed!.name.toString()} Salon',
-                                                                22,
-                                                                MyColor.title,
-                                                                TextAlign
-                                                                    .start)),
+                                                        // Flexible(
+                                                        //     child: MyString.bold(
+                                                        //         '${forumList[index].dogBreed!.name.toString()} Salon',
+                                                        //         22,
+                                                        //         MyColor.title,
+                                                        //         TextAlign
+                                                        //             .start)),
                                                       ],
                                                     ),
                                                   )),
-                                              Positioned(
-                                                  left: 35,
-                                                  top: 120,
-                                                  child: Container(
-                                                      padding:
-                                                          EdgeInsets.symmetric(
-                                                              horizontal: 25,
-                                                              vertical: 10),
-                                                      decoration: BoxDecoration(
-                                                          color: MyColor.redd,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      15)),
-                                                      child: GestureDetector(
-                                                          onTap: () async {
-                                                            // Map<String, dynamic>
-                                                            //     mapping = {
-                                                            //   'image': getForum
-                                                            //                   .data![
-                                                            //                       index]
-                                                            //                   .dogBreed
-                                                            //                   ?.icon !=
-                                                            //               null &&
-                                                            //           getForum
-                                                            //               .data![
-                                                            //                   index]
-                                                            //               .dogBreed!
-                                                            //               .icon
-                                                            //               .toString()
-                                                            //               .isNotEmpty
-                                                            //       ? '${ApiStrings.mediaURl}${getForum.data![index].dogBreed?.icon.toString()}'
-                                                            //       : '',
-                                                            //   'desc': sharedPref
-                                                            //               .getString(SharedKey
-                                                            //                   .languageValue)
-                                                            //               .toString() ==
-                                                            //           'en'
-                                                            //       ? getForum
-                                                            //           .data![
-                                                            //               index]
-                                                            //           .description
-                                                            //           .toString()
-                                                            //       : getForum
-                                                            //           .data![
-                                                            //               index]
-                                                            //           .descriptionFr
-                                                            //           .toString(),
-                                                            //   'topic': forumList[
-                                                            //           index]
-                                                            //       .dogBreed!
-                                                            //       .name
-                                                            //       .toString(),
-                                                            //   'forumId':
-                                                            //       forumList[
-                                                            //               index]
-                                                            //           .id,
-                                                            // };
-                                                            await Navigator.pushNamed(
-                                                                context,
-                                                                RoutesName
-                                                                    .forumQuestion,
-                                                                arguments: {});
-                                                            setState(() {
-                                                              loader = true;
-                                                              page = 1;
-                                                              getForumApi(
-                                                                  page,
-                                                                  '',
-                                                                  currentTabBreed);
-                                                            });
-                                                          },
-                                                          child: MyString.bold(
-                                                              'Join Now',
-                                                              12,
-                                                              MyColor.white,
-                                                              TextAlign
-                                                                  .start))))
+                                              // Positioned(
+                                              //     left: 35,
+                                              //     top: 120,
+                                              //     child: Container(
+                                              //         padding:
+                                              //             EdgeInsets.symmetric(
+                                              //                 horizontal: 25,
+                                              //                 vertical: 10),
+                                              //         decoration: BoxDecoration(
+                                              //             color: MyColor.redd,
+                                              //             borderRadius:
+                                              //                 BorderRadius
+                                              //                     .circular(
+                                              //                         15)),
+                                              //         child: GestureDetector(
+                                              //             onTap: () async {
+                                              //               // Map<String, dynamic>
+                                              //               //     mapping = {
+                                              //               //   'image': getForum
+                                              //               //                   .data![
+                                              //               //                       index]
+                                              //               //                   .dogBreed
+                                              //               //                   ?.icon !=
+                                              //               //               null &&
+                                              //               //           getForum
+                                              //               //               .data![
+                                              //               //                   index]
+                                              //               //               .dogBreed!
+                                              //               //               .icon
+                                              //               //               .toString()
+                                              //               //               .isNotEmpty
+                                              //               //       ? '${ApiStrings.mediaURl}${getForum.data![index].dogBreed?.icon.toString()}'
+                                              //               //       : '',
+                                              //               //   'desc': sharedPref
+                                              //               //               .getString(SharedKey
+                                              //               //                   .languageValue)
+                                              //               //               .toString() ==
+                                              //               //           'en'
+                                              //               //       ? getForum
+                                              //               //           .data![
+                                              //               //               index]
+                                              //               //           .description
+                                              //               //           .toString()
+                                              //               //       : getForum
+                                              //               //           .data![
+                                              //               //               index]
+                                              //               //           .descriptionFr
+                                              //               //           .toString(),
+                                              //               //   'topic': forumList[
+                                              //               //           index]
+                                              //               //       .dogBreed!
+                                              //               //       .name
+                                              //               //       .toString(),
+                                              //               //   'forumId':
+                                              //               //       forumList[
+                                              //               //               index]
+                                              //               //           .id,
+                                              //               // };
+                                              //               await Navigator.pushNamed(
+                                              //                   context,
+                                              //                   RoutesName
+                                              //                       .forumQuestion,
+                                              //                   arguments: {});
+                                              //               setState(() {
+                                              //                 loader = true;
+                                              //                 page = 1;
+                                              //                 getForumApi(
+                                              //                     page,
+                                              //                     '',
+                                              //                     currentTabBreed);
+                                              //               });
+                                              //             },
+                                              //             child: MyString.bold(
+                                              //                 'Join Now',
+                                              //                 12,
+                                              //                 MyColor.white,
+                                              //                 TextAlign
+                                              //                     .start))))
                                             ],
                                           ),
                                         );
@@ -582,19 +586,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                )
-
-
-            )
-
-
-        ));
+                ))));
   }
 
   getForumApi(int page, String search, int type) async {
     var res = await AllApi.getMethodApi(
         "${ApiStrings.forums}?type=$type&page=$page&limit=20&search=$search");
     var result = jsonDecode(res.toString());
+
+
+    print("dfsdfsdfsdfsdfsd ${result}");
+
     if (result['status'] == 200) {
       setState(() {
         getForum = GetForum.fromJson(result);
