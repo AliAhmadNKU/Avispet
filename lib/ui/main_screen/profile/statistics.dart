@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:avispets/models/gamification/gamification_levels_response_model.dart';
+import 'package:avispets/models/gamification/gamification_rankings_response_model.dart';
 import 'package:avispets/models/gamification/user_activities_response_model.dart';
+import 'package:avispets/ui/widgets/ranking_progress.dart';
 import 'package:avispets/utils/apis/all_api.dart';
 import 'package:avispets/utils/common_function/header_widget.dart';
 import 'package:avispets/utils/common_function/toaster.dart';
@@ -27,6 +29,7 @@ class _StatisticsState extends State<Statistics> {
   bool isLoading = true;
   UserActivitiesResponseModel _userActivitiesResponseModel = UserActivitiesResponseModel();
   GamificationLevelsResponseModel _gamificationLevelsResponseModel = GamificationLevelsResponseModel();
+  GamificationRankingsResponseModel _gamificationRankingsResponseModel = GamificationRankingsResponseModel();
 
   @override
   void initState() {
@@ -60,6 +63,7 @@ class _StatisticsState extends State<Statistics> {
   Future<void> getData() async {
     await getAllUserActivities();
     await getAllLevels();
+    await getAllGamePoints();
     // await GetApi.getGamificationApi(
     //     context, sharedPref.getString(SharedKey.userId).toString());
     // await GetApi.getPointsHistoryApi(
@@ -206,137 +210,146 @@ class _StatisticsState extends State<Statistics> {
       enableDrag: true,
       context: context,
       builder: (BuildContext context) {
-        return Column(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              height: MediaQuery.of(context).size.height,
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 1,
+          builder: (context, scrollController) {
+            return Container(
+              height: MediaQuery.of(context).size.height,  // ✅ Full screen height
               padding: EdgeInsets.symmetric(vertical: 30, horizontal: 15),
               decoration: BoxDecoration(
                 color: MyColor.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
               ),
-              child: Padding(
-                padding: EdgeInsets.all(15),
+              child: SingleChildScrollView(
+                controller: scrollController, // ✅ Allows full scrolling
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     HeaderWidget(),
-                    SizedBox(
-                      height: 15,
+                    SizedBox(height: 15),
+                    Row(
+                      children: [
+                        Image.asset("assets/images/icons/points.png", height: 30, width: 30),
+                        SizedBox(width: 10),
+                        MyString.bold("scoredPoints".tr, 27, MyColor.title, TextAlign.start),
+                      ],
                     ),
-                    Container(
-                      width: double.infinity,
-                      alignment: Alignment.center,
-                      margin: EdgeInsets.only(top: 5),
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            "assets/images/icons/points.png",
-                            height: 30,
-                            width: 30,
+                    SizedBox(height: 20),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${_userActivitiesResponseModel.data!.userProfile!.gamePoints}',
+                          style: TextStyle(
+                              color: MyColor.title,
+                              fontSize: 80,
+                              fontWeight: FontWeight.w400,
+                            height: 0.8
                           ),
-                          SizedBox(width: 10),
-                          MyString.bold("scoredPoints".tr, 27, MyColor.title,
-                              TextAlign.start),
+                        ),
+                        Container(
+                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: MyColor.orange2),
+                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            child: Text(
+                              '+pts',
+                              style: TextStyle(
+                                color: MyColor.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400
+                              ),
+                            )
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                    RankingProgress(
+                      progress: _userActivitiesResponseModel.data!.userProfile!.gamePoints!.toDouble(),
+
+                    ),
+                    SizedBox(height: 20),
+                    Container(
+                      color: MyColor.card,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                            child: MyString.bold("scoredPoints".tr, 20, MyColor.title, TextAlign.start),
+                          ),
+                          SizedBox(
+                            height: 300,  // ✅ Constrains the ListView height
+                            child: ListView.builder(
+                              itemCount: _gamificationRankingsResponseModel.data?.length ?? 0,
+                              padding: EdgeInsets.symmetric(horizontal: 10),
+                              shrinkWrap: true,
+                              itemBuilder: (context, index) {
+                                final ranking = _gamificationRankingsResponseModel.data![index];
+                                final currentUserEmail = sharedPref.getString(SharedKey.userEmail);
+
+                                return Container(
+                                  margin: EdgeInsets.only(bottom: 15),
+                                  decoration: BoxDecoration(
+                                    color: ranking.email == currentUserEmail ? MyColor.orange2 : MyColor.white,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  padding: EdgeInsets.all(7),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Image.asset("assets/images/icons/points_icon.png", height: 30),
+                                          SizedBox(width: 10),
+                                          ranking.profilePicture == null || !ranking.profilePicture!.contains('http')
+                                              ? Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(50),
+                                              color: MyColor.cardColor,
+                                            ),
+                                            width: 50,
+                                            height: 50,
+                                            child: Center(
+                                              child: Image.asset(
+                                                'assets/images/onboard/placeholder_image.png',
+                                                width: 50,
+                                                height: 50,
+                                              ),
+                                            ),
+                                          )
+                                              : Image.network(ranking.profilePicture!, width: 50, height: 50),
+                                          SizedBox(width: 10),
+                                          MyString.med(
+                                            ranking.name.toString(),
+                                            12,
+                                            currentUserEmail == ranking.email ? MyColor.white : MyColor.textFieldBorder,
+                                            TextAlign.start,
+                                          ),
+                                        ],
+                                      ),
+                                      Center(
+                                        child: MyString.med(
+                                          '${ranking.ranking.toString()} XP',
+                                          14,
+                                          currentUserEmail == ranking.email ? MyColor.white : MyColor.orange2,
+                                          TextAlign.start,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        MyString.bold(
-                            '${_userActivitiesResponseModel.data!.userProfile!.gamePoints}',
-                            80,
-                            MyColor.title,
-                            TextAlign.start
-                        ),
-                        MyString.bold(
-                            '+pts',
-                            27,
-                            MyColor.orange2,
-                            TextAlign.start
-                        ),
-                      ],
-                    )
-                    // Container(
-                    //     color: MyColor.card,
-                    //     constraints: new BoxConstraints(
-                    //       minHeight: 100,
-                    //       maxHeight: MediaQuery.of(context).size.height / 1.5,
-                    //     ),
-                    //     child: ListView.builder(
-                    //         itemCount: GetApi.pointHistoryModel.data!.length,
-                    //         padding: EdgeInsets.zero,
-                    //         shrinkWrap: true,
-                    //         itemBuilder: (context, index) {
-                    //           return Container(
-                    //             color: MyColor.white,
-                    //             padding: const EdgeInsets.all(7),
-                    //             child: Row(
-                    //               mainAxisAlignment:
-                    //               MainAxisAlignment.spaceBetween,
-                    //               crossAxisAlignment: CrossAxisAlignment.start,
-                    //               children: [
-                    //                 SizedBox(
-                    //                   child: Row(
-                    //                     children: [
-                    //                       Image.asset(
-                    //                         "assets/images/icons/points_icon.png",
-                    //                         height: 30,
-                    //                       ),
-                    //                       SizedBox(
-                    //                         width: 10,
-                    //                       ),
-                    //                       Column(
-                    //                         crossAxisAlignment:
-                    //                         CrossAxisAlignment.start,
-                    //                         children: [
-                    //                           Container(
-                    //                               width:
-                    //                               MediaQuery.of(context)
-                    //                                   .size
-                    //                                   .width /
-                    //                                   1.5,
-                    //                               child: MyString.boldMultiLine(
-                    //                                   GetApi.pointHistoryModel
-                    //                                       .data![index].text
-                    //                                       .toString(),
-                    //                                   12,
-                    //                                   MyColor.textFieldBorder,
-                    //                                   TextAlign.start,
-                    //                                   3)),
-                    //                           SizedBox(
-                    //                             height: 5,
-                    //                           ),
-                    //                           MyString.med(
-                    //                               GetApi.pointHistoryModel
-                    //                                   .data![index].createdAt
-                    //                                   .toString(),
-                    //                               12,
-                    //                               MyColor.textFieldBorder,
-                    //                               TextAlign.start),
-                    //                         ],
-                    //                       ),
-                    //                     ],
-                    //                   ),
-                    //                 ),
-                    //               ],
-                    //             ),
-                    //           );
-                    //         })),
                   ],
                 ),
               ),
-            ),
-          ],
+            );
+          },
         );
       },
     );
@@ -1308,31 +1321,26 @@ class _StatisticsState extends State<Statistics> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          InkWell(
-                              onTap: () {
-                                // Navigator.pushNamed(
-                                //     context, RoutesName.badges);
-                              },
-                              child: MyString.bold("badgesTitle".tr, 18,
-                                  MyColor.title, TextAlign.start)),
+                          MyString.bold("badgesTitle".tr, 18,
+                              MyColor.title, TextAlign.start),
                           InkWell(
                             onTap: () {
-                              // Navigator.pushNamed(context, RoutesName.badges);
+                              Navigator.pushNamed(context, RoutesName.badges);
                             },
                             child: Container(
-                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: MyColor.white),
-                              padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: MyColor.orange2),
+                              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                               child: Row(
                                 children: [
-                                  MyString.med("viewAll".tr, 11, MyColor.textFieldBorder, TextAlign.start),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Icon(
-                                    Icons.arrow_forward_ios_sharp,
-                                    size: 10,
-                                    color: MyColor.textFieldBorder,
-                                  ),
+                                  MyString.med("viewAll".tr, 11, MyColor.white, TextAlign.start),
+                                  // SizedBox(
+                                  //   width: 5,
+                                  // ),
+                                  // Icon(
+                                  //   Icons.arrow_forward_ios_sharp,
+                                  //   size: 10,
+                                  //   color: MyColor.textFieldBorder,
+                                  // ),
                                 ],
                               ),
                             ),
@@ -1361,7 +1369,7 @@ class _StatisticsState extends State<Statistics> {
                                 padding: const EdgeInsets.only(right: 5),
                                 child: Column(
                                   children: [
-                                    (badge.icon == null)
+                                    (badge.gamificationBadge!.icon == null || !badge.gamificationBadge!.icon!.contains('http'))
                                         ? Container(
                                         decoration: BoxDecoration(
                                             borderRadius: BorderRadius.circular(
@@ -1374,7 +1382,7 @@ class _StatisticsState extends State<Statistics> {
                                                 'assets/images/onboard/placeholder_image.png',
                                                 width: 50,
                                                 height: 50)))
-                                        : Image.network(badge.icon,
+                                        : Image.network(badge.gamificationBadge!.icon!,
                                         height: 50,
                                         loadingBuilder: (context, child,
                                             loadingProgress) =>
@@ -1398,9 +1406,9 @@ class _StatisticsState extends State<Statistics> {
                                                 .languageValue)
                                                 .toString() ==
                                                 'en')
-                                                ? badge.name
+                                                ? badge.gamificationBadge!.name
                                                 .toString()
-                                                : badge.nameFr
+                                                : badge.gamificationBadge!.nameFr
                                                 .toString(),
                                             8,
                                             MyColor.redd,
@@ -1638,5 +1646,14 @@ class _StatisticsState extends State<Statistics> {
         ),
       ],
     );
+  }
+
+  Future getAllGamePoints() async {
+    var res = await AllApi.getMethodApi(
+        "${ApiStrings.gamificationRankings}");
+    var result = jsonDecode(res.toString());
+    if (result['status'] == 200) {
+      _gamificationRankingsResponseModel = GamificationRankingsResponseModel.fromJson(result);
+    }
   }
 }

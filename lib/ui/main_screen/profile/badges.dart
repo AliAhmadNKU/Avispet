@@ -25,7 +25,7 @@ class _BadgesState extends State<Badges> {
     // TODO: implement initState
     super.initState();
     getData();
-    GetApi.getNotify(context, '');
+    // GetApi.getNotify(context, '');
   }
 
   @override
@@ -55,7 +55,7 @@ class _BadgesState extends State<Badges> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: MyString.reg(
-                        "${"totalBadges".tr} ${GetApi.gamification.totalBadgesEarn} ${'badge'.tr.toLowerCase()}${(GetApi.gamification.totalBadgesEarn > 1) ? "s" : ""}${'badges'.tr.toLowerCase()}",
+                        "${"totalBadges".tr} ${GetApi.userBadgesResponseModel.data!.length} ${'badge'.tr.toLowerCase()}${(GetApi.userBadgesResponseModel.data!.length > 1) ? "s" : ""}${'badges'.tr.toLowerCase()}",
                         12,
                         Color(0xff5B6170),
                         TextAlign.center),
@@ -79,7 +79,8 @@ class _BadgesState extends State<Badges> {
                                 borderRadius:
                                     const BorderRadius.all(Radius.circular(50)),
                                 child: GetApi.getProfileModel.data!.profilePicture != null
-                                    ? Image.network('${ApiStrings.mediaURl}${GetApi.getProfileModel.data!.profilePicture.toString()}',
+          && GetApi.getProfileModel.data!.profilePicture!.contains('http')
+                                    ? Image.network('${GetApi.getProfileModel.data!.profilePicture.toString()}',
                                         width: 75,
                                         height: 75,
                                         fit: BoxFit.cover,
@@ -158,14 +159,8 @@ class _BadgesState extends State<Badges> {
                       getData();
                     },
                     child: ListView.builder(
-                        itemCount: GetApi.gamification.data!.length,
+                        itemCount: GetApi.userBadgesResponseModel.data!.length,
                         itemBuilder: (context, index) {
-                          int remaining = int.parse(GetApi
-                                  .gamification.data![index].totalPoint
-                                  .toString()) -
-                              int.parse(GetApi
-                                  .gamification.data![index].currentPoint
-                                  .toString());
                           return Column(
                             children: [
                               Container(
@@ -184,7 +179,7 @@ class _BadgesState extends State<Badges> {
                                           top: 10),
                                       child: Row(
                                         children: [
-                                          (GetApi.gamification.data![index].icon == null)
+                                          (GetApi.userBadgesResponseModel.data![index].gamificationBadge!.icon == null || !GetApi.userBadgesResponseModel.data![index]!.gamificationBadge!.icon!.contains('http'))
                                               ? Container(
                                                   decoration: BoxDecoration(
                                                       borderRadius: BorderRadius.circular(
@@ -197,7 +192,7 @@ class _BadgesState extends State<Badges> {
                                                           'assets/images/onboard/placeholder_image.png',
                                                           width: 40,
                                                           height: 40)))
-                                              : Image.network(ApiStrings.mediaURl + GetApi.gamification.data![index].icon.toString(),
+                                              : Image.network(GetApi.userBadgesResponseModel.data![index].gamificationBadge!.icon.toString(),
                                                   height: 40,
                                                   loadingBuilder: (context,
                                                           child,
@@ -239,16 +234,16 @@ class _BadgesState extends State<Badges> {
                                                                         .toString() ==
                                                                     'en')
                                                                 ? GetApi
-                                                                    .gamification
+                                                                    .userBadgesResponseModel
                                                                     .data![
                                                                         index]
-                                                                    .name
+                                                                    .gamificationBadge!.name
                                                                     .toString()
                                                                 : GetApi
-                                                                    .gamification
+                                                                    .userBadgesResponseModel
                                                                     .data![
                                                                         index]
-                                                                    .nameFr
+                                                                    .gamificationBadge!.nameFr
                                                                     .toString(),
                                                             14,
                                                             Color(0xff4F2020),
@@ -261,67 +256,67 @@ class _BadgesState extends State<Badges> {
                                                                         .toString() ==
                                                                     'en')
                                                                 ? GetApi
-                                                                    .gamification
+                                                                    .userBadgesResponseModel
                                                                     .data![
                                                                         index]
-                                                                    .mission
+                                                                    .gamificationBadge!.mission
                                                                     .toString()
                                                                 : GetApi
-                                                                    .gamification
+                                                                    .userBadgesResponseModel
                                                                     .data![
                                                                         index]
-                                                                    .missionFr
+                                                                    .gamificationBadge!.missionFr
                                                                     .toString(),
                                                             8,
                                                             Color(0xff5B6170),
                                                             TextAlign.start,
                                                             2),
-                                                        if (GetApi
-                                                                    .gamification
-                                                                    .data![
-                                                                        index]
-                                                                    .showProgressBar ==
-                                                                1 &&
-                                                            GetApi
-                                                                    .gamification
-                                                                    .data![
-                                                                        index]
-                                                                    .isEarned ==
-                                                                0)
-                                                          Row()
+                                                        // if (GetApi
+                                                        //             .gamification
+                                                        //             .data![
+                                                        //                 index]
+                                                        //             .showProgressBar ==
+                                                        //         1 &&
+                                                        //     GetApi
+                                                        //             .gamification
+                                                        //             .data![
+                                                        //                 index]
+                                                        //             .isEarned ==
+                                                        //         0)
+                                                        //   Row()
                                                       ],
                                                     ),
                                                   ),
                                                 ),
-                                                if (GetApi
-                                                        .gamification
-                                                        .data![index]
-                                                        .isEarned ==
-                                                    1)
-                                                  Container(
-                                                    margin: EdgeInsets.only(
-                                                        left: 20),
-                                                    child: Image.asset(
-                                                      "assets/images/icons/badge_check.png",
-                                                      height: 20,
-                                                      width: 20,
-                                                    ),
-                                                  )
+                                                // if (GetApi
+                                                //         .gamification
+                                                //         .data![index]
+                                                //         .isEarned ==
+                                                //     1)
+                                                //   Container(
+                                                //     margin: EdgeInsets.only(
+                                                //         left: 20),
+                                                //     child: Image.asset(
+                                                //       "assets/images/icons/badge_check.png",
+                                                //       height: 20,
+                                                //       width: 20,
+                                                //     ),
+                                                //   )
                                               ],
                                             ),
                                           ),
                                         ],
                                       ),
                                     ),
-                                    if (GetApi.gamification.data![index]
-                                            .isEarned ==
-                                        1)
-                                      Container(
-                                        height: 75,
-                                        width: double.infinity,
-                                        color:
-                                            MyColor.liteGrey.withOpacity(0.4),
-                                      )
+                                    // if (GetApi.gamification.data![index]
+                                    //         .isEarned ==
+                                    //     1)
+                                    //   Container(
+                                    //     height: 75,
+                                    //     width: double.infinity,
+                                    //     color:
+                                    //         MyColor.liteGrey.withOpacity(0.4),
+                                    //   )
                                   ],
                                 ),
                               ),
@@ -336,7 +331,7 @@ class _BadgesState extends State<Badges> {
   }
 
   Future<void> getData() async {
-    await GetApi.getGamificationApi(
+    await GetApi.getGamificationApiNew(
         context, sharedPref.getString(SharedKey.userId).toString());
     setState(() {
       isLoading = false;

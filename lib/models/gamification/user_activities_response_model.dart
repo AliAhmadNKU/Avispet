@@ -1,3 +1,5 @@
+import 'package:avispets/models/gamification/badges_model.dart';
+
 class UserActivitiesResponseModel {
   UserActivitiesResponseModel({
       num? status, 
@@ -58,7 +60,7 @@ UserActivitiesResponseModel copyWith({  num? status,
 class UserActivitiesModel {
   UserActivitiesModel({
       UserProfile? userProfile, 
-      List<dynamic>? badges, 
+      List<BadgesModel>? badges,
       List<Levels>? levels, 
       ActivityCounts? activityCounts,}){
     _userProfile = userProfile;
@@ -72,7 +74,7 @@ class UserActivitiesModel {
     if (json['badges'] != null) {
       _badges = [];
       json['badges'].forEach((v) {
-        _badges?.add(UserActivitiesModel.fromJson(v));
+        _badges?.add(BadgesModel.fromJson(v));
       });
     }
     if (json['levels'] != null) {
@@ -84,11 +86,11 @@ class UserActivitiesModel {
     _activityCounts = json['activityCounts'] != null ? ActivityCounts.fromJson(json['activityCounts']) : null;
   }
   UserProfile? _userProfile;
-  List<dynamic>? _badges;
+  List<BadgesModel>? _badges;
   List<Levels>? _levels;
   ActivityCounts? _activityCounts;
   UserActivitiesModel copyWith({  UserProfile? userProfile,
-  List<dynamic>? badges,
+  List<BadgesModel>? badges,
   List<Levels>? levels,
   ActivityCounts? activityCounts,
 }) => UserActivitiesModel(  userProfile: userProfile ?? _userProfile,
@@ -97,7 +99,7 @@ class UserActivitiesModel {
   activityCounts: activityCounts ?? _activityCounts,
 );
   UserProfile? get userProfile => _userProfile;
-  List<dynamic>? get badges => _badges;
+  List<BadgesModel>? get badges => _badges;
   List<Levels>? get levels => _levels;
   ActivityCounts? get activityCounts => _activityCounts;
 

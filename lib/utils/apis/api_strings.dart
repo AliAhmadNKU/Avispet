@@ -1,5 +1,6 @@
 class ApiStrings {
-  static const String serverURl = 'http://16.171.146.189:8001/';
+  static const String serverURl = 'http://13.60.217.149:8001/';
+  // static const String serverURl = 'http://16.171.146.189:8001/';
   // static const String serverURl = 'https://9a67-110-39-187-178.ngrok-free.app/';
 
   static const String baseURl = serverURl + 'api/v1/';
@@ -74,6 +75,7 @@ class ApiStrings {
   static const String global = 'global-settings';
   static const String profile = 'profile';
   static const String gamification = 'gamification-badges';
+  static const String gamificationBadges = 'gamification/badges';
   static const String pointHistory = 'point-history';
   static const String ranking = 'leaderboards';
   static const String myAnimals = 'animal/get-all-animal';
@@ -95,6 +97,7 @@ class ApiStrings {
   static const String individual = 'individual';
   static const String userActivitiesGamification = 'gamification/user-activities';
   static const String allGamificationLevels = 'gamification/levels';
+  static const String gamificationRankings = 'gamification/rankings';
   static const String group = 'group';
   static const String userAllChats = chats + '/user-all-chats';
   static const String userIndividualMessages = chats + '/user-individual-messages';
@@ -107,6 +110,8 @@ class ApiStrings {
   static const String followUser = 'user/follow';
   static const String suggestedFriends = 'suggested-friends';
   static const String forums = 'forums';
+  static const String allForumCategories = 'forums/categories';
+  static const String allForumTopicsById = 'forums/forum-topics';
   static const String forumTopics = 'forum-topics';
   static const String forumTopicReplies = 'forum-topic-replies';
   static const String myForumReplies = 'my-forum-replies';

@@ -68,6 +68,7 @@ class _CreateGroup2State extends State<CreateGroup2> {
     // socketOff('create_group_listener');
     socketOff('register');
     socketOff('create_group_chat');
+    socketOff('group_created');
     super.dispose();
   }
 
@@ -137,8 +138,10 @@ class _CreateGroup2State extends State<CreateGroup2> {
   }
 
   void attachCreateGroupListener() {
-    socket.on('create_group_chat', (data) {
+    socket.on('group_created', (data) {
       debugPrint("CREATE_GROUP_EVENT ==> $data");
+      LoadingDialog.hide(context);
+      Navigator.pop(context, true);
     });
   }
 
