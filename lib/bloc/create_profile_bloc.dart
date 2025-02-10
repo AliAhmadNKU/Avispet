@@ -18,7 +18,10 @@ class CreateProfileBloc extends Bloc<CreateProfileEvent, BlocStates> {
         String value = checkValidation(event);
         if (value != '') {
           emit(ValidationCheck(value));
-        } else {
+        }
+
+
+        else {
           emit(Loading());
           await Future.delayed(Duration.zero, () async {
             Map<String, String> mapData = {
@@ -52,6 +55,10 @@ class CreateProfileBloc extends Bloc<CreateProfileEvent, BlocStates> {
   }
 
   String checkValidation(GetCreateProfileEvent data) {
+
+
+    print("data.termsCondition ${data.termsCondition}");
+
     final bool emailValid =
         RegExp(StringKey.emailValidation).hasMatch(data.email.toString());
     if (data.firstName.toString().trim().isEmpty) {
@@ -90,6 +97,9 @@ class CreateProfileBloc extends Bloc<CreateProfileEvent, BlocStates> {
     if (data.city.toString().isEmpty) {
       return StringKey.enterCity;
     }
+
+
+
     if (data.termsCondition == false) {
       return StringKey.selectTermsPrivacy;
     }

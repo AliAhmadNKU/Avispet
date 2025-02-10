@@ -153,7 +153,11 @@ class _HomeScreenState extends State<HomeScreen> {
     // getForumApi(page, '', currentTabBreed);
     // GetApi.getNotify(context, '');
   }
-
+  // Image list
+  List<String> images = [
+    'assets/images/1dog.png',
+    'assets/images/2dog.png'
+  ];
   List<Postssss> postss = [
     Postssss(
       title: 'Bar1',
@@ -465,6 +469,10 @@ class _HomeScreenState extends State<HomeScreen> {
     var res = await AllApi.getMethodApi(
         "${ApiStrings.forums}?type=$type&page=$page&limit=20&search=$search");
     var result = jsonDecode(res.toString());
+
+
+    print("dfsdfsdfsdfsdfsd ${result}");
+
     if (result['status'] == 200) {
       setState(() {
         getForum = GetForum.fromJson(result);

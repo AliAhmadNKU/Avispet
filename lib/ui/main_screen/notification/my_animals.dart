@@ -125,6 +125,7 @@ class _MyAnimalsState extends State<MyAnimals> {
                                 setState(() {});
                               },
                               child: ListView.builder(
+                                reverse: true,
                                 itemCount: GetApi.getAnimal.length,
                                 padding: EdgeInsets.zero,
                                 itemBuilder: (context, index) {
@@ -283,14 +284,10 @@ class _MyAnimalsState extends State<MyAnimals> {
                                                             // 'specices':
                                                             //     '${ApiStrings.mediaURl}${GetApi.getAnimal[index].specices.toString()}',
                                                             'image':
-                                                                '${GetApi.getAnimal[index].images![0].toString()}',
+                                                                '${GetApi.getAnimal[index].images!.toString()}',
                                                           };
 
-                                                          debugPrint(
-                                                              'MY-ANIMAL MAP-DATA IS : ${GetApi
-                                                                  .getAnimal[
-                                                              index]
-                                                                  .type}');
+                                                          debugPrint('MY-ANIMAL MAP-DATA IS : ${GetApi.getAnimal[index].type}');
                                                           debugPrint(
                                                               'MY-ANIMAL MAP-DATA IS : $mapData');
                                                           await Navigator.pushNamed(

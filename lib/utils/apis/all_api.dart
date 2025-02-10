@@ -102,6 +102,9 @@ class AllApi {
           },
           body: jsonEncode(mapData)
       );
+
+
+
       return response.body;
     }
     catch(e){
@@ -145,7 +148,7 @@ class AllApi {
   static Future<Object> patchtMethodApi(
       String endPoint, Map<String, dynamic> mapData) async {
     debugPrint(
-        'SHARED-PREF SAVE LANGUAGE (postApi => ${ApiStrings.baseURl}$endPoint) ${sharedPref.getString(SharedKey.languageValue).toString()}');
+        'SHARED-PREF SAVE LANGUAGE (postApi => ${ApiStrings.baseURl}$endPoint) ${sharedPref.getString(SharedKey.languageValue).toString()} ${mapData}');
     var url = Uri.parse("${ApiStrings.baseURl}$endPoint");
     var response = await http.patch(url,
         headers: {
@@ -157,6 +160,8 @@ class AllApi {
           "x-access-token": sharedPref.getString(SharedKey.auth).toString()
         },
         body: jsonEncode(mapData));
+
+    print("change password ${response.body}");
 
     return response.body;
   }
@@ -348,15 +353,53 @@ class AllApi {
   }
 
   static Future<Object> deactivate(String endPoint) async {
+
+    debugPrint(" deactivate account ${sharedPref.getString(SharedKey.auth).toString()}");
+    debugPrint(" deactivate account ${sharedPref.getString(SharedKey.auth).toString()}");
     var url = Uri.parse(ApiStrings.baseURl + endPoint);
-    var response = await http.delete(url, headers: {
-      ApiStrings.headerKey: ApiStrings.headerValue,
-      'Accept-Language':
+    var response = await http.post(url,
+
+        headers: {
+          'Authorization':
+          "Bearer  ${sharedPref.getString(SharedKey.auth).toString()}",
+          'Content-Type': 'application/json',
+          'Accept-Language':
           sharedPref.getString(SharedKey.languageValue).toString(),
-      "x-access-token": sharedPref.getString(SharedKey.auth).toString()
-    });
+          "x-access-token": sharedPref.getString(SharedKey.auth).toString()
+        },
+    //     headers: {
+    //   ApiStrings.headerKey: "Bearer ${ApiStrings.headerValue}",
+    //   'Accept-Language': sharedPref.getString(SharedKey.languageValue).toString(),
+    //   "x-access-token": sharedPref.getString(SharedKey.auth).toString()
+    // }
+
+
+    );
+
+    debugPrint(" deactivate account ${response.body}");
+
     return response.body;
   }
+
+  static Future<Object> delete(String endPoint) async {
+
+    var url = Uri.parse(ApiStrings.baseURl + endPoint);
+    var response = await http.delete(url,
+      headers: {
+        'Authorization':
+        "Bearer  ${sharedPref.getString(SharedKey.auth).toString()}",
+        'Content-Type': 'application/json',
+        'Accept-Language':
+        sharedPref.getString(SharedKey.languageValue).toString(),
+        "x-access-token": sharedPref.getString(SharedKey.auth).toString()
+      },
+    );
+    debugPrint(" delete account ${response.body}");
+    return response.body;
+  }
+
+
+
 
   static Future<Object> getNotify(String endPoint) async {
     var url = Uri.parse(ApiStrings.baseURl + endPoint);

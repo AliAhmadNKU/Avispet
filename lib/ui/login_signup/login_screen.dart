@@ -336,6 +336,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                           MyColor.white, TextAlign.center),
                                     ),
                                   ),
+
+
                                   Container(
                                     margin: const EdgeInsets.only(
                                         top: 15, bottom: 15),
@@ -790,12 +792,10 @@ class _LoginScreenState extends State<LoginScreen> {
   googleSignup(BuildContext context) async {
     final FirebaseAuth auth = FirebaseAuth.instance;
     final GoogleSignIn googleSignIn = GoogleSignIn();
-    final GoogleSignInAccount? googleSignInAccount =
-        await googleSignIn.signIn();
+    final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
     if (googleSignInAccount != null) {
       LoadingDialog.show(context);
-      final GoogleSignInAuthentication googleSignInAuthentication =
-          await googleSignInAccount.authentication;
+      final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
       final AuthCredential authCredential = GoogleAuthProvider.credential(
           idToken: googleSignInAuthentication.idToken,
           accessToken: googleSignInAuthentication.accessToken);

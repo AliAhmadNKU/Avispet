@@ -73,6 +73,8 @@ Widget deactivateAccount() {
                         onTap: () {
                           LoadingDialog.show(context);
                           Future.delayed(Duration.zero, () async {
+
+
                             var res = await AllApi.deactivate(
                                 ApiStrings.deactivateAccount);
                             var result = jsonDecode(res.toString());

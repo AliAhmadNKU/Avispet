@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:avispets/utils/apis/get_api.dart';
 import 'package:avispets/utils/common_function/dialogs/dialog_deactivate.dart';
@@ -7,6 +8,8 @@ import 'package:avispets/utils/common_function/toaster.dart';
 import 'package:avispets/utils/my_color.dart';
 import 'package:avispets/utils/my_routes/route_name.dart';
 import 'package:avispets/utils/common_function/my_string.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
@@ -23,7 +26,9 @@ import '../../../utils/common_function/dialogs/dialog_delete_account.dart';
 import '../../../utils/common_function/dialogs/dialog_logout.dart';
 import '../../../utils/common_function/loader_screen.dart';
 import '../../../utils/shared_pref.dart';
+import '../../widgets/cached_image.dart';
 
+import 'package:http/http.dart' as http;
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -32,6 +37,10 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+
+  List<File> imageList = [];
+  List<String> imageUrlList = [];
+
   List<ProfileListModel> dataList = [
     ProfileListModel('assets/images/icons/user.png', 'badgesTitle'.tr, 12),
     ProfileListModel(
@@ -78,9 +87,121 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<String?> uploadImage(File imageFile) async {
+    try {
+      // Replace with your actual token
+
+      // Create a multipart request
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse("http://16.171.146.189:8001/api/v1/upload/profile-image"),
+      );
+
+      // Add headers
+      request.headers.addAll({
+        'Authorization':
+        "Bearer  ${sharedPref.getString(SharedKey.auth).toString()}",
+        'Accept': 'application/json',
+      });
+
+      // Add the image file to the request
+      request.files.add(await http.MultipartFile.fromPath(
+        'profile_image',
+        imageFile.path,
+      ));
+
+      // Send the request
+      var response = await request.send();
+
+      print(response);
+
+      // Parse the response
+      if (response.statusCode == 200) {
+        var responseData = await http.Response.fromStream(response);
+        var responseBody = json.decode(responseData.body);
+
+        print("upload_Profile_image ${responseBody}");
+
+
+
+
+
+
+
+        await Future.delayed(Duration.zero, () async {
+          Map<String, String> mapData = {};
+
+
+           String imageUrl = responseBody["data"]["imageUrl"];
+            mapData = {
+              "profile_picture":imageUrl.toString()
+            };
+
+          String id= "/${sharedPref.getString(SharedKey.userId)}";
+          String editProfile = "";
+          editProfile = ApiStrings.updateProfile+id;
+
+          var res = await AllApi.patchtMethodApi(editProfile, mapData);
+          var result = jsonDecode(res.toString());
+          if (result['status'] == 200) {
+            // GetApi.getProfileModel.data = Data();
+            // GetApi.getProfileModel = GetProfileModel.fromJson(result);
+
+
+          } else if (result['status'] == 401) {
+            sharedPref.clear();
+            sharedPref.setString(SharedKey.onboardScreen, 'OFF');
+            Navigator.pushNamedAndRemoveUntil(
+                context, RoutesName.loginScreen, (route) => false);
+          } else {
+
+          }
+        })
+            .onError((error, stackTrace) {
+        });
+
+
+
+
+
+        if (responseBody["error"] == false) {
+          return responseBody["data"]["imageUrl"];
+        } else {
+          throw Exception("Image upload failed: ${responseBody['message']}");
+        }
+      } else {
+        throw Exception(
+            "Failed to upload image. HTTP Status: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error uploading image: $e");
+      return null;
+    }
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
   @override
   void initState() {
+
+
     super.initState();
+
+
+    print("fileImage ${fileImage}");
     // GetApi.getNotify(context, '');
     Future.delayed(Duration.zero, () async {
       await GetApi.getProfileApi(
@@ -93,6 +214,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       // needPoints = maxPoints - currentPoints;
       loader = false;
+
+      setState(() {});
+
       // bio.text = GetApi.getProfileModel.data!.biography != null
       //     ? (GetApi.getProfileModel.data!.biography!.length > 20
       //         ? GetApi.getProfileModel.data!.biography!.substring(0, 20)
@@ -114,7 +238,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: HeaderWidget(backIcon: false,),
+                    child: HeaderWidget(
+                      backIcon: false,
+                    ),
                   ),
                   (GetApi.getProfileModel.data == null && loader)
                       ? Container(
@@ -128,40 +254,90 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               padding: EdgeInsets.symmetric(
                                 horizontal: 20,
                               ),
-                              child: Row(
+                              child:
+
+
+                              Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   GestureDetector(
                                     onTap: () async {
-                                      try {
-                                        // Image picking logic
-                                        String? result = await cameraPhoto(
-                                            context, "editProfile");
-                                        var returnImage;
-                                        if (result == '0') {
-                                          returnImage = await pickImage(
-                                              context, ImageSource.camera);
-                                        } else if (result == '1') {
-                                          returnImage = await pickImage(
-                                              context, ImageSource.gallery);
-                                        }
 
-                                        if (returnImage != null) {
-                                          fileImage = returnImage;
-                                          LoadingDialog.show(context);
+                                      print('==============================');
 
-                                          // Ensure API call has a timeout
-                                          await AllApi.uploadImage(
-                                                  context, fileImage)
-                                              .timeout(Duration(seconds: 5));
-                                        }
-                                      } catch (e) {
-                                        toaster(
-                                            context, "An error occurred: $e");
-                                      } finally {
-                                        LoadingDialog.hide(context);
+                                      String? result =
+                                      await cameraPhoto(context, "editProfile");
+                                      File? returnImage;
+
+                                      // Pick image from Camera or Gallery
+                                      if (result == '0') {
+                                        returnImage = await pickImage(
+                                            context, ImageSource.camera);
+                                      } else if (result == '1') {
+                                        returnImage = await pickImage(
+                                            context, ImageSource.gallery);
                                       }
+
+                                      print(returnImage);
+                                      if (returnImage != null) {
+                                        fileImage = returnImage;
+                                        setState(() {});
+
+                                        String? uploadedImageUrl =
+                                        await uploadImage(fileImage!);
+
+
+                                        // //     // Ensure API call has a timeout
+                                        //     await AllApi.uploadImage(
+                                        //             context, fileImage)
+                                        //         .timeout(Duration(seconds: 5));
+
+                                        if (uploadedImageUrl != null) {
+                                          setState(() {
+                                            imageList.add(File(fileImage!.path));
+                                            imageUrlList.add(uploadedImageUrl);
+                                          });
+                                          print(
+                                              "Image uploaded successfully: $uploadedImageUrl");
+                                        } else {
+                                          print("Image upload failed.");
+                                        }
+                                      }
+
+
+
+
+                                      // try {
+                                      //
+                                      //
+                                      //   // Image picking logic
+                                      //   String? result = await cameraPhoto(
+                                      //       context, "editProfile");
+                                      //   var returnImage;
+                                      //   if (result == '0') {
+                                      //     returnImage = await pickImage(
+                                      //         context, ImageSource.camera);
+                                      //   } else if (result == '1') {
+                                      //     returnImage = await pickImage(
+                                      //         context, ImageSource.gallery);
+                                      //   }
+                                      //
+                                      //   if (returnImage != null) {
+                                      //     fileImage = returnImage;
+                                      //     LoadingDialog.show(context);
+                                      //
+                                      //     // Ensure API call has a timeout
+                                      //     await AllApi.uploadImage(
+                                      //             context, fileImage)
+                                      //         .timeout(Duration(seconds: 5));
+                                      //   }
+                                      // } catch (e) {
+                                      //   toaster(
+                                      //       context, "An error occurred: $e");
+                                      // } finally {
+                                      //   // LoadingDialog.hide(context);
+                                      // }
                                     },
                                     child: Stack(
                                       alignment: Alignment.bottomRight,
@@ -184,22 +360,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                       width: 75,
                                                       height: 75,
                                                       fit: BoxFit.cover,
-                                                      loadingBuilder: (context,
-                                                              child,
-                                                              loadingProgress) =>
-                                                          (loadingProgress == null)
-                                                              ? child
-                                                              : Container(
-                                                                  decoration: BoxDecoration(
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              50),
-                                                                      color:
-                                                                          MyColor.cardColor),
-                                                                  width: 75,
-                                                                  height: 75,
-                                                                  child: Center(child: Image.asset('assets/images/onboard/placeholder_image.png', width: 60, height: 60))))
-                                                  : Container(decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), color: MyColor.cardColor), width: 75, height: 75, child: Center(child: Image.asset('assets/images/onboard/placeholder_image.png', width: 60, height: 60))),
+                                                    )
+
+                                                  // Image.network(
+                                                  //             '${ApiStrings.mediaURl}${GetApi.getProfileModel.data!.profilePicture.toString()}',
+                                                  //             width: 75,
+                                                  //             height: 75,
+                                                  //             fit: BoxFit.cover,
+                                                  //             loadingBuilder: (context,
+                                                  //                     child,
+                                                  //                     loadingProgress) =>
+                                                  //                 (loadingProgress == null)
+                                                  //                     ? child
+                                                  //                     : Container(
+                                                  //                         decoration: BoxDecoration(
+                                                  //                             borderRadius:
+                                                  //                                 BorderRadius.circular(
+                                                  //                                     50),
+                                                  //                             color:
+                                                  //                                 MyColor.cardColor),
+                                                  //                         width: 75,
+                                                  //                         height: 75,
+                                                  //                         child: Center(child: Image.asset('assets/images/onboard/placeholder_image.png', width: 60, height: 60)))
+                                                  //
+                                                  //
+                                                  // )
+                                                  : Container(
+                                                      decoration: BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(50),
+                                                          color: MyColor
+                                                              .cardColor),
+                                                      width: 75,
+                                                      height: 75,
+                                                      child: Center(
+                                                          child: Image.asset(
+                                                              'assets/images/onboard/placeholder_image.png',
+                                                              width: 60,
+                                                              height: 60))),
                                         ),
                                         Image.asset(
                                           'assets/images/icons/editpic.png',
@@ -218,16 +417,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         children: [
                                           Row(
                                             children: [
-                                              MyString.boldMultiLine(
-                                                  loader
-                                                      ? 'USERNAME'
-                                                      : GetApi.getProfileModel
+                                              loader == true
+                                                  ? customProgressBar()
+                                                  : MyString.boldMultiLine(
+                                                      GetApi.getProfileModel
                                                           .data!.name
                                                           .toString(),
-                                                  14,
-                                                  MyColor.title,
-                                                  TextAlign.start,
-                                                  1),
+                                                      14,
+                                                      MyColor.title,
+                                                      TextAlign.start,
+                                                      1),
                                               SizedBox(
                                                 width: 10,
                                               ),
@@ -310,7 +509,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ),
                                   ),
                                 ],
-                              ),
+                              )
+
+
                             ),
                             SizedBox(
                               height: 20,
@@ -688,6 +889,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
         ));
+
+
+
   }
 
   inviteCode(BuildContext context) async {
@@ -960,5 +1164,53 @@ class CustomTrackShape extends RoundedRectSliderTrackShape {
     final trackTop = offset.dy + (parentBox.size.height - trackHeight!) / 2;
     final trackWidth = parentBox.size.width;
     return Rect.fromLTWH(trackLeft, trackTop, trackWidth, trackHeight);
+  }
+}
+
+Future<String?> uploadImage(File imageFile) async {
+  try {
+    // Replace with your actual token
+
+    // Create a multipart request
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse("http://16.171.146.189:8001/api/v1/upload/post-animal-image"),
+    );
+
+    // Add headers
+    request.headers.addAll({
+      'Authorization':
+      "Bearer  ${sharedPref.getString(SharedKey.auth).toString()}",
+      'Accept': 'application/json',
+    });
+
+    // Add the image file to the request
+    request.files.add(await http.MultipartFile.fromPath(
+      'animal_image',
+      imageFile.path,
+    ));
+
+    // Send the request
+    var response = await request.send();
+
+    print(response);
+
+    // Parse the response
+    if (response.statusCode == 200) {
+      var responseData = await http.Response.fromStream(response);
+      var responseBody = json.decode(responseData.body);
+
+      if (responseBody["error"] == false) {
+        return responseBody["data"]["imageUrl"];
+      } else {
+        throw Exception("Image upload failed: ${responseBody['message']}");
+      }
+    } else {
+      throw Exception(
+          "Failed to upload image. HTTP Status: ${response.statusCode}");
+    }
+  } catch (e) {
+    print("Error uploading image: $e");
+    return null;
   }
 }

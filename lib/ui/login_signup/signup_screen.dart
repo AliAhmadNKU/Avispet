@@ -1038,7 +1038,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                               height: 25,
                                               width: 25),
                                           SizedBox(
-                                            width: 20,
+                                            width: 30,
                                           ),
                                           MyString.med(
                                               "signingg".tr,
@@ -1118,6 +1118,20 @@ class _SignupScreenState extends State<SignupScreen> {
                                       //         conditionCheck));
 
                                       // Call the signup function
+
+                                      print(" conditionCheck ${ conditionCheck}");
+
+                                      String phone ="";
+                                        if(selectedCountryCode.isNotEmpty && phoneNumber.text.trim().isNotEmpty)
+                                          {
+                                            phone= selectedCountryCode + phoneNumber.text.trim().toString();
+                                          }
+                                          else{
+                                            phone = "";
+                                        }
+
+
+
                                       _signUpBlock.add(
                                         GetCreateProfileEvent(
                                           firstName.text.trim().toString(),
@@ -1131,7 +1145,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                           latitude,
                                           longitude,
                                           pseudo.text.trim().toString(),
-                                          selectedCountryCode + phoneNumber.text.trim().toString(),
+                                            phone,
                                           city.text.trim().toString(),
                                           address.text.trim().toString(),
                                           deviceType,

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:avispets/bloc/bloc_events.dart';
 import 'package:avispets/bloc/bloc_states.dart';
+import 'package:avispets/utils/apis/api_strings.dart';
 import 'package:avispets/utils/common_function/header_widget2.dart';
 import 'package:avispets/utils/shared_pref.dart';
 import 'package:flutter/material.dart';
@@ -74,7 +75,7 @@ class _CreateAnimalState extends State<CreateAnimal> {
       // Create a multipart request
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse("http://16.171.146.189:8001/api/v1/upload/post-animal-image"),
+        Uri.parse("${ApiStrings.serverURl}api/v1/upload/post-animal-image"),
       );
 
       // Add headers
@@ -114,6 +115,10 @@ class _CreateAnimalState extends State<CreateAnimal> {
       return null;
     }
   }
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -500,41 +505,48 @@ class _CreateAnimalState extends State<CreateAnimal> {
                                   return GestureDetector(
                                     onTap: () async {
                                       print('==============================');
-
-                                      String? result =
+                                      if(imageList.length<5)
+                                        {
+                                          String? result =
                                           await cameraPhoto(context, "create_animal");
-                                      File? returnImage;
+                                          File? returnImage;
 
-                                      // Pick image from Camera or Gallery
-                                      if (result == '0') {
-                                        returnImage = await pickImage(
-                                            context, ImageSource.camera);
-                                      } else if (result == '1') {
-                                        returnImage = await pickImage(
-                                            context, ImageSource.gallery);
-                                      }
+                                          // Pick image from Camera or Gallery
+                                          if (result == '0') {
+                                            returnImage = await pickImage(
+                                                context, ImageSource.camera);
+                                          } else if (result == '1') {
+                                            returnImage = await pickImage(
+                                                context, ImageSource.gallery);
+                                          }
 
-                                      print(returnImage);
-                                      if (returnImage != null) {
-                                        fileImage = returnImage;
-
-                                        print(returnImage);
-                                        String? uploadedImageUrl =
-                                            await uploadImage(fileImage!);
-
-                                        if (uploadedImageUrl != null) {
-                                          setState(() {
+                                          print(returnImage);
+                                          if (returnImage != null) {
+                                            fileImage = returnImage;
                                             imageList.add(File(fileImage!.path));
-                                            imageUrlList.add(uploadedImageUrl);
-                                          });
-                                          print(
-                                              "Image uploaded successfully: $uploadedImageUrl");
-                                        } else {
-                                          print("Image upload failed.");
+                                            String? uploadedImageUrl = await uploadImage(fileImage!);
+
+                                            if (uploadedImageUrl != null) {
+                                              setState(() {
+
+                                                imageUrlList.add(uploadedImageUrl);
+                                              });
+                                              print(
+                                                  "Image uploaded successfully: $uploadedImageUrl");
+                                            } else {
+                                              print("Image upload failed.");
+                                            }
+                                          }
+
+                                          setState(() {});
+
                                         }
+                                      else{
+
+                                        toaster(context,"You can upload a maximum of 5 images.");
+
                                       }
 
-                                      setState(() {});
                                     },
                                     child: Container(
                                       alignment: Alignment.center,
@@ -661,12 +673,18 @@ class _CreateAnimalState extends State<CreateAnimal> {
                             onTap: () async {
                               setState(() {
                                 FocusManager.instance.primaryFocus!.unfocus();
+
+
+
+                                 print("imageUrlList ${  imageUrlList.length}");
+
+
                                 _animalBloc.add(GetCreateAnimalEvent(
                                     name.text.trim().toString(),
                                     type == 1 ? 'Dog' : 'Cat',
                                     doNotKnowBreed ? 'N/A' : sendRace,
-                                    int.parse(weight.text),
-                                    int.parse(age.text),
+                                    weight.text.isNotEmpty? int.parse(weight.text):0,
+                                    age.text.isNotEmpty? int.parse(age.text):0,
                                     gender == 1 ? 'Female' : 'Male',
                                     sterilized == 1 ? 'Yes' : 'No',
                                     imageUrlList));

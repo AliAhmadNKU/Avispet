@@ -16,7 +16,10 @@ class CreateAnimalBloc extends Bloc<CreateAnimalEvent, BlocStates> {
   CreateAnimalBloc(BuildContext context) : super(Initial()) {
     on((event, emit) async {
       if (event is GetCreateAnimalEvent) {
+
+
         String? value = checkValidation(event);
+
         if (value != '') {
           emit(ValidationCheck(value));
         } else {
@@ -63,7 +66,10 @@ class CreateAnimalBloc extends Bloc<CreateAnimalEvent, BlocStates> {
   }
 
   String? checkValidation(GetCreateAnimalEvent data) {
-    if (data.image == null) {
+
+       print("data.age.toString() ${data.image}");
+
+    if (data.image == null || data.image!.isEmpty) {
       return StringKey.animalImage;
     }
     if (data.name.toString().trim().isEmpty) {
@@ -82,6 +88,19 @@ class CreateAnimalBloc extends Bloc<CreateAnimalEvent, BlocStates> {
     if (data.sterilized.toString().trim().isEmpty) {
       return StringKey.animalSterilized;
     }
+    if (data.age==0) {
+
+
+      return StringKey.animalAge;
+    }
+       if (data.weight==0) {
+
+
+         return StringKey.animalWeight;
+       }
+
+
+
     return '';
   }
 }

@@ -3,9 +3,13 @@ import 'package:avispets/bloc/bloc_events.dart';
 import 'package:avispets/bloc/bloc_states.dart';
 import 'package:avispets/models/login_model.dart';
 import 'package:avispets/utils/apis/api_strings.dart';
+import 'package:avispets/utils/common_function/toaster.dart';
 import 'package:avispets/utils/shared_pref.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import '../ui/login_signup/otp_screen.dart';
 import '../utils/apis/all_api.dart';
 import '../utils/my_routes/route_name.dart';
 
@@ -37,35 +41,77 @@ class LoginBloc extends Bloc<LoginEvent, BlocStates> {
             var res = await AllApi.postMethodApi(ApiStrings.login, mapData);
 
             var result = jsonDecode(res.toString());
+
+            debugPrint(" LOGIN result ${result}");
+
             if (result['status'] == 200) {
-              _loginModel = LoginModel.fromJson(result);
-              emit(ValidationCheck(result['message'].toString()));
 
-              sharedPref.setString(
-                  SharedKey.auth, _loginModel.data!.token.toString());
-              sharedPref.setString(SharedKey.deviceToken,
-                  _loginModel.data!.deviceToken.toString());
-              sharedPref.setString(
-                  SharedKey.userId, _loginModel.data!.id.toString());
-              sharedPref.setString(
-                  SharedKey.userEmail, _loginModel.data!.email.toString());
+              if(result['message'].toString().contains("Your account is not verified.Please verify your account first"))
+              {
+                print("lnumber }") ;
+                 toaster(context,"Your account is not verified.Please verify your account first");
 
-              debugPrint(
-                  'LOGIN (AUTH) : ${sharedPref.getString(SharedKey.auth)}');
-              debugPrint(
-                  'LOGIN (TOKEN) : ${sharedPref.getString(SharedKey.deviceToken)}');
-              debugPrint(
-                  'LOGIN (USERID) : ${sharedPref.getString(SharedKey.userId)}');
-              debugPrint(
-                  'LOGIN (USER_EMAIL) : ${sharedPref.getString(SharedKey.userEmail)}');
 
-              emit(Loaded());
-              emit(NextScreen());
+
+                mapData = {
+                  'data':result['data']['phoneNumber'],
+                };
+
+                Get.back();
+
+                Navigator.pushNamed(
+                    context,
+                    RoutesName.otpScreen,
+                    arguments: {
+                      'data':mapData,
+                      'screen': 'login',
+                    }
+                );
+
+
+
+
+
+              }
+              else{
+
+                _loginModel = LoginModel.fromJson(result);
+
+
+
+
+                emit(ValidationCheck(result['message'].toString()));
+
+                sharedPref.setString(
+                    SharedKey.auth, _loginModel.data!.token.toString());
+                sharedPref.setString(SharedKey.deviceToken,
+                    _loginModel.data!.deviceToken.toString());
+                sharedPref.setString(SharedKey.userId, _loginModel.data!.id.toString());
+                sharedPref.setString(SharedKey.userEmail, _loginModel.data!.email.toString());
+
+                debugPrint(
+                    'LOGIN (AUTH) : ${sharedPref.getString(SharedKey.auth)}');
+                debugPrint(
+                    'LOGIN (TOKEN) : ${sharedPref.getString(SharedKey.deviceToken)}');
+                debugPrint(
+                    'LOGIN (USERID) : ${sharedPref.getString(SharedKey.userId)}');
+                debugPrint(
+                    'LOGIN (USER_EMAIL) : ${sharedPref.getString(SharedKey.userEmail)}');
+
+                emit(Loaded());
+                emit(NextScreen());
+              }
+
+
             } else if (result['status'] == 401) {
-              sharedPref.clear();
-              sharedPref.setString(SharedKey.onboardScreen, 'OFF');
-              Navigator.pushNamedAndRemoveUntil(
-                  context, RoutesName.loginScreen, (route) => false);
+
+
+              emit(ValidationCheck(result['message'].toString()));
+              emit(Loaded());
+              // sharedPref.clear();
+              // sharedPref.setString(SharedKey.onboardScreen, 'OFF');
+              // Navigator.pushNamedAndRemoveUntil(
+              //     context, RoutesName.loginScreen, (route) => false);
             } else {
               emit(ValidationCheck(result['message'].toString()));
               emit(Loaded());

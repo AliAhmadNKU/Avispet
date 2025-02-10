@@ -51,6 +51,8 @@ class StringKey {
   static String animalGender = 'animalGender'.tr;
   static String animalSterilized = 'animalSterilized'.tr;
   static String animalImage = 'animalImage'.tr;
+  static String animalAge = 'animalAge'.tr;
+
 
   //changePassword
   static String currentPassword = 'currentPassword'.tr;

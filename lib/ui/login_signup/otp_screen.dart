@@ -25,8 +25,9 @@ import '../../utils/my_routes/route_name.dart';
 
 class OtpScreen extends StatefulWidget {
   Map<String, dynamic> data;
+  bool sreenCheck = false;
 
-  OtpScreen({super.key, required this.data});
+  OtpScreen({super.key, required this.data,required this.sreenCheck});
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();
@@ -51,8 +52,20 @@ class _OtpScreenState extends State<OtpScreen> {
   @override
   initState() {
     super.initState();
+
     screen = widget.data['screen']!;
-    payload = widget.data['data']!;
+
+
+    if(screen=="login")
+      {
+        payload = widget.data['data']!;
+        _resendOTPForVerfication();
+
+      }
+    else{
+      payload = widget.data['data']!;
+    }
+
     if(payload['googleLogin'] != null){
       socialLogin = true;
     }
@@ -121,14 +134,15 @@ class _OtpScreenState extends State<OtpScreen> {
       });
       var res = await AllApi.postMethodApi(
           "${ApiStrings.verifyOtp}",{
-        'phone_number': payload['phone_number'],
+        'phone_number':screen=="login"?  payload["data"]: payload['phone_number'],
+
         'otp': verificationCode,
       });
       print(res);
       var result = jsonDecode(res.toString());
       if (result['status'] == 200) {
         toaster(context, result['data']['message']);
-        if(screen == 'signup'){
+        if(screen == 'signup' ||screen=="login" ){
           Navigator.pushNamedAndRemoveUntil(
               context,
               RoutesName.loginScreen,
@@ -628,7 +642,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     ),
                     children: <TextSpan>[
                       TextSpan(
-                        text: " ${payload['phone_number']}",
+                        text: " ${ payload["data"]}",
                         style: TextStyle(
                           fontSize: 14,
                           fontFamily: "mont_Med",
@@ -870,7 +884,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
     var res = await AllApi.resendOTP(mapData);
     var result = jsonDecode(res.toString());
-    print(result);
+    print("result otp code $result");
     if(result['status'] == 200){
       toaster(context, result['message']);
       secondsRemaining = 120;
@@ -881,4 +895,35 @@ class _OtpScreenState extends State<OtpScreen> {
       loader = false;
     });
   }
+
+
+  Future<void> _resendOTPForVerfication( ) async {
+    setState(() {
+      loader = true;
+    });
+
+    String phoneNumber = widget.data['data']['data'].toString();
+
+    print("mapData ${phoneNumber}");
+    Map<String, String> mapData = {
+      'phone_number': phoneNumber
+          .toString(),
+    };
+
+
+    print("mapData ${mapData}");
+    var res = await AllApi.resendOTP(mapData);
+    var result = jsonDecode(res.toString());
+    print("result otp code $result");
+    if(result['status'] == 200){
+      toaster(context, result['message']);
+      secondsRemaining = 120;
+      enableResend = false;
+      _startTimer();
+    }
+    setState(() {
+      loader = false;
+    });
+  }
+
 }

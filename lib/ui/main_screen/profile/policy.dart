@@ -24,8 +24,7 @@ class _PrivacyState extends State<Privacy> {
   @override
   void initState() {
     super.initState();
-    GetApi.getNotify(context, '');
-
+     // GetApi.getNotify(context, '');
     page = 1;
   }
 

@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:avispets/bloc/bloc_events.dart';
 import 'package:avispets/bloc/bloc_states.dart';
+import 'package:avispets/ui/widgets/cached_image.dart';
 import 'package:avispets/utils/apis/all_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,13 +10,15 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import '../../../bloc/edit_animal.dart';
+import '../../../utils/apis/api_strings.dart';
 import '../../../utils/common_function/crop_image.dart';
 import '../../../utils/common_function/loader_screen.dart';
 import '../../../utils/common_function/toaster.dart';
 import '../../../utils/my_color.dart';
 import '../../../utils/common_function/my_string.dart';
 import '../../../utils/my_routes/route_name.dart';
-
+import '../../../utils/shared_pref.dart';
+import 'package:http/http.dart' as http;
 class EditAnimal extends StatefulWidget {
   final Map<String, dynamic>? mapData;
 
@@ -58,7 +62,27 @@ class _EditAnimalState extends State<EditAnimal> {
     if (widget.mapData != null) {
       name.text = widget.mapData!['animal'].toString();
       type = int.parse(widget.mapData!['type'].toString());
-      image = widget.mapData!['image'].toString();
+
+      imageUrlList =  widget.mapData!['image'].toString().replaceAll('[', '')
+          .replaceAll(']', '')
+          .split(',')
+          .map((url) => url.trim())
+          .toList();
+      // var imageData = widget.mapData?['image'] as List;
+      //
+      // print("asdasdaada ${imageData[0]}");
+
+      // print("imageData ${imageData['image'][0]}");
+      // // imageUrlList  = imageData.asMap((e) => e['image']).toList();
+      // // print("imageUrlList ${widget.mapData?['image']}");
+      //
+      //
+       print(" imageUrlList ${ imageUrlList}");
+
+
+
+
+
 
       if (widget.mapData!['weight'].toString().isNotEmpty) {
         weight.text = widget.mapData!['weight'].toString();
@@ -80,6 +104,54 @@ class _EditAnimalState extends State<EditAnimal> {
     }
     if (widget.mapData!['specices'].toString() != 'null') {
       specices = widget.mapData!['specices'].toString();
+    }
+  }
+
+  Future<String?> uploadImage(File imageFile) async {
+    try {
+      // Replace with your actual token
+
+      // Create a multipart request
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse("${ApiStrings.serverURl}api/v1/upload/post-animal-image"),
+      );
+
+      // Add headers
+      request.headers.addAll({
+        'Authorization':
+        "Bearer  ${sharedPref.getString(SharedKey.auth).toString()}",
+        'Accept': 'application/json',
+      });
+
+      // Add the image file to the request
+      request.files.add(await http.MultipartFile.fromPath(
+        'animal_image',
+        imageFile.path,
+      ));
+
+      // Send the request
+      var response = await request.send();
+
+      print(response);
+
+      // Parse the response
+      if (response.statusCode == 200) {
+        var responseData = await http.Response.fromStream(response);
+        var responseBody = json.decode(responseData.body);
+
+        if (responseBody["error"] == false) {
+          return responseBody["data"]["imageUrl"];
+        } else {
+          throw Exception("Image upload failed: ${responseBody['message']}");
+        }
+      } else {
+        throw Exception(
+            "Failed to upload image. HTTP Status: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error uploading image: $e");
+      return null;
     }
   }
 
@@ -339,7 +411,7 @@ class _EditAnimalState extends State<EditAnimal> {
 
                           //!@dob
                           const SizedBox(height: 15),
-                          MyString.med('Age in months', 16, MyColor.black,
+                          MyString.med('Age', 16, MyColor.black,
                               TextAlign.center),
                           Container(
                             decoration: BoxDecoration(
@@ -402,50 +474,50 @@ class _EditAnimalState extends State<EditAnimal> {
                               },
                             ),
                           ), //radio 1
-                          Container(
-                            margin: const EdgeInsets.only(top: 8),
-                            height: 30,
-                            alignment: Alignment.center,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    doNotKnowDob = !doNotKnowDob;
-                                    dob.text = '';
-                                    setState(() {});
-                                  },
-                                  child: Container(
-                                    margin: const EdgeInsets.only(right: 8),
-                                    alignment: Alignment.center,
-                                    width: 20,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                        color: doNotKnowDob
-                                            ? MyColor.orange
-                                            : MyColor.white,
-                                        borderRadius: const BorderRadius.all(
-                                            Radius.circular(10))),
-                                    child: Icon(
-                                      Icons.check,
-                                      color: MyColor.white,
-                                      size: 15,
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                    child: MyString.reg(
-                                        "dontKnowDOB".tr,
-                                        14,
-                                        MyColor.textFieldBorder,
-                                        TextAlign.center)),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 15),
+                          // Container(
+                          //   margin: const EdgeInsets.only(top: 8),
+                          //   height: 30,
+                          //   alignment: Alignment.center,
+                          //   child: Row(
+                          //     mainAxisAlignment: MainAxisAlignment.start,
+                          //     crossAxisAlignment: CrossAxisAlignment.start,
+                          //     children: [
+                          //       GestureDetector(
+                          //         onTap: () {
+                          //           doNotKnowDob = !doNotKnowDob;
+                          //           dob.text = '';
+                          //           setState(() {});
+                          //         },
+                          //         child: Container(
+                          //           margin: const EdgeInsets.only(right: 8),
+                          //           alignment: Alignment.center,
+                          //           width: 20,
+                          //           height: 20,
+                          //           decoration: BoxDecoration(
+                          //               color: doNotKnowDob
+                          //                   ? MyColor.orange
+                          //                   : MyColor.white,
+                          //               borderRadius: const BorderRadius.all(
+                          //                   Radius.circular(10))),
+                          //           child: Icon(
+                          //             Icons.check,
+                          //             color: MyColor.white,
+                          //             size: 15,
+                          //           ),
+                          //         ),
+                          //       ),
+                          //       Container(
+                          //           child: MyString.reg(
+                          //               "dontKnowDOB".tr,
+                          //               14,
+                          //               MyColor.textFieldBorder,
+                          //               TextAlign.center)),
+                          //     ],
+                          //   ),
+                          // ),
+                           const SizedBox(height: 15),
                           MyString.med(
-                              'Weight', 16, MyColor.black, TextAlign.center),
+                              'Weight(Kg)', 16, MyColor.black, TextAlign.center),
                           Container(
                             decoration: BoxDecoration(
                                 boxShadow: <BoxShadow>[
@@ -561,47 +633,47 @@ class _EditAnimalState extends State<EditAnimal> {
                           ),
 
                           //radio 2
-                          Container(
-                            margin: const EdgeInsets.only(top: 8),
-                            height: 30,
-                            alignment: Alignment.center,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    doNotKnowBreed = !doNotKnowBreed;
-                                    race.text = '';
-                                    setState(() {});
-                                  },
-                                  child: Container(
-                                    margin: const EdgeInsets.only(right: 8),
-                                    alignment: Alignment.center,
-                                    width: 20,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                        color: doNotKnowBreed
-                                            ? MyColor.orange
-                                            : MyColor.white,
-                                        borderRadius: const BorderRadius.all(
-                                            Radius.circular(10))),
-                                    child: Icon(
-                                      Icons.check,
-                                      color: MyColor.white,
-                                      size: 15,
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                    child: MyString.reg(
-                                        "DonotKnowBreed".tr,
-                                        14,
-                                        MyColor.textFieldBorder,
-                                        TextAlign.center)),
-                              ],
-                            ),
-                          ),
+                          // Container(
+                          //   margin: const EdgeInsets.only(top: 8),
+                          //   height: 30,
+                          //   alignment: Alignment.center,
+                          //   child: Row(
+                          //     mainAxisAlignment: MainAxisAlignment.start,
+                          //     crossAxisAlignment: CrossAxisAlignment.start,
+                          //     children: [
+                          //       GestureDetector(
+                          //         onTap: () {
+                          //           doNotKnowBreed = !doNotKnowBreed;
+                          //           race.text = '';
+                          //           setState(() {});
+                          //         },
+                          //         child: Container(
+                          //           margin: const EdgeInsets.only(right: 8),
+                          //           alignment: Alignment.center,
+                          //           width: 20,
+                          //           height: 20,
+                          //           decoration: BoxDecoration(
+                          //               color: doNotKnowBreed
+                          //                   ? MyColor.orange
+                          //                   : MyColor.white,
+                          //               borderRadius: const BorderRadius.all(
+                          //                   Radius.circular(10))),
+                          //           child: Icon(
+                          //             Icons.check,
+                          //             color: MyColor.white,
+                          //             size: 15,
+                          //           ),
+                          //         ),
+                          //       ),
+                          //       // Container(
+                          //       //     child: MyString.reg(
+                          //       //         "DonotKnowBreed".tr,
+                          //       //         14,
+                          //       //         MyColor.textFieldBorder,
+                          //       //         TextAlign.center)),
+                          //     ],
+                          //   ),
+                          // ),
                           const SizedBox(height: 15),
 
                           //!@gender
@@ -684,149 +756,282 @@ class _EditAnimalState extends State<EditAnimal> {
                           const SizedBox(height: 15),
 
                           //!@sterilized
-                          MyString.med('sterilized'.tr, 16, MyColor.black,
-                              TextAlign.center),
-                          Row(
-                            children: [
-                              Flexible(
-                                  flex: 1,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      sterilized = 1;
-                                      setState(() {});
-                                    },
-                                    child: Container(
-                                      height: 40,
-                                      alignment: Alignment.center,
-                                      margin: const EdgeInsets.only(
-                                          right: 10, left: 10),
-                                      width: double.infinity,
-                                      decoration: BoxDecoration(
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(40)),
-                                          boxShadow: <BoxShadow>[
-                                            new BoxShadow(
-                                              color: MyColor.liteGrey,
-                                              blurRadius: 2.0,
-                                              offset: new Offset(0.0, 3.0),
-                                            ),
-                                          ],
-                                          color: sterilized == 2
-                                              ? MyColor.white
-                                              : MyColor.newBackgroundColor),
-                                      child: MyString.med(
-                                          'yes'.tr,
-                                          14,
-                                          sterilized == 2
-                                              ? MyColor.textBlack3
-                                              : MyColor.white,
-                                          TextAlign.center),
-                                    ),
-                                  )),
-                              Flexible(
-                                  flex: 1,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      sterilized = 2;
-                                      setState(() {});
-                                    },
-                                    child: Container(
-                                      margin: const EdgeInsets.only(
-                                          right: 10, left: 10),
-                                      height: 40,
-                                      alignment: Alignment.center,
-                                      width: double.infinity,
-                                      decoration: BoxDecoration(
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(40)),
-                                          boxShadow: <BoxShadow>[
-                                            new BoxShadow(
-                                              color: MyColor.liteGrey,
-                                              blurRadius: 2.0,
-                                              offset: new Offset(0.0, 3.0),
-                                            ),
-                                          ],
-                                          color: sterilized == 1
-                                              ? MyColor.white
-                                              : MyColor.newBackgroundColor),
-                                      child: MyString.med(
-                                          'no'.tr,
-                                          14,
-                                          sterilized == 1
-                                              ? MyColor.textBlack3
-                                              : MyColor.white,
-                                          TextAlign.center),
-                                    ),
-                                  )),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
+                          // MyString.med('sterilized'.tr, 16, MyColor.black,
+                          //     TextAlign.center),
+                          // Row(
+                          //   children: [
+                          //     Flexible(
+                          //         flex: 1,
+                          //         child: GestureDetector(
+                          //           onTap: () {
+                          //             sterilized = 1;
+                          //             setState(() {});
+                          //           },
+                          //           child: Container(
+                          //             height: 40,
+                          //             alignment: Alignment.center,
+                          //             margin: const EdgeInsets.only(
+                          //                 right: 10, left: 10),
+                          //             width: double.infinity,
+                          //             decoration: BoxDecoration(
+                          //                 borderRadius: const BorderRadius.all(
+                          //                     Radius.circular(40)),
+                          //                 boxShadow: <BoxShadow>[
+                          //                   new BoxShadow(
+                          //                     color: MyColor.liteGrey,
+                          //                     blurRadius: 2.0,
+                          //                     offset: new Offset(0.0, 3.0),
+                          //                   ),
+                          //                 ],
+                          //                 color: sterilized == 2
+                          //                     ? MyColor.white
+                          //                     : MyColor.newBackgroundColor),
+                          //             child: MyString.med(
+                          //                 'yes'.tr,
+                          //                 14,
+                          //                 sterilized == 2
+                          //                     ? MyColor.textBlack3
+                          //                     : MyColor.white,
+                          //                 TextAlign.center),
+                          //           ),
+                          //         )),
+                          //     Flexible(
+                          //         flex: 1,
+                          //         child: GestureDetector(
+                          //           onTap: () {
+                          //             sterilized = 2;
+                          //             setState(() {});
+                          //           },
+                          //           child: Container(
+                          //             margin: const EdgeInsets.only(
+                          //                 right: 10, left: 10),
+                          //             height: 40,
+                          //             alignment: Alignment.center,
+                          //             width: double.infinity,
+                          //             decoration: BoxDecoration(
+                          //                 borderRadius: const BorderRadius.all(
+                          //                     Radius.circular(40)),
+                          //                 boxShadow: <BoxShadow>[
+                          //                   new BoxShadow(
+                          //                     color: MyColor.liteGrey,
+                          //                     blurRadius: 2.0,
+                          //                     offset: new Offset(0.0, 3.0),
+                          //                   ),
+                          //                 ],
+                          //                 color: sterilized == 1
+                          //                     ? MyColor.white
+                          //                     : MyColor.newBackgroundColor),
+                          //             child: MyString.med(
+                          //                 'no'.tr,
+                          //                 14,
+                          //                 sterilized == 1
+                          //                     ? MyColor.textBlack3
+                          //                     : MyColor.white,
+                          //                 TextAlign.center),
+                          //           ),
+                          //         )),
+                          //   ],
+                          // ),
+                          // const SizedBox(height: 10),
 
                           //!@photo
                           const SizedBox(height: 10),
                           MyString.med(
                               'photo'.tr, 16, MyColor.black, TextAlign.center),
-                          GestureDetector(
-                            onTap: () async {
-                              String? result =
-                                  await cameraPhoto(context, "edit");
-                              var returnImage;
-                              if (result == '0') {
-                                returnImage = await pickImage(
-                                    context, ImageSource.camera);
-                              } else if (result == '1') {
-                                returnImage = await pickImage(
-                                    context, ImageSource.gallery);
-                              }
-                              if (returnImage != null) {
-                                fileImage = returnImage;
-                                String? uploadedImageUrl =
-                                    await AllApi().uploadImages(fileImage!);
-                                if (uploadedImageUrl != null) {
-                                  setState(() {
-                                    imageList.add(File(fileImage!.path));
-                                    imageUrlList.add(uploadedImageUrl);
-                                  });
-                                  print(
-                                      "Image uploaded successfully: $uploadedImageUrl");
+
+                          Container(
+                            height: imageUrlList.length >= 3 ? 230 : 150,
+                            width: double.infinity,
+                            child: GridView.builder(
+                              itemCount: imageUrlList.length + 1,
+                              gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3, // Number of items per row
+                                crossAxisSpacing: 8,
+                                mainAxisSpacing: 8,
+                              ),
+                              itemBuilder: (context, index) {
+                                if (index == imageUrlList.length) {
+                                  // Add More Button
+                                  return GestureDetector(
+                                    onTap: () async {
+                                      print('==============================');
+                                      if(imageUrlList.length<5)
+                                      {
+                                        String? result =
+                                        await cameraPhoto(context, "create_animal");
+                                        File? returnImage;
+
+                                        // Pick image from Camera or Gallery
+                                        if (result == '0') {
+                                          returnImage = await pickImage(
+                                              context, ImageSource.camera);
+                                        } else if (result == '1') {
+                                          returnImage = await pickImage(
+                                              context, ImageSource.gallery);
+                                        }
+
+                                        print(returnImage);
+                                        if (returnImage != null) {
+                                          fileImage = returnImage;
+                                          imageList.add(File(fileImage!.path));
+
+
+                                          String? uploadedImageUrl = await uploadImage(fileImage!);
+
+                                          print("asdasdasdsaddasda");
+                                          if (uploadedImageUrl != null) {
+                                            setState(() {
+                                              imageUrlList.add(uploadedImageUrl);
+                                            });
+                                            print(
+                                                "Image uploaded successfully: $uploadedImageUrl");
+                                          } else {
+                                            print("Image upload failed.");
+                                          }
+                                        }
+
+                                        setState(() {});
+
+                                      }
+                                      else{
+
+                                        toaster(context,"You can upload a maximum of 5 images.");
+
+                                      }
+
+                                    },
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: MyColor.white,
+                                        border:
+                                        Border.all(color: MyColor.orange2),
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                        children: [
+                                          Image.asset(
+                                            'assets/images/icons/addpic.png',
+                                            height: 30,
+                                            width: 30,
+                                          ),
+                                          Text('Add More',
+                                              style: TextStyle(
+                                                  color: MyColor.orange2)),
+                                        ],
+                                      ),
+                                    ),
+                                  );
                                 } else {
-                                  print("Image upload failed.");
-                                }
-                              }
-                              setState(() {});
-                            },
-                            child: Container(
-                              width: double.infinity,
-                              height: 100,
-                              decoration: BoxDecoration(
-                                  color: MyColor.liteGrey,
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(20))),
-                              child: ClipRRect(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10)),
-                                  child: fileImage != null
-                                      ? Image.file(
-                                          fileImage!,
+                                  // Display selected images
+                                  return Stack(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: CachedImage(
+                                          url:
+                                          imageUrlList[index],
                                           fit: BoxFit.cover,
-                                        )
-                                      : image != null
-                                          ? Image.network(
-                                              image.toString(),
-                                              fit: BoxFit.cover,
-                                            )
-                                          : Padding(
-                                              padding: const EdgeInsets.all(30),
-                                              child: Image.asset(
-                                                'assets/images/icons/camera_animal.png',
-                                                height: 20,
-                                                width: 20,
-                                              ),
-                                            )),
+                                          width: double.infinity,
+                                          height: double.infinity,
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: 5,
+                                        right: 5,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            // Remove image from list
+                                            setState(() {
+                                              imageUrlList.removeAt(index);
+                                            });
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.all(4),
+                                            decoration: BoxDecoration(
+                                              color: Colors.red.withOpacity(0.8),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Icon(
+                                              Icons.close,
+                                              size: 18,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }
+                              },
                             ),
                           ),
+                          // GestureDetector(
+                          //   onTap: () async {
+                          //     String? result =
+                          //         await cameraPhoto(context, "edit");
+                          //     var returnImage;
+                          //     if (result == '0') {
+                          //       returnImage = await pickImage(
+                          //           context, ImageSource.camera);
+                          //     } else if (result == '1') {
+                          //       returnImage = await pickImage(
+                          //           context, ImageSource.gallery);
+                          //     }
+                          //     if (returnImage != null) {
+                          //       fileImage = returnImage;
+                          //       String? uploadedImageUrl =
+                          //           await AllApi().uploadImages(fileImage!);
+                          //       if (uploadedImageUrl != null) {
+                          //         setState(() {
+                          //           imageList.add(File(fileImage!.path));
+                          //           imageUrlList.add(uploadedImageUrl);
+                          //         });
+                          //         print(
+                          //             "Image uploaded successfully: $uploadedImageUrl");
+                          //       } else {
+                          //         print("Image upload failed.");
+                          //       }
+                          //     }
+                          //     setState(() {});
+                          //   },
+                          //   child: Container(
+                          //     width: double.infinity,
+                          //     height: 100,
+                          //     decoration: BoxDecoration(
+                          //         color: MyColor.liteGrey,
+                          //         borderRadius: const BorderRadius.all(
+                          //             Radius.circular(20))),
+                          //     child: ClipRRect(
+                          //         borderRadius:
+                          //             BorderRadius.all(Radius.circular(10)),
+                          //         child: fileImage != null
+                          //             ? Image.file(
+                          //                 fileImage!,
+                          //                 fit: BoxFit.cover,
+                          //               )
+                          //             : image != null
+                          //                 ? Image.network(
+                          //                     image.toString(),
+                          //                     fit: BoxFit.cover,
+                          //                   )
+                          //                 : Padding(
+                          //                     padding: const EdgeInsets.all(30),
+                          //                     child: Image.asset(
+                          //                       'assets/images/icons/camera_animal.png',
+                          //                       height: 20,
+                          //                       width: 20,
+                          //                     ),
+                          //                   )),
+                          //   ),
+                          // ),
 
-                          //mainButton
+                         // mainButton
                           GestureDetector(
                             onTap: () async {
                               setState(() {
