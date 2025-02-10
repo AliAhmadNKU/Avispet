@@ -96,6 +96,8 @@ class GetCreateAnimalEvent extends CreateAnimalEvent {
 //  --createPost
 class GetCreatePostEvent extends CreatePost {
   int userId;
+  num lat;
+  num lng;
   String placeId;
   String email;
   String phone;
@@ -135,6 +137,8 @@ class GetCreatePostEvent extends CreatePost {
     required this.additionalInfo,
     required this.isFavourite,
     required this.postRatings,
+    required this.lat,
+    required this.lng,
   });
 }
 

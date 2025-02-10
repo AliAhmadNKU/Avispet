@@ -185,6 +185,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                       children: [
                                         Expanded(
                                           child: TextField(
+                                            inputFormatters: [
+                                              LengthLimitingTextInputFormatter(50), // Restrict to 50 characters
+                                            ],
                                             controller: firstName,
                                             scrollPadding:
                                                 const EdgeInsets.only(
@@ -232,6 +235,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                             scrollPadding:
                                                 const EdgeInsets.only(
                                                     bottom: 50),
+                                            inputFormatters: [
+                                              LengthLimitingTextInputFormatter(50), // Restrict to 50 characters
+                                            ],
                                             style:
                                                 TextStyle(color: MyColor.black),
                                             decoration: InputDecoration(
@@ -262,10 +268,14 @@ class _SignupScreenState extends State<SignupScreen> {
                                   ),
                                   Container(
                                     child: TextField(
+
                                       controller: email,
                                       scrollPadding:
                                           const EdgeInsets.only(bottom: 50),
                                       style: TextStyle(color: MyColor.black),
+                                      inputFormatters: [
+                                        LengthLimitingTextInputFormatter(50), // Restrict to 50 characters
+                                      ],
                                       decoration: InputDecoration(
                                         border: const OutlineInputBorder(
                                           borderSide: BorderSide.none,
@@ -306,6 +316,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                       children: [
                                         Expanded(
                                           child: TextField(
+                                            inputFormatters: [
+                                              LengthLimitingTextInputFormatter(50), // Restrict to 50 characters
+                                            ],
                                             controller: password,
                                             obscureText:
                                                 passwordVisible ? false : true,
@@ -369,6 +382,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                         ),
                                         Expanded(
                                           child: TextField(
+                                            inputFormatters: [
+                                              LengthLimitingTextInputFormatter(50), // Restrict to 50 characters
+                                            ],
                                             controller: confirmPassword,
                                             obscureText: confirmPasswordVisible
                                                 ? false

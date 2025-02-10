@@ -236,7 +236,7 @@ class SignUpBlock extends Bloc<CreateProfileEvent, BlocStates> {
     if (data.lastName.toString().trim().isEmpty) {
       return StringKey.enterLastName;
     }
-    if (data.email.toString().isEmpty) {
+    if (data.email.toString().trim().isEmpty) {
       return StringKey.enterEmail;
     }
     if (!emailValid) {
@@ -257,13 +257,13 @@ class SignUpBlock extends Bloc<CreateProfileEvent, BlocStates> {
     if (data.pseudo.toString().isEmpty) {
       return StringKey.enterPseudo;
     }
-    if (data.phoneNumber.toString().isEmpty) {
+    if (data.phoneNumber.toString().trim().isEmpty) {
       return StringKey.enterPhone;
     }
-    if (data.address.toString().isEmpty) {
+    if (data.address.toString().trim().isEmpty) {
       return StringKey.enterAddress;
     }
-    if (data.city.toString().isEmpty) {
+    if (data.city.toString().trim().isEmpty) {
       return StringKey.enterCity;
     }
 
