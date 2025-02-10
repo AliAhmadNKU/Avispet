@@ -5,6 +5,18 @@ class Lang extends Translations {
   Map<String, Map<String, String>> get keys => {
         // English
         'en_en': {
+          "Explore":"Explore",
+          "Reviews":" Reviews",
+          "Authentic":" Authentic",
+          "Share&Consult":"Share & consult",
+          "Forums":" Forums",
+          "Personalized":" Personalized",
+          "Discover":"Discover",
+          "FindTheBestsHotelsRestaurantsParksToVisitWithYourFurryLovedones.":"Find the bests hotels, restaurants, parks ... to visit with your furry loved-ones.",
+          "EvaluateTheServicesYouBuyForYourDogsAndCats":"Evaluate the services you buy for your dogs and cats.",
+          "DiscussCommonTopicsWithPetParentsDependingOnTheBreedOfYourPet":"Discuss common topics with pet parents, depending on the breed of your pet.",
+          "FindTheBestsHotelsRestaurantsParksToVisitWithYourFurryLovedOnes":"Find the bests hotels, restaurants, parks ... to visit with your furry loved-ones.",
+          "GiveYourPetTheBest":" Give Your Pet The Best",
           'YourNewsFeed': 'Your News Feed',
           'centerElseWhere': 'Center Elsewhere',
           'useCurrLoc': 'Use your current location',
@@ -486,6 +498,18 @@ class Lang extends Translations {
 
         // French
         'fr_fr': {
+          "Explore":"Explorer",
+          "Reviews":" Avis",
+          "Authentic":" Authentique",
+          "Share&Consult":"Partager & consulter",
+          "Forums":" Forums",
+          "Personalized":" Personnalisé",
+          "Discover":"Découvrir",
+          "FindTheBestsHotelsRestaurantsParksToVisitWithYourFurryLovedones":"Trouvez les meilleurs hôtels, restaurants, parcs... à visiter avec vos proches à quatre pattes.",
+          "EvaluateTheServicesYouBuyForYourDogsAndCats":"Évaluez les services que vous achetez pour vos chiens et chats.",
+          "DiscussCommonTopicsWithPetParentsDependingOnTheBreedOfYourPet":"Discutez de sujets courants avec les parents d'animaux, en fonction de la race de votre animal.",
+          "FindTheBestsHotelsRestaurantsParksToVisitWithYourFurryLovedOnes":"Trouvez les meilleurs hôtels, restaurants, parcs... à visiter avec vos proches à quatre pattes.",
+          "GiveYourPetTheBest":" Donnez le meilleur à votre animal de compagnie",
           'YourNewsFeed': 'Your News Feed',
           'useCurrLoc': 'Utiliser votre localisation actuelle',
           'centerElseWhere': 'Center Elsewhere',

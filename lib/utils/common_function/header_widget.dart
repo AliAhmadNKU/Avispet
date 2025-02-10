@@ -94,6 +94,8 @@ class HeaderWidget extends StatelessWidget {
                 ],
               ),
               const SizedBox(width: 10),
+
+              /// translation
               GestureDetector(
                 onTap: () async {
                   await changeLanguage(context);
