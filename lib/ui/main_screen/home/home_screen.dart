@@ -1561,13 +1561,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildForumsUINEW() {
+    final List<String> imageUrls = [
+      "assets/images/1dog.png",
+      "assets/images/2dog.png",
+    ];
     return Expanded(
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: _allForumsResponseModel.data != null ? _allForumsResponseModel.data!.length : 0,
+        itemCount:imageUrls.length, /*_allForumsResponseModel.data != null ? _allForumsResponseModel.data!.length: 0,*/
         itemBuilder: (context, index) {
-          final forum = _allForumsResponseModel.data![index];
-
+         // final forum = _allForumsResponseModel.data![index];
           return Container(
             width: MediaQuery.of(context)
                 .size
@@ -1583,14 +1586,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       EdgeInsets.symmetric(
                           horizontal: 10),
                       width: double.infinity,
-                      color: MyColor.white,
+
                       child: Center(
                           child: Image.asset(
                               width:
                               double.infinity,
                               fit:
                               BoxFit.fitWidth,
-                              'assets/images/chi_salon.png'))),
+                              imageUrls[index]))),
                 ),
                 Positioned(
                     left: 35,
@@ -1599,13 +1602,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       width: 200,
                       child: Row(
                         children: [
-                          Flexible(
-                              child: MyString.bold(
-                                  '${forum.title.toString()}',
-                                  22,
-                                  MyColor.title,
-                                  TextAlign
-                                      .start)),
+                          // Flexible(
+                          //     child: MyString.bold(
+                          //         '${forum.title.toString()}',
+                          //         22,
+                          //         MyColor.title,
+                          //         TextAlign
+                          //             .start)),
                         ],
                       ),
                     )),
