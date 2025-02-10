@@ -1955,7 +1955,7 @@ class _ChatScreenState extends State<GroupChatScreen> {
   Future<void> _pickMedia() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['jpg', 'jpeg', 'png', 'mp4'],
+      allowedExtensions: ['jpg', 'jpeg', 'png'],
       allowMultiple: true,
       allowCompression: true,
     );

@@ -1378,6 +1378,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                                             context,
                                                             "add_post");
                                                     File? returnImage;
+                                                    print('====== result === ${result}');
 
                                                     // Pick image from Camera or Gallery
                                                     if (result == '0') {
@@ -1394,7 +1395,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                                                   .gallery);
                                                     }
 
-                                                    print(returnImage);
+                                                    print('====== returnImage === ${returnImage}');
                                                     if (returnImage != null) {
                                                       fileImage = returnImage;
 
@@ -1890,11 +1891,17 @@ class _AddPostScreenState extends State<AddPostScreen> {
   Future<dynamic> _updateSuggestions(String query) async {
     print('_updateSuggestions => query $query');
     if(selectedCategory.toLowerCase().contains('store')){
-      if(query.isNotEmpty) return [];
+      if(query.isNotEmpty) {
+        toaster(context, 'You can only select from available list');
+        return [];
+      };
       return await getLocationByStore();
     }
     else if(selectedCategory.toLowerCase().contains('event')){
-      if(query.isNotEmpty) return [];
+      if(query.isNotEmpty) {
+        toaster(context, 'You can only select from available list');
+        return [];
+      };
       return await getLocationByEvent();
     }
     else if (query.isNotEmpty) {

@@ -1,4 +1,5 @@
 import 'package:avispets/ui/main_screen/profile/profile_screen.dart';
+import 'package:avispets/ui/widgets/no_data_found.dart';
 import 'package:avispets/utils/apis/get_api.dart';
 import 'package:avispets/utils/common_function/header_widget.dart';
 import 'package:flutter/material.dart';
@@ -35,13 +36,15 @@ class _BadgesState extends State<Badges> {
       body: Container(
         padding: EdgeInsets.symmetric(vertical: 25, horizontal: 10),
         width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
         child: (isLoading)
             ? Center(
                 child: CircularProgressIndicator(
                   color: MyColor.orange2,
                 ),
               )
-            : Column(
+            : GetApi.userBadgesResponseModel.data != null && GetApi.userBadgesResponseModel.data!.isNotEmpty ?
+        Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -324,6 +327,14 @@ class _BadgesState extends State<Badges> {
                           );
                         }),
                   ))
+                ],
+              ) : Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  HeaderWidget(),
+                  Align(
+                    alignment: Alignment.center,
+                      child: NoDataFound()),
                 ],
               ),
       ),

@@ -35,6 +35,8 @@ class HomeScreen extends StatefulWidget {
 enum SampleItem { report, delete }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late ScrollController _feedsScrollController;
+
   List<Object> places = [];
 
   bool isLoading = false;
@@ -88,6 +90,8 @@ class _HomeScreenState extends State<HomeScreen> {
   //extra
   int page = 1;
   final searchDelay = SearchDelayFunction();
+
+  int feedCurrentPage = 1;
 
   //horizontal-list
   int horizontalPosition = 0;
@@ -150,11 +154,31 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _feedsScrollController = ScrollController();
+    _feedsScrollController.addListener(_onScroll);
 
     getAllCategoriesApi();
-    getAllPostsApi(page);
+    getAllPostsApi();
     getForumApi(page, '', currentTabBreed);
     // GetApi.getNotify(context, '');
+  }
+
+  @override
+  void dispose() {
+    _feedsScrollController.dispose() ;
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_feedsScrollController.position.pixels >= _feedsScrollController.position.maxScrollExtent - 200) {
+      stackLoader = true;
+      feedCurrentPage++;
+      setState(() {
+
+      });
+      getAllPostsApi();
+      // context.read<PaginationCubit>().fetchItems();
+    }
   }
   // Image list
   List<String> images = [
@@ -252,6 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       searchBar.text = '';
                     },
                     child: SingleChildScrollView(
+                      controller: _feedsScrollController,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 15.0, vertical: 10),
@@ -569,10 +594,10 @@ class _HomeScreenState extends State<HomeScreen> {
   //     });
   //   }
   // }
-  Future<void> getAllPostsApi(int page) async {
+  Future<void> getAllPostsApi() async {
     try {
       // Make the API call
-      var res = await AllApi.getMethodApi("${ApiStrings.getAllFeed}?page=1&limit=20");
+      var res = await AllApi.getMethodApi("${ApiStrings.getAllFeed}?page=${feedCurrentPage}&limit=20");
       print('=========================$res');
 
       // Decode the response
@@ -580,13 +605,14 @@ class _HomeScreenState extends State<HomeScreen> {
       if (result['status'] == 200) {
         // Parse the response into the GetAllPostModel
         var posts = GetAllPostModel.fromJson(result);
-        setState(() {
-          // Update your local state with the data
-          postsList = posts.data!.data!.post!
-              .map((post) => Post.fromJson(post.toJson()))
-              .toList();
-          print('getAllPostsApi => total_post ${postsList.length}');
-        });
+        if(feedCurrentPage == 1){
+          postsList.clear();
+        }
+        final feeds = posts.data!.data!.post!
+            .map((post) => Post.fromJson(post.toJson()))
+            .toList();
+        postsList.addAll(feeds);
+        print('getAllPostsApi => total_post ${postsList.length}');
       } else if (result['status'] == 401) {
         // Handle unauthorized access
         Navigator.pushNamedAndRemoveUntil(
@@ -595,6 +621,10 @@ class _HomeScreenState extends State<HomeScreen> {
         // Handle other errors
         toaster(context, result['message'].toString());
       }
+      setState(() {
+        stackLoader = false;
+        // Update your local state with the data
+      });
     } catch (e) {
       // Handle exceptions
       debugPrint("Error: $e");
@@ -1427,138 +1457,138 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildForumsUIOLD() {
-    return Expanded(
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: forumList.length,
-        itemBuilder: (context, index) {
-          return Container(
-            width: MediaQuery.of(context)
-                .size
-                .width *
-                0.95,
-            child: Stack(
-              children: [
-                ClipRRect(
-                  borderRadius:
-                  BorderRadius.circular(15),
-                  child: Container(
-                      padding:
-                      EdgeInsets.symmetric(
-                          horizontal: 10),
-                      width: double.infinity,
-                      color: MyColor.white,
-                      child: Center(
-                          child: Image.asset(
-                              width:
-                              double.infinity,
-                              fit:
-                              BoxFit.fitWidth,
-                              'assets/images/chi_salon.png'))),
-                ),
-                Positioned(
-                    left: 35,
-                    top: 40,
-                    child: Container(
-                      width: 200,
-                      child: Row(
-                        children: [
-                          Flexible(
-                              child: MyString.bold(
-                                  '${forumList[index].dogBreed!.name.toString()} Salon',
-                                  22,
-                                  MyColor.title,
-                                  TextAlign
-                                      .start)),
-                        ],
-                      ),
-                    )),
-                Positioned(
-                    left: 35,
-                    top: 120,
-                    child: Container(
-                        padding:
-                        EdgeInsets.symmetric(
-                            horizontal: 25,
-                            vertical: 10),
-                        decoration: BoxDecoration(
-                            color: MyColor.redd,
-                            borderRadius:
-                            BorderRadius
-                                .circular(
-                                15)),
-                        child: GestureDetector(
-                            onTap: () async {
-                              // Map<String, dynamic>
-                              //     mapping = {
-                              //   'image': getForum
-                              //                   .data![
-                              //                       index]
-                              //                   .dogBreed
-                              //                   ?.icon !=
-                              //               null &&
-                              //           getForum
-                              //               .data![
-                              //                   index]
-                              //               .dogBreed!
-                              //               .icon
-                              //               .toString()
-                              //               .isNotEmpty
-                              //       ? '${ApiStrings.mediaURl}${getForum.data![index].dogBreed?.icon.toString()}'
-                              //       : '',
-                              //   'desc': sharedPref
-                              //               .getString(SharedKey
-                              //                   .languageValue)
-                              //               .toString() ==
-                              //           'en'
-                              //       ? getForum
-                              //           .data![
-                              //               index]
-                              //           .description
-                              //           .toString()
-                              //       : getForum
-                              //           .data![
-                              //               index]
-                              //           .descriptionFr
-                              //           .toString(),
-                              //   'topic': forumList[
-                              //           index]
-                              //       .dogBreed!
-                              //       .name
-                              //       .toString(),
-                              //   'forumId':
-                              //       forumList[
-                              //               index]
-                              //           .id,
-                              // };
-                              await Navigator.pushNamed(
-                                  context,
-                                  RoutesName
-                                      .forumQuestion,
-                                  arguments: {});
-                              setState(() {
-                                loader = true;
-                                page = 1;
-                                getForumApi(
-                                    page,
-                                    '',
-                                    currentTabBreed);
-                              });
-                            },
-                            child: MyString.bold(
-                                'Join Now',
-                                12,
-                                MyColor.white,
-                                TextAlign
-                                    .start))))
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
+  // Widget _buildForumsUIOLD() {
+  //   return Expanded(
+  //     child: ListView.builder(
+  //       scrollDirection: Axis.horizontal,
+  //       itemCount: forumList.length,
+  //       itemBuilder: (context, index) {
+  //         return Container(
+  //           width: MediaQuery.of(context)
+  //               .size
+  //               .width *
+  //               0.95,
+  //           child: Stack(
+  //             children: [
+  //               ClipRRect(
+  //                 borderRadius:
+  //                 BorderRadius.circular(15),
+  //                 child: Container(
+  //                     padding:
+  //                     EdgeInsets.symmetric(
+  //                         horizontal: 10),
+  //                     width: double.infinity,
+  //                     color: MyColor.white,
+  //                     child: Center(
+  //                         child: Image.asset(
+  //                             width:
+  //                             double.infinity,
+  //                             fit:
+  //                             BoxFit.fitWidth,
+  //                             'assets/images/chi_salon.png'))),
+  //               ),
+  //               Positioned(
+  //                   left: 35,
+  //                   top: 40,
+  //                   child: Container(
+  //                     width: 200,
+  //                     child: Row(
+  //                       children: [
+  //                         Flexible(
+  //                             child: MyString.bold(
+  //                                 '${forumList[index].dogBreed!.name.toString()} Salon',
+  //                                 22,
+  //                                 MyColor.title,
+  //                                 TextAlign
+  //                                     .start)),
+  //                       ],
+  //                     ),
+  //                   )),
+  //               Positioned(
+  //                   left: 35,
+  //                   top: 120,
+  //                   child: Container(
+  //                       padding:
+  //                       EdgeInsets.symmetric(
+  //                           horizontal: 25,
+  //                           vertical: 10),
+  //                       decoration: BoxDecoration(
+  //                           color: MyColor.redd,
+  //                           borderRadius:
+  //                           BorderRadius
+  //                               .circular(
+  //                               15)),
+  //                       child: GestureDetector(
+  //                           onTap: () async {
+  //                             // Map<String, dynamic>
+  //                             //     mapping = {
+  //                             //   'image': getForum
+  //                             //                   .data![
+  //                             //                       index]
+  //                             //                   .dogBreed
+  //                             //                   ?.icon !=
+  //                             //               null &&
+  //                             //           getForum
+  //                             //               .data![
+  //                             //                   index]
+  //                             //               .dogBreed!
+  //                             //               .icon
+  //                             //               .toString()
+  //                             //               .isNotEmpty
+  //                             //       ? '${ApiStrings.mediaURl}${getForum.data![index].dogBreed?.icon.toString()}'
+  //                             //       : '',
+  //                             //   'desc': sharedPref
+  //                             //               .getString(SharedKey
+  //                             //                   .languageValue)
+  //                             //               .toString() ==
+  //                             //           'en'
+  //                             //       ? getForum
+  //                             //           .data![
+  //                             //               index]
+  //                             //           .description
+  //                             //           .toString()
+  //                             //       : getForum
+  //                             //           .data![
+  //                             //               index]
+  //                             //           .descriptionFr
+  //                             //           .toString(),
+  //                             //   'topic': forumList[
+  //                             //           index]
+  //                             //       .dogBreed!
+  //                             //       .name
+  //                             //       .toString(),
+  //                             //   'forumId':
+  //                             //       forumList[
+  //                             //               index]
+  //                             //           .id,
+  //                             // };
+  //                             await Navigator.pushNamed(
+  //                                 context,
+  //                                 RoutesName
+  //                                     .forumQuestion,
+  //                                 arguments: {});
+  //                             setState(() {
+  //                               loader = true;
+  //                               page = 1;
+  //                               getForumApi(
+  //                                   page,
+  //                                   '',
+  //                                   currentTabBreed);
+  //                             });
+  //                           },
+  //                           child: MyString.bold(
+  //                               'Join Now',
+  //                               12,
+  //                               MyColor.white,
+  //                               TextAlign
+  //                                   .start))))
+  //             ],
+  //           ),
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
 
   Widget _buildForumsUINEW() {
     final List<String> imageUrls = [
