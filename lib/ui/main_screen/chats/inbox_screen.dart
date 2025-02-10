@@ -91,11 +91,13 @@ class _InboxScreenState extends State<InboxScreen> {
                   Future.delayed(Duration(milliseconds: 100), () async {
                     var data = await Navigator.pushNamed(
                         context, RoutesName.createGroup);
-                    if (data == true) {
-                      loader = true;
-                      groupCreateEnable = true;
-                      inbox();
-                    }
+                    getAllUserChats();
+                    getAllGroupChats();
+                    // if (data == true) {
+                    //   loader = true;
+                    //   groupCreateEnable = true;
+                    //   inbox();
+                    // }
                   });
                 },
                 shape: CircleBorder(),
@@ -112,10 +114,12 @@ class _InboxScreenState extends State<InboxScreen> {
           backgroundColor: MyColor.white,
           body: RefreshIndicator(
             onRefresh: () async {
-              setState(() {
-                inbox();
-                searchController.clear();
-              });
+              getAllUserChats();
+              getAllGroupChats();
+              // setState(() {
+              //   inbox();
+              //   searchController.clear();
+              // });
             },
             child: SingleChildScrollView(
               child: Container(
@@ -181,9 +185,11 @@ class _InboxScreenState extends State<InboxScreen> {
                                 TextStyle(color: MyColor.more, fontSize: 14),
                           ),
                           onChanged: (value) {
-                            setState(() {
-                              onSearchUsers(value.trim().toLowerCase());
-                            });
+                            onSearchUsersV2(value.trim().toLowerCase());
+                            // setState(() {
+                            //   onSearchUsers(value.trim().toLowerCase());
+                            //
+                            // });
                           },
                         ),
                       ),
@@ -346,21 +352,36 @@ class _InboxScreenState extends State<InboxScreen> {
     );
   }
 
-  onSearchUsers(String text) async {
-    inboxList.clear();
+  // onSearchUsers(String text) async {
+  //   inboxList.clear();
+  //   if (text.isEmpty) {
+  //     FocusManager.instance.primaryFocus!.unfocus();
+  //     setState(() {
+  //       stackLoader = true;
+  //       inbox();
+  //     });
+  //     return;
+  //   }
+  //   for (var userDetail in dataHold) {
+  //     if (userDetail.name.toString().toLowerCase().contains(text) ||
+  //         userDetail.lastMessage.toString().toLowerCase().contains(text))
+  //       inboxList.add(userDetail);
+  //   }
+  //   setState(() {});
+  // }
+
+  onSearchUsersV2(String text) async {
     if (text.isEmpty) {
       FocusManager.instance.primaryFocus!.unfocus();
-      setState(() {
-        stackLoader = true;
-        inbox();
-      });
+      getAllUserChats();
+      getAllGroupChats();
       return;
     }
-    for (var userDetail in dataHold) {
-      if (userDetail.name.toString().toLowerCase().contains(text) ||
-          userDetail.lastMessage.toString().toLowerCase().contains(text))
-        inboxList.add(userDetail);
-    }
+    final filteredChats = _listChats.where((chat) => chat.sender!.name!.toLowerCase().contains(text)
+    || chat.receiver!.name!.toLowerCase().contains(text)
+    ).toList();
+    _listChats.clear();
+    _listChats.addAll(filteredChats);
     setState(() {});
   }
 
@@ -688,9 +709,11 @@ class _InboxScreenState extends State<InboxScreen> {
       var res = await AllApi.getMethodApi(
           "${ApiStrings.userAllChats}/${sharedPref.getString(SharedKey.userId)}");
       var result = jsonDecode(res.toString());
+      print(result);
 
       if (result['status'] == 200) {
         _userAllChatsModel = UserAllChatsModel.fromJson(result);
+        _listChats.clear();
         _listChats.addAll(_userAllChatsModel.data!.individualChats!);
         setState(() {
 
@@ -709,6 +732,7 @@ class _InboxScreenState extends State<InboxScreen> {
 
       if (result['status'] == 200) {
         _userGroupModel = UserGroupModel.fromJson(result);
+        _listGroupChats.clear();
         _listGroupChats.addAll(_userGroupModel.data!);
         setState(() {
 
@@ -1083,7 +1107,6 @@ class _InboxScreenState extends State<InboxScreen> {
               child: ListView.builder(
                 shrinkWrap: true,
                 itemCount: _listChats.length > 10 ? 10 : _listChats.length,
-                physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
                   final user = _listChats[index];
                   final currentUserID = int.parse(sharedPref.getString(SharedKey.userId)!);
@@ -1122,12 +1145,14 @@ class _InboxScreenState extends State<InboxScreen> {
                                   arguments: {
                                     'user': UserDiscussion(
                                       id: senderIsMe ? user.receiverId! : user.senderId,
-                                      name: senderIsMe ? user.sender!.name : user.receiver!.name,
+                                      name: senderIsMe ? user.receiver!.name : user.sender!.name,
                                       email: '',
-                                      profilePicture: senderIsMe ? user.sender!.profilePicture : user.receiver!.profilePicture,
+                                      profilePicture: profileImage,
+                                      // profilePicture: senderIsMe ? user.sender!.profilePicture : user.receiver!.profilePicture,
                                     )
                                   }
                               );
+                              getAllUserChats();
                             });
                       },
                       child: Container(
@@ -1339,7 +1364,6 @@ class _InboxScreenState extends State<InboxScreen> {
               child: ListView.builder(
                 shrinkWrap: true,
                 itemCount: _listGroupChats.length > 10 ? 10 : _listGroupChats.length,
-                physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
                   final user = _listGroupChats[index];
                   final currentUserID = int.parse(sharedPref.getString(SharedKey.userId)!);
@@ -1367,6 +1391,8 @@ class _InboxScreenState extends State<InboxScreen> {
                                     'group': user
                                   }
                               );
+                              // getAllUserChats();
+                              getAllGroupChats();
                             });
                       },
                       child: Container(

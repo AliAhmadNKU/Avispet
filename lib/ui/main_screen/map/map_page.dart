@@ -90,6 +90,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _onMapTap(LatLng position) async {
+    print('_onMapTap');
     final address = await GoogleMapsService.getAddressFromLatLng(
         position.latitude, position.longitude);
     setState(() {
@@ -382,7 +383,14 @@ class _MapScreenState extends State<MapScreen> {
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 12.0),
-                                child: HeaderWidget(backIcon: false,),
+                                child: HeaderWidget(
+                                  backIcon: false,
+                                  onTap: (){
+                                    // setState(() {
+                                    //   currentTab = 1;
+                                    // });
+                                  },
+                                ),
                               ),
                               Padding(
                                 padding: const EdgeInsets.symmetric(
@@ -417,8 +425,8 @@ class _MapScreenState extends State<MapScreen> {
                                   ),
                                   markers: _markers,
                                   onTap: _onMapTap,
-                                  myLocationEnabled: true,
-                                  myLocationButtonEnabled: true,
+                                  myLocationEnabled: false,
+                                  myLocationButtonEnabled: false,
                                 ),
                               ),
                             ],
@@ -431,7 +439,13 @@ class _MapScreenState extends State<MapScreen> {
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 12.0),
-                                    child: HeaderWidget(),
+                                    child: HeaderWidget(
+                                      onTap: (){
+                                        setState(() {
+                                          currentTab = 1;
+                                        });
+                                      },
+                                    ),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
@@ -608,7 +622,13 @@ class _MapScreenState extends State<MapScreen> {
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 12.0),
-                                    child: HeaderWidget(),
+                                    child: HeaderWidget(
+                                      onTap: (){
+                                        setState(() {
+                                          currentTab = 1;
+                                        });
+                                      },
+                                    ),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
@@ -758,7 +778,12 @@ class _MapScreenState extends State<MapScreen> {
                     bottom: 15,
                     right: 40,
                     child: GestureDetector(
-                      onTap: () {
+                      onTap: () async {
+                        setState(() {
+                          _selectedMarkerPosition = null;
+                          _selectedAddress = null;
+                        });
+                        _getLocation();
                         // setState(() {
                         //   currentTab = 3;
                         // });
@@ -772,8 +797,13 @@ class _MapScreenState extends State<MapScreen> {
                               color: MyColor.orange2,
                               borderRadius:
                                   const BorderRadius.all(Radius.circular(22))),
-                          child: MyString.med('centerElseWhere'.tr, 13,
-                              MyColor.white, TextAlign.center),
+                          child:
+                          MyString.med(
+                              'Reset',
+                              // 'centerElseWhere'.tr,
+                              13,
+                              MyColor.white, TextAlign.center)
+                          ,
                         ),
                       ),
                     ),

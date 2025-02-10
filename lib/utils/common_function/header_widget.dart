@@ -6,9 +6,11 @@ import 'dialogs/bottom_language.dart';
 
 class HeaderWidget extends StatelessWidget {
   final bool backIcon;
-  const HeaderWidget({
+  final Function()? onTap;
+  HeaderWidget({
     Key? key,
-    this.backIcon = true
+    this.backIcon = true,
+    this.onTap
   }) : super(key: key);
 
   @override
@@ -19,7 +21,9 @@ class HeaderWidget extends StatelessWidget {
         mainAxisAlignment: backIcon ? MainAxisAlignment.spaceBetween : MainAxisAlignment.end,
         children: [
           if(backIcon) GestureDetector(
-            onTap: () => Navigator.pop(context),
+            onTap: onTap == null ?  () {
+              Navigator.pop(context);
+            } : onTap,
             child: Container(
               width: 31,
               height: 31,

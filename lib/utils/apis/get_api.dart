@@ -372,11 +372,9 @@ class GetApi {
     } else if (result['status'] == 401) {
       sharedPref.clear();
       sharedPref.setString(SharedKey.onboardScreen, 'OFF');
-      toaster(context, result['status'].toString());
+      // toaster(context, result['status'].toString());
       Navigator.pushNamedAndRemoveUntil(
           context, RoutesName.loginScreen, (route) => false);
-    } else {
-      toaster(context, result['status'].toString());
     }
   }
 

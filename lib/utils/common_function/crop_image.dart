@@ -22,113 +22,115 @@ cameraPhoto(BuildContext context, String from) async {
     builder: (BuildContext context) {
       return StatefulBuilder(
         builder: (context, myState) {
-          return Container(
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-                color: MyColor.white,
-                border: Border.all(color: MyColor.orange2),
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(40),
-                    topRight: Radius.circular(40))),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                    width: double.infinity,
-                    height: 60,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(40),
-                            topRight: Radius.circular(40))),
-                    child: MyString.bold(
-                        (from == "edit")
-                            ? 'editAnimalPhoto'.tr
-                            : (from == "editProfile")
-                                ? 'changeProfilePhoto'.tr
-                                : (from == "create_group")
-                                    ? 'addGroupPhoto'.tr
-                                    : (from == "editGroup")
-                                        ? 'editGroupPhoto'.tr
-                                        : (from == "create_animal")
-                                            ? 'animalPhotoCreate'.tr
-                                            : 'cameraGallery1'.tr,
-                        16,
-                        MyColor.black,
-                        TextAlign.center)),
-                const SizedBox(height: 5),
-                Row(
-                  children: [
-                    Flexible(
-                      flex: 1,
-                      child: InkWell(
-                        onTap: () async {
-                          Navigator.pop(context, "1");
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.only(right: 10, left: 10),
-                          height: 100,
-                          alignment: Alignment.center,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(10)),
-                              border: Border.all(color: MyColor.stroke),
-                              color: MyColor.card),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                "assets/images/icons/post_library.png",
-                                height: 40,
-                                width: 40,
-                              ),
-                              MyString.med('phoneLibrary'.tr, 18, MyColor.black,
-                                  TextAlign.start)
-                            ],
+          return SafeArea(
+            child: Container(
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                  color: MyColor.white,
+                  border: Border.all(color: MyColor.orange2),
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(40),
+                      topRight: Radius.circular(40))),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Container(
+                      width: double.infinity,
+                      height: 60,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(40),
+                              topRight: Radius.circular(40))),
+                      child: MyString.bold(
+                          (from == "edit")
+                              ? 'editAnimalPhoto'.tr
+                              : (from == "editProfile")
+                                  ? 'changeProfilePhoto'.tr
+                                  : (from == "create_group")
+                                      ? 'addGroupPhoto'.tr
+                                      : (from == "editGroup")
+                                          ? 'editGroupPhoto'.tr
+                                          : (from == "create_animal")
+                                              ? 'animalPhotoCreate'.tr
+                                              : 'cameraGallery1'.tr,
+                          16,
+                          MyColor.black,
+                          TextAlign.center)),
+                  const SizedBox(height: 5),
+                  Row(
+                    children: [
+                      Flexible(
+                        flex: 1,
+                        child: InkWell(
+                          onTap: () async {
+                            Navigator.pop(context, "1");
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(right: 10, left: 10),
+                            height: 100,
+                            alignment: Alignment.center,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(10)),
+                                border: Border.all(color: MyColor.stroke),
+                                color: MyColor.card),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  "assets/images/icons/post_library.png",
+                                  height: 40,
+                                  width: 40,
+                                ),
+                                MyString.med('phoneLibrary'.tr, 18, MyColor.black,
+                                    TextAlign.start)
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    Flexible(
-                      flex: 1,
-                      child: InkWell(
-                        onTap: () async {
-                          Navigator.pop(context, "0");
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.only(right: 10, left: 10),
-                          height: 100,
-                          alignment: Alignment.center,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(10)),
-                              border: Border.all(color: MyColor.stroke),
-                              color: MyColor.card),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                "assets/images/icons/post_camera.png",
-                                height: 40,
-                                width: 40,
-                              ),
-                              MyString.med('camera'.tr, 18, MyColor.black,
-                                  TextAlign.start)
-                            ],
+                      Flexible(
+                        flex: 1,
+                        child: InkWell(
+                          onTap: () async {
+                            Navigator.pop(context, "0");
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(right: 10, left: 10),
+                            height: 100,
+                            alignment: Alignment.center,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(10)),
+                                border: Border.all(color: MyColor.stroke),
+                                color: MyColor.card),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  "assets/images/icons/post_camera.png",
+                                  height: 40,
+                                  width: 40,
+                                ),
+                                MyString.med('camera'.tr, 18, MyColor.black,
+                                    TextAlign.start)
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 5),
-              ],
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                ],
+              ),
             ),
           );
         },

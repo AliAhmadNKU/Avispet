@@ -92,216 +92,214 @@ class _CreateGroupState extends State<CreateGroup> {
               padding: EdgeInsets.all(20),
               child: Stack(
                 children: [
-                  SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          HeaderWidget(),
-                          MyString.bold('creategroup'.tr, 27, MyColor.title,
-                              TextAlign.center),
-                          Container(
-                              height: 40,
-                              margin: EdgeInsets.symmetric(vertical: 15),
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: Color(0xffEBEBEB)),
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(13),
-                                      topRight: Radius.circular(50),
-                                      bottomLeft: Radius.circular(13),
-                                      bottomRight: Radius.circular(50))),
-                              child: TextField(
-                                controller: searchBar,
-                                scrollPadding:
-                                    const EdgeInsets.only(bottom: 50),
-                                style: TextStyle(
-                                    color: MyColor.black, fontSize: 14),
-                                decoration: InputDecoration(
-                                  border: const OutlineInputBorder(
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  prefixIcon: SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Image.asset(
-                                          'assets/images/icons/search.png',
-                                          width: 20,
-                                          height: 20,
-                                        ),
-                                      )),
-                                  suffixIcon: (searchBar.text
-                                          .trim()
-                                          .toString()
-                                          .isNotEmpty)
-                                      ? GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              FocusManager
-                                                  .instance.primaryFocus!
-                                                  .unfocus();
-                                              searchBar.text = '';
-                                              // stackLoader = false;
-                                              getAllUsersForDiscussion();
-
-                                              // getFollowFollowingApi(
-                                              //     page, 1, '');
-                                            });
-                                          },
-                                          child: Icon(
-                                            Icons.cancel,
-                                            color: MyColor.orange2,
-                                          ))
-                                      : GestureDetector(
-                                          onTap: () async {},
-                                          child: Container(
-                                              width: 40,
-                                              height: 40,
-                                              padding: EdgeInsets.all(8),
-                                              decoration: BoxDecoration(
-                                                  color: Color(0xff4F2020),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          150)),
-                                              child: Image.asset(
-                                                  'assets/images/icons/filter.png'))),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 5, horizontal: 12),
-                                  hintText: 'search'.tr,
-                                  hintStyle: TextStyle(
-                                      color: MyColor.textFieldBorder,
-                                      fontSize: 14),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        HeaderWidget(),
+                        MyString.bold('creategroup'.tr, 27, MyColor.title,
+                            TextAlign.center),
+                        Container(
+                            height: 40,
+                            margin: EdgeInsets.symmetric(vertical: 15),
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Color(0xffEBEBEB)),
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(13),
+                                    topRight: Radius.circular(50),
+                                    bottomLeft: Radius.circular(13),
+                                    bottomRight: Radius.circular(50))),
+                            child: TextField(
+                              controller: searchBar,
+                              scrollPadding:
+                                  const EdgeInsets.only(bottom: 50),
+                              style: TextStyle(
+                                  color: MyColor.black, fontSize: 14),
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(
+                                  borderSide: BorderSide.none,
                                 ),
-                                onChanged: (value) {
-                                  // setState(() {
-                                  //   // page = 1;
-                                  //   stackLoader = true;
-                                  // });
-                                  if (value.isNotEmpty) {
-                                    userDiscussionListTemp = userDiscussionList.where((item) => item.name!.toLowerCase().contains(value.toLowerCase())).toList();
-                                    // getFollowFollowingApi(page, 1, value);
-                                  }
-                                  if(value.isEmpty){
-                                    userDiscussionListTemp = userDiscussionList;
-                                  }
-                                  setState(() {
+                                prefixIcon: SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Image.asset(
+                                        'assets/images/icons/search.png',
+                                        width: 20,
+                                        height: 20,
+                                      ),
+                                    )),
+                                suffixIcon: (searchBar.text
+                                        .trim()
+                                        .toString()
+                                        .isNotEmpty)
+                                    ? GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            FocusManager
+                                                .instance.primaryFocus!
+                                                .unfocus();
+                                            searchBar.text = '';
+                                            // stackLoader = false;
+                                            getAllUsersForDiscussion();
 
-                                  });
-                                  // FocusManager.instance.primaryFocus!
-                                  //     .unfocus();
-                                },
-                              )),
-                          if (saveList.isNotEmpty)
-                            Container(
-                              margin:
-                                  EdgeInsets.only(top: 3, right: 4, left: 4),
-                              height: 100,
-                              child: ListView.builder(
-                                itemCount: saveList.length,
-                                shrinkWrap: true,
-                                scrollDirection: Axis.horizontal,
-                                physics: BouncingScrollPhysics(),
-                                padding: EdgeInsets.zero,
-                                itemBuilder: (context, index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Column(
-                                      children: [
-                                        Stack(
-                                          alignment: Alignment.bottomRight,
-                                          children: [
-                                            Container(
-                                              alignment: Alignment.center,
-                                              height: 50,
-                                              child: ClipRRect(
+                                            // getFollowFollowingApi(
+                                            //     page, 1, '');
+                                          });
+                                        },
+                                        child: Icon(
+                                          Icons.cancel,
+                                          color: MyColor.orange2,
+                                        ))
+                                    : GestureDetector(
+                                        onTap: () async {},
+                                        child: Container(
+                                            width: 40,
+                                            height: 40,
+                                            padding: EdgeInsets.all(8),
+                                            decoration: BoxDecoration(
+                                                color: Color(0xff4F2020),
                                                 borderRadius:
-                                                    const BorderRadius.all(
-                                                        Radius.circular(50)),
-                                                child: saveList[index]
-                                                            .followRef!
-                                                            .profilePicture !=
-                                                        null
-                                                    ? Image.network(
-                                                        '${ApiStrings.mediaURl}${saveList[index].followRef!.profilePicture.toString()}',
-                                                        width: 50,
-                                                        height: 50,
-                                                        fit: BoxFit.cover,
-                                                        loadingBuilder: (context,
-                                                                child,
-                                                                loadingProgress) =>
-                                                            (loadingProgress ==
-                                                                    null)
-                                                                ? child
-                                                                : Container(
-                                                                    width: 50,
-                                                                    child:
-                                                                        customProgressBar()))
-                                                    : Image.asset(
-                                                        'assets/images/onboard/placeholder_image.png',
-                                                        width: 50),
-                                              ),
-                                            ),
-                                            GestureDetector(
-                                                onTap: () {
-                                                  setState(() {
-                                                    // saveList.remove(index);
-
-                                                    for (int i = 0;
-                                                        i < followList.length;
-                                                        i++) {
-                                                      if (saveList[index]
-                                                              .followRef!
-                                                              .id ==
-                                                          followList[i]
-                                                              .followRef!
-                                                              .id) {
-                                                        saveList1.remove(
-                                                            followList[i]
-                                                                .id
-                                                                .toString());
-                                                        followList[i]
-                                                                .createGroupSelect =
-                                                            false;
-                                                      }
-                                                    }
-
-                                                    saveList.removeAt(index);
-
-                                                    debugPrint(
-                                                        'save list  ${saveList.toString()}');
-                                                    debugPrint(
-                                                        'save list1 ${saveList1.toString()}');
-                                                  });
-                                                },
-                                                child: Image.asset(
-                                                  'assets/images/icons/del2.png',
-                                                  color: MyColor.orange2,
-                                                  height: 14,
-                                                  width: 17,
-                                                ))
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
+                                                    BorderRadius.circular(
+                                                        150)),
+                                            child: Image.asset(
+                                                'assets/images/icons/filter.png'))),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 12),
+                                hintText: 'search'.tr,
+                                hintStyle: TextStyle(
+                                    color: MyColor.textFieldBorder,
+                                    fontSize: 14),
                               ),
+                              onChanged: (value) {
+                                // setState(() {
+                                //   // page = 1;
+                                //   stackLoader = true;
+                                // });
+                                if (value.isNotEmpty) {
+                                  userDiscussionListTemp = userDiscussionList.where((item) => item.name!.toLowerCase().contains(value.toLowerCase())).toList();
+                                  // getFollowFollowingApi(page, 1, value);
+                                }
+                                if(value.isEmpty){
+                                  userDiscussionListTemp = userDiscussionList;
+                                }
+                                setState(() {
+
+                                });
+                                // FocusManager.instance.primaryFocus!
+                                //     .unfocus();
+                              },
+                            )),
+                        if (saveList.isNotEmpty)
+                          Container(
+                            margin:
+                                EdgeInsets.only(top: 3, right: 4, left: 4),
+                            height: 100,
+                            child: ListView.builder(
+                              itemCount: saveList.length,
+                              shrinkWrap: true,
+                              scrollDirection: Axis.horizontal,
+                              physics: BouncingScrollPhysics(),
+                              padding: EdgeInsets.zero,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Column(
+                                    children: [
+                                      Stack(
+                                        alignment: Alignment.bottomRight,
+                                        children: [
+                                          Container(
+                                            alignment: Alignment.center,
+                                            height: 50,
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  const BorderRadius.all(
+                                                      Radius.circular(50)),
+                                              child: saveList[index]
+                                                          .followRef!
+                                                          .profilePicture !=
+                                                      null
+                                                  ? Image.network(
+                                                      '${ApiStrings.mediaURl}${saveList[index].followRef!.profilePicture.toString()}',
+                                                      width: 50,
+                                                      height: 50,
+                                                      fit: BoxFit.cover,
+                                                      loadingBuilder: (context,
+                                                              child,
+                                                              loadingProgress) =>
+                                                          (loadingProgress ==
+                                                                  null)
+                                                              ? child
+                                                              : Container(
+                                                                  width: 50,
+                                                                  child:
+                                                                      customProgressBar()))
+                                                  : Image.asset(
+                                                      'assets/images/onboard/placeholder_image.png',
+                                                      width: 50),
+                                            ),
+                                          ),
+                                          GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  // saveList.remove(index);
+
+                                                  for (int i = 0;
+                                                      i < followList.length;
+                                                      i++) {
+                                                    if (saveList[index]
+                                                            .followRef!
+                                                            .id ==
+                                                        followList[i]
+                                                            .followRef!
+                                                            .id) {
+                                                      saveList1.remove(
+                                                          followList[i]
+                                                              .id
+                                                              .toString());
+                                                      followList[i]
+                                                              .createGroupSelect =
+                                                          false;
+                                                    }
+                                                  }
+
+                                                  saveList.removeAt(index);
+
+                                                  debugPrint(
+                                                      'save list  ${saveList.toString()}');
+                                                  debugPrint(
+                                                      'save list1 ${saveList1.toString()}');
+                                                });
+                                              },
+                                              child: Image.asset(
+                                                'assets/images/icons/del2.png',
+                                                color: MyColor.orange2,
+                                                height: 14,
+                                                width: 17,
+                                              ))
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
                             ),
-                          SizedBox(
-                            height: 20,
                           ),
-                          loader
-                              ? Container(
-                                  child: progressBar(),
-                                )
-                              :
-                          // _buildFollowersUI(),
-                          _buildUsersUI(),
-                        ],
-                      ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        loader
+                            ? Container(
+                                child: progressBar(),
+                              )
+                            :
+                        // _buildFollowersUI(),
+                        Expanded(child: _buildUsersUI()),
+                      ],
                     ),
                   ),
                   if (stackLoader) progressBar()
@@ -465,7 +463,6 @@ class _CreateGroupState extends State<CreateGroup> {
     return ListView.builder(
       itemCount: userDiscussionListTemp.length,
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
       padding: EdgeInsets.zero,
       itemBuilder: (context, index) {
         final user = userDiscussionListTemp[index];

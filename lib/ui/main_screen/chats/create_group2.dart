@@ -81,6 +81,7 @@ class _CreateGroup2State extends State<CreateGroup2> {
           body: SafeArea(
             child: Container(
               height: MediaQuery.of(context).size.height,
+              padding: EdgeInsets.symmetric(horizontal: 20),
               child: Stack(
                 children: [
                   _buildUINEW(),
@@ -563,7 +564,7 @@ class _CreateGroup2State extends State<CreateGroup2> {
                     color: MyColor.orange2,
                     borderRadius: const BorderRadius.all(
                         Radius.circular(22))),
-                child: MyString.med('submit'.tr, 18,
+                child: MyString.med('Create', 18,
                     MyColor.white, TextAlign.center),
               ),
             )
