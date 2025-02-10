@@ -86,8 +86,10 @@ class MyString {
 
   // reg
   static Widget reg(
-      String value, double size, Color textColor, TextAlign align) {
+      String value, double size, Color textColor, TextAlign align, {maxLines = 100}) {
     return Text(value,
+        maxLines: maxLines,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(
           fontSize: size,
           color: textColor,

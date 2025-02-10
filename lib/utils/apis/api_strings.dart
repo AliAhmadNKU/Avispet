@@ -99,6 +99,7 @@ class ApiStrings {
   static const String allGamificationLevels = 'gamification/levels';
   static const String gamificationRankings = 'gamification/rankings';
   static const String group = 'group';
+  static const String location = 'location';
   static const String userAllChats = chats + '/user-all-chats';
   static const String userIndividualMessages = chats + '/user-individual-messages';
   static const String userGroupChats = chats + '/user-groups';

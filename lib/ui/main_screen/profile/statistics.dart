@@ -1147,7 +1147,10 @@ class _StatisticsState extends State<Statistics> {
                   _myActivitiesUI(),
 
                   ///Levels
-                  InkWell(
+                  if(_userActivitiesResponseModel.data != null
+                      && _userActivitiesResponseModel.data!.levels != null
+                      && _userActivitiesResponseModel.data!.levels!.isNotEmpty
+                  ) InkWell(
                     onTap: () {
                       levelsSheetNew(context);
                     },
@@ -1172,7 +1175,7 @@ class _StatisticsState extends State<Statistics> {
                               SizedBox(
                                 width: 10,
                               ),
-                              MyString.reg(
+                               MyString.reg(
                                   _userActivitiesResponseModel.data!.levels!.first.gamificationLevel!.name
                                       .toString(),
                                   15,

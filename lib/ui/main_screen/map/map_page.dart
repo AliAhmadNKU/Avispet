@@ -1,12 +1,14 @@
 import 'package:avispets/models/events_response_model.dart';
 import 'package:avispets/models/get_all_categories_model.dart';
 import 'package:avispets/models/locations/get_location_name_address.dart';
+import 'package:avispets/models/locations/location_by_category_response_model.dart';
 import 'package:avispets/models/online_store_response_model.dart';
 import 'package:avispets/ui/main_screen/map/search_bar.dart';
 import 'package:avispets/ui/widgets/no_data_found.dart';
 import 'package:avispets/utils/apis/all_api.dart';
 import 'package:avispets/utils/apis/api_strings.dart';
 import 'package:avispets/utils/common_function/header_widget.dart';
+import 'package:avispets/utils/common_function/loader_screen.dart';
 import 'package:avispets/utils/common_function/toaster.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -69,7 +71,10 @@ class _MapScreenState extends State<MapScreen> {
   String _selectedImage = 'assets/images/place.png';
   List<Data> categoriesList = [];
 
+  LocationByCategoryResponseModel _locationByCategoryResponseModel = LocationByCategoryResponseModel();
+
   void _onMapCreated(GoogleMapController controller) {
+    print('_onMapCreated => ');
     _mapController = controller;
     _location.onLocationChanged.listen((LocationPackage.LocationData locationData) {
       if (_shouldFollowUserLocation &&
@@ -225,10 +230,12 @@ class _MapScreenState extends State<MapScreen> {
     ),
   ];
   List<Postssss> filteredPosts = [];
+  List<LocationModel> filteredPostsNew = [];
 
   double longitude = 0;
 
   double latitude = 0;
+
   void filterPosts(String category) {
     setState(() {
       filteredPosts = posts.where((post) => post.category == category).toList();
@@ -332,14 +339,16 @@ class _MapScreenState extends State<MapScreen> {
     Future.delayed(Duration.zero, () async {
       await getAllCategoriesApi();
       await _getLocation();
+      await getLocationByCategories(null);
     });
   }
 
-  _getLocation() async {
+  Future _getLocation() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     longitude = position.longitude;
     latitude = position.latitude;
+    _initialPosition = LatLng(latitude, longitude);
 
     setState(() {
 
@@ -383,20 +392,20 @@ class _MapScreenState extends State<MapScreen> {
                               ),
 
                               //!@search-bar
-                              Container(
-                                height: 50,
-                                margin: EdgeInsets.only(
-                                    bottom: 25, right: 30, left: 30),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Flexible(
-                                      child: buildSearchBar(),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                              // Container(
+                              //   height: 50,
+                              //   margin: EdgeInsets.only(
+                              //       bottom: 25, right: 30, left: 30),
+                              //   child: Row(
+                              //     mainAxisAlignment: MainAxisAlignment.center,
+                              //     crossAxisAlignment: CrossAxisAlignment.center,
+                              //     children: [
+                              //       Flexible(
+                              //         child: buildSearchBar(),
+                              //       ),
+                              //     ],
+                              //   ),
+                              // ),
                               // Suggestions List
                               buildCategoryFilter(),
                               Expanded(
@@ -432,22 +441,22 @@ class _MapScreenState extends State<MapScreen> {
                                   ),
 
                                   //!@search-bar
-                                  Container(
-                                    height: 50,
-                                    margin: EdgeInsets.only(
-                                        bottom: 25, right: 30, left: 30),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Flexible(
-                                          child: buildSearchBar(),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                  // Container(
+                                  //   height: 50,
+                                  //   margin: EdgeInsets.only(
+                                  //       bottom: 25, right: 30, left: 30),
+                                  //   child: Row(
+                                  //     mainAxisAlignment:
+                                  //         MainAxisAlignment.center,
+                                  //     crossAxisAlignment:
+                                  //         CrossAxisAlignment.center,
+                                  //     children: [
+                                  //       Flexible(
+                                  //         child: buildSearchBar(),
+                                  //       ),
+                                  //     ],
+                                  //   ),
+                                  // ),
                                   // Suggestions List
                                   buildCategoryFilter(),
 
@@ -455,29 +464,32 @@ class _MapScreenState extends State<MapScreen> {
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 20.0, vertical: 10),
                                     child: MyString.bold(
-                                        '${filteredPosts.length} Results Found',
+                                        '${filteredPostsNew.length} Results Found',
                                         18,
                                         MyColor.title,
                                         TextAlign.start),
                                   ),
                                   Expanded(
-                                    child: ListView.builder(
-                                      itemCount: filteredPosts
-                                          .length, // Or filteredPosts.length if filtering applied
+                                    child:
+                                    ListView.builder(
+                                      itemCount: filteredPostsNew
+                                          .length,
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) {
-                                        final post = filteredPosts[
+                                        final post = filteredPostsNew[
                                             index]; // Use filteredPosts if filtering applied
 
                                         return Column(
                                           children: [
                                             GestureDetector(
                                               onTap: () async {
-                                                Map<String, dynamic> mapData = {
-                                                  'postId': '',
-                                                };
-                                                Navigator.pushNamed(context,
-                                                    RoutesName.postDetail,
-                                                    arguments: mapData);
+                                                // Map<String, dynamic> mapData = {
+                                                //   'postId': '',
+                                                // };
+                                                // Navigator.pushNamed(context,
+                                                //     RoutesName.postDetail,
+                                                //     arguments: mapData);
                                               },
                                               child: Container(
                                                 margin:
@@ -501,8 +513,14 @@ class _MapScreenState extends State<MapScreen> {
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               15),
-                                                      child: Image.asset(
-                                                        post.imageUrl, // Ensure this path is valid
+                                                      child: post.profile!.isNotEmpty && post.profile!.contains('http') ?
+                                                      Image.network(
+                                                        post.profile!, // Ensure this path is valid
+                                                        width: 130,
+                                                        height: 110,
+                                                        fit: BoxFit.cover,
+                                                      ) : Image.asset(
+                                                        'assets/images/onboard/placeholder_image.png',
                                                         width: 130,
                                                         height: 110,
                                                         fit: BoxFit.cover,
@@ -516,30 +534,31 @@ class _MapScreenState extends State<MapScreen> {
                                                                 .start,
                                                         children: [
                                                           MyString.reg(
-                                                              post.title,
+                                                              '${post.name}',
                                                               14,
                                                               MyColor.red,
-                                                              TextAlign.start),
+                                                              TextAlign.start,
+                                                          maxLines: 1),
                                                           const SizedBox(
                                                               height: 4),
                                                           MyString.reg(
-                                                              post.location,
+                                                              '${post.address}',
                                                               12,
                                                               MyColor
                                                                   .textBlack0,
-                                                              TextAlign.start),
+                                                              TextAlign.start, maxLines: 2),
                                                           MyString.reg(
-                                                              post.category,
+                                                              '${selectedCategory}',
                                                               12,
                                                               MyColor
                                                                   .textBlack0,
                                                               TextAlign.start),
-                                                          MyString.reg(
-                                                              post.distance,
-                                                              12,
-                                                              MyColor
-                                                                  .textBlack0,
-                                                              TextAlign.start),
+                                                          // MyString.reg(
+                                                          //     post.distance,
+                                                          //     12,
+                                                          //     MyColor
+                                                          //         .textBlack0,
+                                                          //     TextAlign.start),
                                                           const SizedBox(
                                                               height: 4),
                                                           Row(
@@ -552,7 +571,7 @@ class _MapScreenState extends State<MapScreen> {
                                                               const SizedBox(
                                                                   width: 4),
                                                               MyString.reg(
-                                                                  '${post.rating} (${post.reviews})',
+                                                                  '${post.rating}',
                                                                   15,
                                                                   MyColor
                                                                       .textBlack0,
@@ -599,22 +618,22 @@ class _MapScreenState extends State<MapScreen> {
                                   ),
 
                                   //!@search-bar
-                                  Container(
-                                    height: 50,
-                                    margin: EdgeInsets.only(
-                                        bottom: 25, right: 30, left: 30),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Flexible(
-                                          child: buildSearchBar(),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                  // Container(
+                                  //   height: 50,
+                                  //   margin: EdgeInsets.only(
+                                  //       bottom: 25, right: 30, left: 30),
+                                  //   child: Row(
+                                  //     mainAxisAlignment:
+                                  //         MainAxisAlignment.center,
+                                  //     crossAxisAlignment:
+                                  //         CrossAxisAlignment.center,
+                                  //     children: [
+                                  //       Flexible(
+                                  //         child: buildSearchBar(),
+                                  //       ),
+                                  //     ],
+                                  //   ),
+                                  // ),
                                 ],
                               )),
                 if (currentTab == 1 && _selectedMarkerPosition != null)
@@ -657,38 +676,51 @@ class _MapScreenState extends State<MapScreen> {
                             children: [
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(15),
-                                child: Image.asset(
+                                child: _selectedImage.isNotEmpty && _selectedImage.contains('http') ?
+                                Image.network(
                                   '${_selectedImage}', // Ensure this path is valid
                                   width: 130,
                                   height: 110,
                                   fit: BoxFit.cover,
+                                ) : Image.asset(
+                                  'assets/images/onboard/placeholder_image.png',
+                                  width: 130,
+                                  height: 110,
                                 ),
                               ),
                               SizedBox(
                                 width: 15,
                               ),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  MyString.reg('${_selectedPlace}', 16,
-                                      MyColor.red, TextAlign.start),
-                                  MyString.reg('${_selectedDistance}', 12,
-                                      MyColor.textBlack0, TextAlign.start),
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.star,
-                                          color: Colors.amber, size: 16),
-                                      const SizedBox(width: 4),
-                                      MyString.reg(
-                                          '${_selectedRating} (${_selectedReviews})',
-                                          12,
-                                          MyColor.textBlack0,
-                                          TextAlign.start),
-                                    ],
-                                  ),
-                                ],
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      width: MediaQuery.sizeOf(context).width * 0.8,
+                                      child: MyString.reg('${_selectedPlace}', 16,
+                                          MyColor.red, TextAlign.start,maxLines: 1),
+                                    ),
+                                    Container(
+                                      width: MediaQuery.sizeOf(context).width * 0.6,
+                                      child: MyString.reg('${_selectedAddress}', 12,
+                                          MyColor.textBlack0, TextAlign.start,maxLines: 2),
+                                    ),
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.star,
+                                            color: Colors.amber, size: 16),
+                                        const SizedBox(width: 4),
+                                        MyString.reg(
+                                            '${_selectedRating}',
+                                            12,
+                                            MyColor.textBlack0,
+                                            TextAlign.start),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
@@ -727,9 +759,9 @@ class _MapScreenState extends State<MapScreen> {
                     right: 40,
                     child: GestureDetector(
                       onTap: () {
-                        setState(() {
-                          currentTab = 3;
-                        });
+                        // setState(() {
+                        //   currentTab = 3;
+                        // });
                       },
                       child: Center(
                         child: Container(
@@ -767,12 +799,23 @@ class _MapScreenState extends State<MapScreen> {
           }
           return GestureDetector(
             onTap: () async {
-              selectedCategory = categoriesList[index].name!;
-              setState(() {
-
-              });
+              if(selectedCategory != categoriesList[index].name!){
+                setState(() {
+                  selectedCategory = categoriesList[index].name!;
+                  _selectedMarkerPosition = null;
+                  _selectedAddress = null;
+                  _selectedImage = '';
+                  _selectedRating = null;
+                  filteredPostsNew.clear();
+                });
+                LoadingDialog.show(context);
+                await getLocationByCategories(context);
+              }
+              // setState(() {
+              //
+              // });
               // selectedCategory = dataList[index].nickname;
-              _filterPostsAndAddMarkers(selectedCategory);
+              // _filterPostsAndAddMarkers(selectedCategory);
               // filterPosts(selectedCategory);
             },
             child: Container(
@@ -929,7 +972,7 @@ class _MapScreenState extends State<MapScreen> {
     return [];
   }
 
-  getAllCategoriesApi() async {
+  Future getAllCategoriesApi() async {
     try {
       var res = await AllApi.getMethodApi("${ApiStrings.getAllCategories}");
       print(res);
@@ -948,6 +991,64 @@ class _MapScreenState extends State<MapScreen> {
       } else {
         toaster(context, result['message'].toString());
       }
+    } catch (e) {
+      debugPrint("Error: $e");
+      toaster(context, "An error occurred while fetching categories.");
+    }
+  }
+
+  Future getLocationByCategories(BuildContext? tempContext) async {
+    try {
+      final data = {
+        "latitude": latitude,
+        "longitude": longitude,
+        "category": selectedCategory,
+        "limit": 100,
+        "conditions": "dogs.yes"
+      };
+
+      var res = await AllApi.postMethodApi("${ApiStrings.location}",data);
+      print(res);
+      var result = jsonDecode(res.toString());
+      final List<Marker> newMarkers = [];
+
+      if (result['status'] == 201) {
+        _locationByCategoryResponseModel = LocationByCategoryResponseModel.fromJson(result);
+        final locations = _locationByCategoryResponseModel.data;
+        if(locations != null && locations.isNotEmpty){
+          filteredPostsNew.clear();
+          filteredPostsNew.addAll(locations);
+          for(int i=0; i < locations.length; i++){
+            newMarkers.add(
+                Marker(
+                  markerId: MarkerId(locations[i].address!),
+                  position: LatLng(locations[i].latitude!.toDouble(), locations[i].longitude!.toDouble()),
+                  // infoWindow: InfoWindow(
+                  //   title: locations[i].name!,
+                  //   snippet: '${selectedCategory} • ⭐ ${locations[i].rating} ${locations[i].address!}',
+                  // ),
+                  onTap: (){
+                    _selectedPlace = locations[i].name!;
+                    _selectedMarkerPosition = LatLng(locations[i].latitude!.toDouble(), locations[i].longitude!.toDouble());
+                    _selectedAddress = locations[i].address!;
+                    _selectedImage = locations[i].profile!;
+                    _selectedRating = locations[i].rating!.toString();
+                    setState(() {
+
+                    });
+                  }
+                ));
+          }
+        }
+      }
+      _markers.clear();
+      _markers.addAll(newMarkers);
+      if(tempContext != null){
+        LoadingDialog.hide(tempContext);
+      }
+      setState(() {
+
+      });
     } catch (e) {
       debugPrint("Error: $e");
       toaster(context, "An error occurred while fetching categories.");
