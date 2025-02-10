@@ -80,9 +80,8 @@ class _ChatScreenState extends State<GroupChatScreen> {
 
     Future.delayed(Duration.zero, () async {
       // getUserIndividualChats();
-      // registerUserListener();
       getGroupChatMessages();
-      checkSocketConnect();
+      registerUserListener();
       attachGroupChatListener();
 
       // getSingleChat();
@@ -100,8 +99,9 @@ class _ChatScreenState extends State<GroupChatScreen> {
   @override
   void dispose() {
     socketOff('register');
-    socketOff('send_individual_message');
-    socketOff('receive_message');
+    socketOff('send_group_message');
+    socketOff('group_message');
+    socketOff('join_group');
     checkSocketConnect();
 // socketOff('get_chat_listener');
     // socketOff('read_data_status');
@@ -1487,7 +1487,7 @@ class _ChatScreenState extends State<GroupChatScreen> {
     return Align(
       alignment: Alignment.centerLeft,
       child: Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -1501,7 +1501,7 @@ class _ChatScreenState extends State<GroupChatScreen> {
             },
             child: ClipRRect(
               borderRadius: BorderRadius.all(Radius.circular(50)),
-              child: _listChats[index].sender!.profilePicture != null &&
+              child: _listChats[index].sender != null && _listChats[index].sender!.profilePicture != null &&
                   _listChats[index].sender!.profilePicture!.contains('http')
                   ? Image.network(
                 '${_listChats[index].sender!.profilePicture!}',
@@ -1543,9 +1543,7 @@ class _ChatScreenState extends State<GroupChatScreen> {
                         fontFamily: 'poppins_medium',
                       ),
                     )))
-                    : chatList[index].messageType == 1 ||
-                    chatList[index].messageType == 2 ||
-                    chatList[index].messageType == 3
+                    : _listChats[index].messageType == 'image'
                     ? GestureDetector(
                     onTap: () {
                       _focusNode.unfocus();
@@ -1574,9 +1572,8 @@ class _ChatScreenState extends State<GroupChatScreen> {
                         margin:
                         const EdgeInsets.only(top: 5, bottom: 5),
                         child: ClipRRect(
-                          child: chatList[index].messageType == 1 &&
-                              !chatList[index]
-                                  .mediaUrl
+                          child: !_listChats[index]
+                                  .message
                                   .toString()
                                   .contains('giphy.com/media')
                               ? SizedBox(
@@ -1585,7 +1582,8 @@ class _ChatScreenState extends State<GroupChatScreen> {
                                 .width *
                                 0.65,
                             child: Image.network(
-                                '${ApiStrings.mediaURl}${chatList[index].mediaUrl.toString()}',
+                                '${_listChats[index]
+                                    .message}',
                                 height: 150,
                                 loadingBuilder: (context, child,
                                     loadingProgress) =>
@@ -2825,6 +2823,9 @@ class _ChatScreenState extends State<GroupChatScreen> {
     socket.on('send_group_message', (newMessage) {
       debugPrint("GROUP_CHAT_OBJECT_SEND_EVENT ==> $newMessage");
     });
+    socket.on('join_group', (newMessage) {
+      debugPrint("JOIN_GROUP_EVENT ==> $newMessage");
+    });
     socket.on('group_message', (newMessage) {
       debugPrint("GROIP_CHAT_OBJECT_RECEIVE_EVENT ==> $newMessage");
       setState(() {
@@ -3337,6 +3338,7 @@ class _ChatScreenState extends State<GroupChatScreen> {
     checkSocketConnect();
     attachRegisterListener();
     socket.emit('register', int.parse(sharedPref.getString(SharedKey.userId)!));
+    socket.emit('join_group', _groupChatModel.id!);
   }
 
   void attachRegisterListener() {

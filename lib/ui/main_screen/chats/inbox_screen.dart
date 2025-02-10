@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:avispets/models/chats/all_users_discussion_model.dart';
 import 'package:avispets/models/chats/user_all_chats_model.dart';
 import 'package:avispets/models/chats/user_group_model.dart';
+import 'package:avispets/models/forum/all_forums_response_model.dart';
 import 'package:avispets/utils/common_function/header_widget.dart';
 import 'package:avispets/utils/my_routes/route_name.dart';
 import 'package:avispets/utils/shared_pref.dart';
@@ -43,6 +44,7 @@ class _InboxScreenState extends State<InboxScreen> {
   int currentTabBreed = 1;
 
   late Future<GetForum> futureForumData;
+  late Future<AllForumsResponseModel> futureForumDataV2;
 
   UserAllChatsModel _userAllChatsModel = UserAllChatsModel();
   List<IndividualChats> _listChats = [];
@@ -54,7 +56,8 @@ class _InboxScreenState extends State<InboxScreen> {
   void initState() {
     super.initState();
     // GetApi.getNotify(context, '');
-    futureForumData = fetchForumData();
+    // futureForumData = fetchForumData();
+    futureForumDataV2 = fetchForumDataV2();
     Future.delayed(Duration.zero, () async {
       getAllUserChats();
       getAllGroupChats();
@@ -270,100 +273,8 @@ class _InboxScreenState extends State<InboxScreen> {
                           ],
                         ),
                       ),
-                      FutureBuilder<GetForum>(
-                        future: futureForumData,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Container(height: 150, child: progressBar());
-                          } else if (snapshot.hasError) {
-                            return Center(
-                                child: Text(
-                                    'Error loading forums: ${snapshot.error}'));
-                          } else if (!snapshot.hasData ||
-                              snapshot.data!.data!.isEmpty) {
-                            return Center(
-                                child: Text('No forum data available.'));
-                          }
-
-                          final forumList = snapshot.data!.data!;
-                          return Container(
-                            height: 150,
-                            child: ListView.builder(
-                              padding: EdgeInsets.zero,
-                              scrollDirection: Axis.horizontal,
-                              itemCount: forumList.length,
-                              itemBuilder: (context, index) {
-                                final forum = forumList[index];
-                                return GestureDetector(
-                                  onTap: () async {
-                                    Map<String, dynamic> mapping = {
-                                      'image': forum.dogBreed?.icon != null &&
-                                              forum.dogBreed!.icon!.isNotEmpty
-                                          ? '${ApiStrings.mediaURl}${forum.dogBreed!.icon}'
-                                          : '',
-                                      'desc': sharedPref.getString(
-                                                  SharedKey.languageValue) ==
-                                              'en'
-                                          ? forum.description.toString()
-                                          : forum.descriptionFr.toString(),
-                                      'topic': forum.dogBreed!.name.toString(),
-                                      'forumId': forum.id,
-                                    };
-
-                                    await Navigator.pushNamed(
-                                      context,
-                                      RoutesName.forumQuestion,
-                                      arguments: mapping,
-                                    );
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      children: [
-                                        ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          child: forum.dogBreed?.icon != null
-                                              ? Image.network(
-                                                  '${ApiStrings.mediaURl}${forum.dogBreed!.icon}',
-                                                  width: 90,
-                                                  height: 90,
-                                                  fit: BoxFit.cover,
-                                                  loadingBuilder: (context,
-                                                          child, progress) =>
-                                                      progress == null
-                                                          ? child
-                                                          : customProgressBar(),
-                                                )
-                                              : Container(
-                                                  width: 85,
-                                                  height: 85,
-                                                  color: MyColor.cardColor,
-                                                  child: Center(
-                                                    child: Image.asset(
-                                                      'assets/images/onboard/placeholder_image.png',
-                                                      width: 85,
-                                                      height: 85,
-                                                    ),
-                                                  ),
-                                                ),
-                                        ),
-                                        SizedBox(height: 5),
-                                        Text(
-                                          forum.dogBreed?.name ?? 'Unknown',
-                                          style: TextStyle(fontSize: 8),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          );
-                        },
-                      ),
+                      _buildForumsUINew(),
+                      // _buildForumsUIOLD(),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8.0, vertical: 8),
@@ -746,6 +657,23 @@ class _InboxScreenState extends State<InboxScreen> {
         Navigator.pushNamedAndRemoveUntil(
             context, RoutesName.loginScreen, (route) => false);
         throw Exception('Unauthorized access');
+      } else {
+        toaster(context, result['message'].toString());
+        throw Exception(result['message']);
+      }
+    } catch (e) {
+      throw Exception('Error fetching forum data: $e');
+    }
+  }
+
+  Future<AllForumsResponseModel> fetchForumDataV2() async {
+    try {
+      var res = await AllApi.getMethodApi(
+          "${ApiStrings.forums}?type=1&page=1&limit=20");
+      var result = jsonDecode(res.toString());
+
+      if (result['status'] == 200) {
+        return AllForumsResponseModel.fromJson(result);
       } else {
         toaster(context, result['message'].toString());
         throw Exception(result['message']);
@@ -1155,6 +1083,7 @@ class _InboxScreenState extends State<InboxScreen> {
               child: ListView.builder(
                 shrinkWrap: true,
                 itemCount: _listChats.length > 10 ? 10 : _listChats.length,
+                physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
                   final user = _listChats[index];
                   final currentUserID = int.parse(sharedPref.getString(SharedKey.userId)!);
@@ -1410,6 +1339,7 @@ class _InboxScreenState extends State<InboxScreen> {
               child: ListView.builder(
                 shrinkWrap: true,
                 itemCount: _listGroupChats.length > 10 ? 10 : _listGroupChats.length,
+                physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
                   final user = _listGroupChats[index];
                   final currentUserID = int.parse(sharedPref.getString(SharedKey.userId)!);
@@ -1644,5 +1574,200 @@ class _InboxScreenState extends State<InboxScreen> {
     setState(() {
       loader = false;
     });
+  }
+
+  Widget _buildForumsUIOLD() {
+    return FutureBuilder<GetForum>(
+      future: futureForumData,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState ==
+            ConnectionState.waiting) {
+          return Container(height: 150, child: progressBar());
+        } else if (snapshot.hasError) {
+          return Center(
+              child: Text(
+                  'Error loading forums: ${snapshot.error}'));
+        } else if (!snapshot.hasData ||
+            snapshot.data!.data!.isEmpty) {
+          return Center(
+              child: Text('No forum data available.'));
+        }
+
+        final forumList = snapshot.data!.data!;
+        return Container(
+          height: 150,
+          child: ListView.builder(
+            padding: EdgeInsets.zero,
+            scrollDirection: Axis.horizontal,
+            itemCount: forumList.length,
+            itemBuilder: (context, index) {
+              final forum = forumList[index];
+              return GestureDetector(
+                onTap: () async {
+                  Map<String, dynamic> mapping = {
+                    'image': forum.dogBreed?.icon != null &&
+                        forum.dogBreed!.icon!.isNotEmpty
+                        ? '${ApiStrings.mediaURl}${forum.dogBreed!.icon}'
+                        : '',
+                    'desc': sharedPref.getString(
+                        SharedKey.languageValue) ==
+                        'en'
+                        ? forum.description.toString()
+                        : forum.descriptionFr.toString(),
+                    'topic': forum.dogBreed!.name.toString(),
+                    'forumId': forum.id,
+                  };
+
+                  await Navigator.pushNamed(
+                    context,
+                    RoutesName.forumQuestion,
+                    arguments: mapping,
+                  );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      ClipRRect(
+                        borderRadius:
+                        BorderRadius.circular(10),
+                        child: forum.dogBreed?.icon != null
+                            ? Image.network(
+                          '${ApiStrings.mediaURl}${forum.dogBreed!.icon}',
+                          width: 90,
+                          height: 90,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context,
+                              child, progress) =>
+                          progress == null
+                              ? child
+                              : customProgressBar(),
+                        )
+                            : Container(
+                          width: 85,
+                          height: 85,
+                          color: MyColor.cardColor,
+                          child: Center(
+                            child: Image.asset(
+                              'assets/images/onboard/placeholder_image.png',
+                              width: 85,
+                              height: 85,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        forum.dogBreed?.name ?? 'Unknown',
+                        style: TextStyle(fontSize: 8),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildForumsUINew() {
+    return FutureBuilder<AllForumsResponseModel>(
+      future: futureForumDataV2,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState ==
+            ConnectionState.waiting) {
+          return Container(height: 150, child: progressBar());
+        } else if (snapshot.hasError) {
+          return Center(
+              child: Text(
+                  'Error loading forums: ${snapshot.error}'));
+        } else if (!snapshot.hasData ||
+            snapshot.data!.data!.isEmpty) {
+          return Center(
+              child: Text('No forum data available.'));
+        }
+
+        final forumList = snapshot.data!.data!;
+        return Container(
+          height: 150,
+          child: ListView.builder(
+            padding: EdgeInsets.zero,
+            scrollDirection: Axis.horizontal,
+            itemCount: forumList.length,
+            itemBuilder: (context, index) {
+              final forum = forumList[index];
+              return GestureDetector(
+                onTap: () async {
+                  // Map<String, dynamic> mapping = {
+                  //   'image': forum.dogBreed?.icon != null &&
+                  //       forum.dogBreed!.icon!.isNotEmpty
+                  //       ? '${ApiStrings.mediaURl}${forum.dogBreed!.icon}'
+                  //       : '',
+                  //   'desc': sharedPref.getString(
+                  //       SharedKey.languageValue) ==
+                  //       'en'
+                  //       ? forum.description.toString()
+                  //       : forum.descriptionFr.toString(),
+                  //   'topic': forum.dogBreed!.name.toString(),
+                  //   'forumId': forum.id,
+                  // };
+                  //
+                  // await Navigator.pushNamed(
+                  //   context,
+                  //   RoutesName.forumQuestion,
+                  //   arguments: mapping,
+                  // );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      ClipRRect(
+                        borderRadius:
+                        BorderRadius.circular(10),
+                        child:
+                        forum.category?.icon != null
+                            ? Image.network(
+                          '${forum.category!.icon}',
+                          width: 90,
+                          height: 90,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context,
+                              child, progress) =>
+                          progress == null
+                              ? child
+                              : customProgressBar(),
+                        )
+                            : Container(
+                          width: 85,
+                          height: 85,
+                          color: MyColor.cardColor,
+                          child: Center(
+                            child: Image.asset(
+                              'assets/images/onboard/placeholder_image.png',
+                              width: 85,
+                              height: 85,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        forum.category!.name ?? 'Unknown',
+                        style: TextStyle(fontSize: 8),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
   }
 }

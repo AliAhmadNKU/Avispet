@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:avispets/models/GlobalModel.dart';
+import 'package:avispets/models/gamification/user_badges_response_model.dart';
 import 'package:avispets/models/gamification_model.dart';
 import 'package:avispets/models/ranking_model.dart';
 import 'package:avispets/utils/common_function/toaster.dart';
@@ -332,10 +333,10 @@ class GetApi {
 
   //Gamification
   static Gamification gamification = Gamification();
+  static UserBadgesResponseModel userBadgesResponseModel = UserBadgesResponseModel();
   static Future<Gamification?> getGamificationApi(
       BuildContext context, String userId) async {
-    var res = await AllApi.getMethodApi(
-        "${ApiStrings.gamification}?page=1&limit=1000");
+    var res = await AllApi.getMethodApi("${ApiStrings.gamificationBadges}?page=1&limit=1000");
     var result = jsonDecode(res.toString());
     debugPrint("dfdsfdfd f   ${result}");
     if (result['status'] == 200) {
@@ -358,6 +359,25 @@ class GetApi {
       toaster(context, result['status'].toString());
     }
     return null;
+  }
+
+  static Future getGamificationApiNew(
+      BuildContext context, String userId) async {
+    var res = await AllApi.getMethodApi("${ApiStrings.gamificationBadges}/${userId}");
+    // var res = await AllApi.getMethodApi("${ApiStrings.gamificationBadges}?page=1&limit=1000");
+    var result = jsonDecode(res.toString());
+    debugPrint("dfdsfdfd f   ${result}");
+    if (result['status'] == 200) {
+      userBadgesResponseModel = UserBadgesResponseModel.fromJson(result);
+    } else if (result['status'] == 401) {
+      sharedPref.clear();
+      sharedPref.setString(SharedKey.onboardScreen, 'OFF');
+      toaster(context, result['status'].toString());
+      Navigator.pushNamedAndRemoveUntil(
+          context, RoutesName.loginScreen, (route) => false);
+    } else {
+      toaster(context, result['status'].toString());
+    }
   }
 
   int totalBadges = 0;

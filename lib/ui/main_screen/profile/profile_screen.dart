@@ -350,14 +350,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                   width: 75,
                                                   height: 75,
                                                   fit: BoxFit.cover)
-                                              : GetApi.getProfileModel.data!.profilePicture != null &&
-                                                      GetApi.getProfileModel.data!.profilePicture!.contains('http')
-                                                  ? CachedImage(
+                                              : GetApi.getProfileModel.data!
+                                                          .profilePicture !=
+                                                      null && GetApi.getProfileModel.data!
+                                              .profilePicture!.contains('http')
+                                                  ? Image.network(
+                                                      '${GetApi.getProfileModel.data!
+                                                          .profilePicture}',
                                                       width: 75,
                                                       height: 75,
                                                       fit: BoxFit.cover,
-                                                      url:
-                                                          '${GetApi.getProfileModel.data!.profilePicture.toString()}',
                                                     )
 
                                                   // Image.network(

@@ -1478,7 +1478,7 @@ class _ChatScreenState extends State<ChatScreen> {
             },
             child: ClipRRect(
               borderRadius: BorderRadius.all(Radius.circular(50)),
-              child: _listChats[index].sender!.profilePicture != null &&
+              child: _listChats[index].sender != null && _listChats[index].sender!.profilePicture != null &&
                   _listChats[index].sender!.profilePicture!.contains('http')
                   ? Image.network(
                 '${_listChats[index].sender!.profilePicture!}',
@@ -1520,9 +1520,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         fontFamily: 'poppins_medium',
                       ),
                     )))
-                    : chatList[index].messageType == 1 ||
-                    chatList[index].messageType == 2 ||
-                    chatList[index].messageType == 3
+                    : _listChats[index].messageType == 'image'
                     ? GestureDetector(
                     onTap: () {
                       _focusNode.unfocus();
@@ -1551,9 +1549,8 @@ class _ChatScreenState extends State<ChatScreen> {
                         margin:
                         const EdgeInsets.only(top: 5, bottom: 5),
                         child: ClipRRect(
-                          child: chatList[index].messageType == 1 &&
-                              !chatList[index]
-                                  .mediaUrl
+                          child: !_listChats[index]
+                                  .message
                                   .toString()
                                   .contains('giphy.com/media')
                               ? SizedBox(
@@ -1562,7 +1559,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                 .width *
                                 0.65,
                             child: Image.network(
-                                '${ApiStrings.mediaURl}${chatList[index].mediaUrl.toString()}',
+                                '${_listChats[index]
+                                    .message}',
                                 height: 150,
                                 loadingBuilder: (context, child,
                                     loadingProgress) =>
