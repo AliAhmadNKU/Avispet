@@ -36,6 +36,8 @@ class CreatePostBloc extends Bloc<GetCreatePostEvent, BlocStates> {
             'additionalInfo': event.description,
             'isFavourite': false,
             'postRatings': event.postRatings.map((post) => post.toJson()).toList(),
+            "latitude": event.lat,
+            "longitude": event.lng,
 
             // 'category': event.category.toString(),
             // 'currPos': event.currPos.toString(),

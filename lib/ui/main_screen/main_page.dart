@@ -172,44 +172,39 @@ class _MainPageState extends State<MainPage> {
                       // GetApi.getProfileModel.data!.unreadMessageCount = 0;
                       setState(() {});
                     },
-                    child: Container(
-                      width: double.infinity,
-                      alignment: Alignment.center,
-                      child: SizedBox(
-                        width: 22,
-                        child: Stack(
-                          children: [
-                            Image.asset(
-                              'assets/images/icons/bottom_chat.png',
-                              width: 22,
-                              height: 22,
-                              color: currentTab == 2
-                                  ? MyColor.orange2
-                                  : Color(0xff5B6170),
-                            ),
-                            if (GetApi.getProfileModel.data != null &&
-                                currentTab != 2 &&
-                                GetApi.getProfileModel.data!.counts
-                                        ?.notificationCount !=
-                                    null &&
-                                GetApi.getProfileModel.data!.counts!
-                                        .notificationCount! >
-                                    0)
-                              Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: Container(
-                                  height: 7,
-                                  width: 7,
-                                  decoration: BoxDecoration(
-                                    color: Colors.red,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                ),
-                              )
-                          ],
+                    child:
+                    Stack(
+                      children: [
+                        Image.asset(
+                          'assets/images/chat.png',
+                          width: 120,
+                          height:120,
+                          fit: BoxFit.cover,
+                          color: currentTab == 2
+                              ? MyColor.orange2
+                              : Color(0xff5B6170),
                         ),
-                      ),
+                        if (GetApi.getProfileModel.data != null &&
+                            currentTab != 2 &&
+                            GetApi.getProfileModel.data!.counts
+                                    ?.notificationCount !=
+                                null &&
+                            GetApi.getProfileModel.data!.counts!
+                                    .notificationCount! >
+                                0)
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: Container(
+                              height: 7,
+                              width: 7,
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                          )
+                      ],
                     ),
                   )),
               Flexible(

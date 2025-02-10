@@ -37,6 +37,10 @@ enum SampleItem { report, delete }
 class _HomeScreenState extends State<HomeScreen> {
   List<Object> places = [];
 
+  bool isLoading = false;
+  bool hasMore = true;
+
+
   List<Object> dataList = [
     // FilterModel(
     //     'assets/images/markers/Animalerie.png', 'Animalerie'.tr, 'petstore'),
@@ -148,9 +152,8 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
 
     getAllCategoriesApi();
-    getAllPostsApi();
-    getForumApiV2(page, '', currentTabBreed);
-    // getForumApi(page, '', currentTabBreed);
+    getAllPostsApi(page);
+    getForumApi(page, '', currentTabBreed);
     // GetApi.getNotify(context, '');
   }
   // Image list
@@ -229,10 +232,15 @@ class _HomeScreenState extends State<HomeScreen> {
         child: NotificationListener(
             onNotification: (notification) {
               if (notification is ScrollEndNotification &&
-                  (notification.metrics.extentAfter == 0 &&
-                      notification.metrics.axis == Axis.vertical)) {
+                  (notification.metrics.extentAfter == 0 && notification.metrics.axis == Axis.vertical)) {
                 print('notification working');
                 page++;
+                // getAllPostsApi(page);
+                // if (hasMore && !isLoading) {
+                //
+                // }
+
+
               }
               return false;
             },
@@ -329,12 +337,21 @@ class _HomeScreenState extends State<HomeScreen> {
                             Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
+
                                 ListView.builder(
-                                  itemCount: postsList.length,
+                                  itemCount: postsList.length ,
                                   shrinkWrap: true,
                                   physics: NeverScrollableScrollPhysics(),
                                   itemBuilder: (context, index) {
                                     final post = postsList[index];
+                                    // if (index == postsList.length) {
+                                    //   return Center(
+                                    //     child: Padding(
+                                    //       padding: EdgeInsets.all(10),
+                                    //       child: CircularProgressIndicator(), // Show loading indicator
+                                    //     ),
+                                    //   );
+                                    // }
                                     return GestureDetector(
                                       onTap: () async {
                                         Navigator.pushNamed(
@@ -511,10 +528,51 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Future<void> getAllPostsApi() async {
+
+  // Future<void> getAllPostsApi(int page) async {
+  //   // if (isLoading || !hasMore) return; // Prevent duplicate calls
+  //
+  //   try {
+  //     // setState(() {
+  //     //   isLoading = true;
+  //     // });
+  //
+  //     // Make the API call
+  //     var res = await AllApi.getMethodApi("${ApiStrings.getAllFeed}?page=$page&limit=20");
+  //     print('API Response: $res');
+  //
+  //     var result = jsonDecode(res.toString());
+  //
+  //     if (result['status'] == 200) {
+  //       var posts = GetAllPostModel.fromJson(result);
+  //
+  //       setState(() {
+  //         if (posts.data?.data?.post != null && posts.data!.data!.post!.isNotEmpty) {
+  //           postsList.addAll(posts.data!.data!.post!.map((post) => Post.fromJson(post.toJson())));
+  //         } else {
+  //           // hasMore = false; // No more posts to fetch
+  //         }
+  //       });
+  //
+  //       print('Fetched Posts: ${postsList.length}');
+  //     } else if (result['status'] == 401) {
+  //       Navigator.pushNamedAndRemoveUntil(context, RoutesName.loginScreen, (route) => false);
+  //     } else {
+  //       toaster(context, result['message'].toString());
+  //     }
+  //   } catch (e) {
+  //     debugPrint("Error: $e");
+  //     toaster(context, "An error occurred while fetching posts.");
+  //   } finally {
+  //     setState(() {
+  //       // isLoading = false;
+  //     });
+  //   }
+  // }
+  Future<void> getAllPostsApi(int page) async {
     try {
       // Make the API call
-      var res = await AllApi.getMethodApi("${ApiStrings.getAllFeed}");
+      var res = await AllApi.getMethodApi("${ApiStrings.getAllFeed}?page=1&limit=20");
       print('=========================$res');
 
       // Decode the response
@@ -1503,13 +1561,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildForumsUINEW() {
+    final List<String> imageUrls = [
+      "assets/images/1dog.png",
+      "assets/images/2dog.png",
+    ];
     return Expanded(
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: _allForumsResponseModel.data != null ? _allForumsResponseModel.data!.length : 0,
+        itemCount:imageUrls.length, /*_allForumsResponseModel.data != null ? _allForumsResponseModel.data!.length: 0,*/
         itemBuilder: (context, index) {
-          final forum = _allForumsResponseModel.data![index];
-
+         // final forum = _allForumsResponseModel.data![index];
           return Container(
             width: MediaQuery.of(context)
                 .size
@@ -1525,14 +1586,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       EdgeInsets.symmetric(
                           horizontal: 10),
                       width: double.infinity,
-                      color: MyColor.white,
+
                       child: Center(
                           child: Image.asset(
                               width:
                               double.infinity,
                               fit:
                               BoxFit.fitWidth,
-                              'assets/images/chi_salon.png'))),
+                              imageUrls[index]))),
                 ),
                 Positioned(
                     left: 35,
@@ -1541,13 +1602,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       width: 200,
                       child: Row(
                         children: [
-                          Flexible(
-                              child: MyString.bold(
-                                  '${forum.title.toString()}',
-                                  22,
-                                  MyColor.title,
-                                  TextAlign
-                                      .start)),
+                          // Flexible(
+                          //     child: MyString.bold(
+                          //         '${forum.title.toString()}',
+                          //         22,
+                          //         MyColor.title,
+                          //         TextAlign
+                          //             .start)),
                         ],
                       ),
                     )),

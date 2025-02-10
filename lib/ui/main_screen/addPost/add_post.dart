@@ -256,7 +256,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
       // Create a multipart request
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse("http://16.171.146.189:8001/api/v1/upload/post-animal-image"),
+        Uri.parse("${ApiStrings.serverURl}api/v1/upload/post-animal-image"),
       );
 
       // Add headers
@@ -1881,6 +1881,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
       reservationPlatform: '${currPos!['website']}',
       additionalInfo: additionalInfo.text,
       isFavourite: false,
+      lat:  latitude,
+      lng: longitude,
       postRatings: postRatings,
     ));
   }
