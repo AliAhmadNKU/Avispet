@@ -308,6 +308,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
       print('getLocationByEvent => $queryParams');
       final response = await AllApi.getEvents(queryParams);
       var result = response is String ? jsonDecode(response) : response;
+      print('getLocationByEvent => ${result}');
       if (result['status'] == 200) {
         EventsResponseModel eventsResponseModel = EventsResponseModel.fromJson(result);
         return eventsResponseModel.data!;
@@ -590,9 +591,11 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                         children: [
                                           Flexible(
                                             child: Container(
+                                      width: MediaQuery.sizeOf(context).width,
                                               child: SearchingBar(
                                                   onChanged: _updateSuggestions,
                                                   onPlaceSelected: _onPlaceSelected,
+                                                allowFilter: false,
                                               ),
                                             ),
                                           ),
@@ -1961,7 +1964,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
       print(long);
       Map<String, dynamic>? curPos =
       await GoogleMapsService.getLocationInfo(lat, long);
-      print(curPos);
+      print('getCurrentLocationByStores => ');
       setState(() {
         currPos = curPos;
         isLoadingLocation = false;

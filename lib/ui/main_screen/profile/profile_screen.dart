@@ -63,9 +63,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     ProfileListModel(
         'assets/images/logos/delete_account.png', 'deleteAccount'.tr, 9),
     ProfileListModel('assets/images/icons/logout.png', 'logout'.tr, 10),
-    ProfileListModel(
-        'assets/images/icons/invite_user.png', 'inviteFriends'.tr, 100),
-    ProfileListModel('assets/images/icons/logout.png', 'passcode'.tr, 99),
+    // ProfileListModel(
+    //     'assets/images/icons/invite_user.png', 'inviteFriends'.tr, 100),
+    // ProfileListModel('assets/images/icons/logout.png', 'passcode'.tr, 99),
   ];
 
   bool loader = true;
@@ -817,7 +817,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     } else if (dataList[index].count == 12) {
                                       Navigator.pushNamed(
                                           context, RoutesName.badges);
-                                    } else if (dataList[index].count == 100) {
+                                    }
+                                    else if (dataList[index].count == 100) {
                                       inviteCode(context);
                                     }
                                     setState(() {});

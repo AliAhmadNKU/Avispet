@@ -304,9 +304,8 @@ class _NewPasswordState extends State<NewPassword> {
                                         color: MyColor.orange2,
                                         borderRadius: const BorderRadius.all(
                                             Radius.circular(22))),
-                                    child: Flexible(
-                                        child: MyString.med('save'.tr, 18,
-                                            MyColor.white, TextAlign.center)),
+                                    child: MyString.med('save'.tr, 18,
+                                        MyColor.white, TextAlign.center),
                                   ),
                                 ),
                               ),
