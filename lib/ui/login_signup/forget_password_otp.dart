@@ -57,6 +57,7 @@ class _ForgetPasswordOtpScreenState extends State<ForgetPasswordOtpScreen> {
 
     return Scaffold(
       // appBar: AppBar(title: Text('Verify OTP')),
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

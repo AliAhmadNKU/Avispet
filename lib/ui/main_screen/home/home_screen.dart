@@ -37,6 +37,8 @@ enum SampleItem { report, delete }
 
 class _HomeScreenState extends State<HomeScreen> {
   late ScrollController _feedsScrollController;
+  double _previousScrollPosition = 0.0;
+
 
   List<Object> places = [];
 
@@ -77,6 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool pagerLoader = false;
   bool loader = true;
   bool stackLoader = false;
+  bool apiCall = false;
 
   String dogList = '';
   String catList = '';
@@ -171,15 +174,23 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onScroll() {
-    if (_feedsScrollController.position.pixels >= _feedsScrollController.position.maxScrollExtent - 200) {
-      stackLoader = true;
-      feedCurrentPage++;
-      setState(() {
+    double currentPosition = _feedsScrollController.position.pixels;
+    bool isScrollingDown = currentPosition > _previousScrollPosition; // Chec
+    if (isScrollingDown &&
+        currentPosition >= _feedsScrollController.position.maxScrollExtent - 200) {
 
-      });
-      getAllPostsApi();
-      // context.read<PaginationCubit>().fetchItems();
+      if (!apiCall) {
+        apiCall = true;
+        print('_onScroll');
+        stackLoader = true;
+        feedCurrentPage++;
+        setState(() {});
+
+        getAllPostsApi();
+      }
     }
+
+    _previousScrollPosition = currentPosition;
   }
   // Image list
   List<String> images = [
@@ -507,6 +518,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           SizedBox(
                             height: 200,
                           )
+                      if(stackLoader) progressBar()
                         ],
                       ),
                     ),
@@ -630,6 +642,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
       setState(() {
         stackLoader = false;
+        apiCall = false;
         // Update your local state with the data
       });
     } catch (e) {
@@ -1632,23 +1645,23 @@ class _HomeScreenState extends State<HomeScreen> {
                               BoxFit.fitWidth,
                               imageUrls[index]))),
                 ),
-                Positioned(
-                    left: 35,
-                    top: 40,
-                    child: Container(
-                      width: 200,
-                      child: Row(
-                        children: [
-                          // Flexible(
-                          //     child: MyString.bold(
-                          //         '${forum.title.toString()}',
-                          //         22,
-                          //         MyColor.title,
-                          //         TextAlign
-                          //             .start)),
-                        ],
-                      ),
-                    )),
+                // Positioned(
+                //     left: 35,
+                //     top: 40,
+                //     child: Container(
+                //       width: 200,
+                //       child: Row(
+                //         children: [
+                //           Flexible(
+                //               child: MyString.bold(
+                //                   '${forum.title.toString()}',
+                //                   22,
+                //                   MyColor.title,
+                //                   TextAlign
+                //                       .start)),
+                //         ],
+                //       ),
+                //     )),
                 // Align(
                 //   alignment: Alignment.bottomLeft,
                 //   child: Container(
