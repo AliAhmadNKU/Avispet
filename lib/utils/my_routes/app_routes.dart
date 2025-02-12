@@ -274,8 +274,10 @@ class Routes {
         return MaterialPageRoute(
             builder: (BuildContext context) => const FilterReviews());
       case RoutesName.addPostDetail:
+
+        int id=0;
         return MaterialPageRoute(
-            builder: (BuildContext context) => const AddPostDetails());
+            builder: (BuildContext context) =>  AddPostDetails(id:id));
       case RoutesName.replyScreen:
         print('APP-ROUTE(CREATE_ANIMAL) ::  ${settings.arguments.toString()}');
         Map<String, dynamic>? mapData =

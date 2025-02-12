@@ -4,7 +4,9 @@ import 'package:appinio_video_player/appinio_video_player.dart';
 import 'package:avispets/models/get_all_post_modle.dart';
 import 'package:avispets/models/get_feed_comment_model.dart';
 import 'package:avispets/models/reviews/get_post_reviews_by_postid_model.dart';
+import 'package:avispets/ui/main_screen/addPost/add_post_details.dart';
 import 'package:avispets/ui/main_screen/home/like_screen.dart';
+import 'package:avispets/ui/widgets/cached_image.dart';
 import 'package:avispets/utils/apis/all_api.dart';
 import 'package:avispets/utils/apis/api_strings.dart';
 import 'package:avispets/utils/base_date_utils.dart';
@@ -175,7 +177,7 @@ class _PostDetailState extends State<PostDetail> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     HeaderWidget(),
-                    MyString.bold('Category - Backers & brothers', 18,
+                    MyString.bold(post.category, 18,
                         MyColor.title, TextAlign.start),
                     Container(
                       margin: const EdgeInsets.only(top: 15, bottom: 15),
@@ -216,18 +218,19 @@ class _PostDetailState extends State<PostDetail> {
                     ),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(15),
-                      child: Image.asset(
+                      child: CachedImage(
+                          url: post.images[0],
                           width: double.infinity,
                           height: 147,
                           fit: BoxFit.cover,
-                          'assets/images/place.png'),
+                          ),
                     ),
                     Container(
                       padding: EdgeInsets.symmetric(vertical: 10),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          MyString.bold('Backers & brothers', 18, MyColor.title,
+                          MyString.bold(post.category, 18, MyColor.title,
                               TextAlign.start),
                           Row(
                             children: [
@@ -280,9 +283,17 @@ class _PostDetailState extends State<PostDetail> {
                         children: [
                           GestureDetector(
                               onTap: () async {
-                                await Navigator.pushNamed(
-                                    context, RoutesName.addReview,
-                                    arguments: {});
+
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) =>  AddPostDetails(
+                                    id:post.id,
+                                  )),
+                                );
+
+                                // await Navigator.pushNamed(
+                                //     context, RoutesName.addReview,
+                                //     arguments: {});
                               },
                               child: Container(
                                   padding: EdgeInsets.symmetric(
@@ -808,10 +819,13 @@ class _PostDetailState extends State<PostDetail> {
                                     TextAlign.start),
                               ),
                               GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    showReviewsList = true;
-                                  });
+                                onTap: () async {
+                                  await Navigator.pushNamed(
+                                      context, RoutesName.addReview,
+                                      arguments: {});
+                                  // setState(() {
+                                  //   showReviewsList = true;
+                                  // });
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.only(bottom: 20.0),

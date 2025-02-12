@@ -73,13 +73,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           fontWeight: FontWeight.w700,
                         ),
                         children: [
-                          TextSpan(
-                            text: 'Avispets',
-                            style: TextStyle(color: Color(0xff800000)),
-                          ),
+                          // TextSpan(
+                          //   text: 'Avispets',
+                          //   style: TextStyle(color: Color(0xff800000)),
+                          // ),
                           TextSpan(
                             text: 'GiveYourPetTheBest'.tr,
-                            style: TextStyle(color: Color(0xff1F3143)),
+                            style: TextStyle(color: Color(0xff800000)),
                           ),
                         ],
                       ),

@@ -9,11 +9,14 @@ class ApiStrings {
   static const String privacy = serverURl + 'privacy-policy';
   static const String mediaURl = 'https://d1pi76jwqujuc3.cloudfront.net/';
 
+
+
   static const String gifKey = 'Fwqcj9yGBZV20kAZbxvmBUOhouhBhuGq';
   static const String headerKey = 'Authorization';
   static const String headerValue = 'AVISEaZFcaISZMHGrpEjxpQj3bzK57202gNuPETS';
 
   //feedV1
+
   static const String postfeed = 'post-feed';
   static const String likefeed = 'like-feed';
   static const String favfeed = 'fav-feed';
@@ -36,6 +39,7 @@ class ApiStrings {
   static const String getAllFeed = 'user/get-all-feed';
 
   // POST METHODS
+  static const String createReview = 'review';
   static const String signup = 'auth/signup';
   static const String emailOtp = 'request-email-otp';
   static const String resendOTP = 'auth/resend-otp';
@@ -72,6 +76,7 @@ class ApiStrings {
   static const String updateProfilePicture = 'update-profile-picture';
 
   //GET METHODS
+  static const String getPostById = 'post/get-post';
   static const String global = 'global-settings';
   static const String profile = 'profile';
   static const String gamification = 'gamification-badges';

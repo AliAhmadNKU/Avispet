@@ -63,6 +63,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
       }
     else{
+      print("asdasdasdasd");
       payload = widget.data['data']!;
     }
 
@@ -642,7 +643,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     ),
                     children: <TextSpan>[
                       TextSpan(
-                        text: " ${ payload["data"]}",
+                        text: " ${payload["data"]}",
                         style: TextStyle(
                           fontSize: 14,
                           fontFamily: "mont_Med",

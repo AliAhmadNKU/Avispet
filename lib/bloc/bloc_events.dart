@@ -166,6 +166,31 @@ class PostRating {
   }
 }
 
+class PostRatingX {
+  String category;
+  int rating;
+
+  PostRatingX({
+    required this.category,
+    required this.rating,
+  });
+
+  factory PostRatingX.fromJson(Map<String, dynamic> json) {
+    return PostRatingX(
+      category: json['category'],
+      rating: json['rating'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'category': category,
+      'rating': rating,
+    };
+  }
+}
+
+
 //  --editAnimal
 class GetEditAnimalEvent extends EditAnimalEvent {
   String? id;

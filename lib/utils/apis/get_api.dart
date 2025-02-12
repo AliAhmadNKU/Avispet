@@ -176,6 +176,8 @@ class GetApi {
     var res =
         await AllApi.getNotify('${ApiStrings.notifications}?search=$search');
     var result = jsonDecode(res.toString());
+
+    print("result notification ${result}");
     debugPrint(result['status'].toString());
     if (result['status'] == 200) {
       getNotification = GetNotification.fromJson(result);

@@ -359,6 +359,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ],
                               ),
                             ),
+
+
+                            ///Create post
                             Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -1642,43 +1645,43 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     )),
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 25,vertical: 40),
-                      padding:
-                      EdgeInsets.symmetric(
-                          horizontal: 25,
-                          vertical: 10),
-                      decoration: BoxDecoration(
-                          color: MyColor.redd,
-                          borderRadius:
-                          BorderRadius
-                              .circular(
-                              15)),
-                      child: GestureDetector(
-                          onTap: () async {
-                            // await Navigator.pushNamed(
-                            //     context,
-                            //     RoutesName
-                            //         .forumQuestion,
-                            //     arguments: {});
-                            // setState(() {
-                            //   loader = true;
-                            //   page = 1;
-                            //   getForumApi(
-                            //       page,
-                            //       '',
-                            //       currentTabBreed);
-                            // });
-                          },
-                          child: MyString.bold(
-                              'Join Now',
-                              12,
-                              MyColor.white,
-                              TextAlign
-                                  .start))),
-                )
+                // Align(
+                //   alignment: Alignment.bottomLeft,
+                //   child: Container(
+                //     margin: EdgeInsets.symmetric(horizontal: 25,vertical: 40),
+                //       padding:
+                //       EdgeInsets.symmetric(
+                //           horizontal: 25,
+                //           vertical: 10),
+                //       decoration: BoxDecoration(
+                //           color: MyColor.redd,
+                //           borderRadius:
+                //           BorderRadius
+                //               .circular(
+                //               15)),
+                //       child: GestureDetector(
+                //           onTap: () async {
+                //             // await Navigator.pushNamed(
+                //             //     context,
+                //             //     RoutesName
+                //             //         .forumQuestion,
+                //             //     arguments: {});
+                //             // setState(() {
+                //             //   loader = true;
+                //             //   page = 1;
+                //             //   getForumApi(
+                //             //       page,
+                //             //       '',
+                //             //       currentTabBreed);
+                //             // });
+                //           },
+                //           child: MyString.bold(
+                //               'Join Now',
+                //               12,
+                //               MyColor.white,
+                //               TextAlign
+                //                   .start))),
+                // )
               ],
             ),
           );

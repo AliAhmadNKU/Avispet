@@ -528,7 +528,7 @@ class AllApi {
       // Create a multipart request
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse("http://16.171.146.189:8001/api/v1/upload/post-animal-image"),
+        Uri.parse("${ApiStrings.serverURl}api/v1/upload/post-animal-image"),
       );
 
       // Add headers

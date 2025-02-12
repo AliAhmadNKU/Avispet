@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:avispets/utils/apis/api_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
@@ -13,7 +14,7 @@ class _ImageUploadExampleState extends State<ImageUploadExample> {
   File? fileImage;
   final picker = ImagePicker();
   final String uploadUrl =
-      "http://16.171.146.189:8001/api/v1/upload/post-animal-image";
+      "${ApiStrings.serverURl}api/v1/upload/post-animal-image";
   Future<File?> pickImage(BuildContext context, ImageSource source) async {
     final pickedFile = await picker.pickImage(source: source);
     if (pickedFile != null) {

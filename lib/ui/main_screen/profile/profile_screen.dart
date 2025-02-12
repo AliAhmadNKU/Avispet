@@ -94,7 +94,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       // Create a multipart request
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse("http://16.171.146.189:8001/api/v1/upload/profile-image"),
+        Uri.parse("${ApiStrings.serverURl}api/v1/upload/profile-image"),
       );
 
       // Add headers
@@ -354,7 +354,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                           .profilePicture !=
                                                       null && GetApi.getProfileModel.data!
                                               .profilePicture!.contains('http')
-                                                  ? Image.network(
+                                                  ? CachedImage(
+                                                     url:
                                                       '${GetApi.getProfileModel.data!
                                                           .profilePicture}',
                                                       width: 75,
@@ -1174,7 +1175,7 @@ Future<String?> uploadImage(File imageFile) async {
     // Create a multipart request
     var request = http.MultipartRequest(
       'POST',
-      Uri.parse("http://16.171.146.189:8001/api/v1/upload/post-animal-image"),
+      Uri.parse("${ApiStrings.serverURl}/api/v1/upload/post-animal-image"),
     );
 
     // Add headers
