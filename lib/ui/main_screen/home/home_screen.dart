@@ -517,7 +517,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           SizedBox(
                             height: 200,
-                          )
+                          ),
                       if(stackLoader) progressBar()
                         ],
                       ),

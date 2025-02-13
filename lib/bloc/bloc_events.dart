@@ -98,6 +98,8 @@ class GetCreatePostEvent extends CreatePost {
   int userId;
   num lat;
   num lng;
+  num distance;
+  num totalUserRating;
   String placeId;
   String email;
   String phone;
@@ -139,6 +141,8 @@ class GetCreatePostEvent extends CreatePost {
     required this.postRatings,
     required this.lat,
     required this.lng,
+    required this.distance,
+    required this.totalUserRating,
   });
 }
 

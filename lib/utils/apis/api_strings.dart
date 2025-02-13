@@ -76,6 +76,7 @@ class ApiStrings {
   static const String updateProfilePicture = 'update-profile-picture';
 
   //GET METHODS
+  static const String filterReview = 'review/filter-reviews';
   static const String getPostById = 'post/get-post';
   static const String global = 'global-settings';
   static const String profile = 'profile';

@@ -322,7 +322,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
     return [];
   }
 
+  late GetLocatioByName location;
   Future<List<LocationData>> getLocationByNameNew(String query) async {
+
+
     try {
       Map<String, dynamic> data = {
         "latitude": latitude,
@@ -340,7 +343,11 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
       if (result['status'] == 201) {
         // Parse the response into the GetAllCategories model
-        GetLocatioByName location = GetLocatioByName.fromJson(result);
+
+         location = GetLocatioByName.fromJson(result);
+
+         print(" location.data ${ location.data}");
+
         return location.data!;
         // setState(() {
         //   locationListByName = location.data ?? [];
@@ -525,6 +532,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+
+    print("current position ${currPos}");
+
     return NotificationListener(
       onNotification: (notification) {
         if (notification is ScrollEndNotification &&
@@ -1865,6 +1876,12 @@ class _AddPostScreenState extends State<AddPostScreen> {
         ));
       }
     }
+
+
+
+    print("location data  ${location.data}");
+
+
     _postBloc.add(GetCreatePostEvent(
       userId: int.parse(sharedPref.getString(SharedKey.userId)!),
       placeId: currPos!['placeId'],
@@ -1888,6 +1905,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
       lat:  latitude,
       lng: longitude,
       postRatings: postRatings,
+      distance: _locationData!.distance??0.0,
+      totalUserRating: _locationData!.userRating??0.0,
     ));
   }
 
@@ -1962,8 +1981,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
       });
       print(lat);
       print(long);
-      Map<String, dynamic>? curPos =
-      await GoogleMapsService.getLocationInfo(lat, long);
+      Map<String, dynamic>? curPos = await GoogleMapsService.getLocationInfo(lat, long);
       print('getCurrentLocationByStores => ');
       setState(() {
         currPos = curPos;
@@ -2019,6 +2037,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
     });
     try {
       print('Latitude: ${_locationData!.latitude}, Longitude: ${_locationData!.longitude}');
+
+      print("location distance ${_locationData?.distance}");
       setState(() {
         lat = _locationData!.latitude!.toDouble();
         long = _locationData!.longitude!.toDouble();
@@ -2033,6 +2053,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
         currPos = curPos;
         isLoadingLocation = false;
       });
+
+      print("currPos data ${currPos} ");
+
+
       if (currPos != null) {
         loader = false;
       }
@@ -2078,17 +2102,19 @@ class _AddPostScreenState extends State<AddPostScreen> {
   }
 
   _onPlaceSelected(dynamic data) {
-    print('_onPlaceSelected => $data');
+    print('_onPlaceSelected => ${data.toString()}');
     if(data is LocationData){
       _locationData = data;
       getCurrentLocationNew();
     }
     else if(data is EventsModel){
+      print("online event model");
       _eventsModel = data;
       getCurrentLocationByEvents();
     }
     else if(data is OnlineStoreModel){
       _onlineStoreModel = data;
+      print("online store model");
       getCurrentLocationByStores();
     }
 
@@ -2106,6 +2132,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
           ApiStrings.fetchOnlineStores,
         map
       );
+
+      print("getLocationByStore => $response");
+
       var result = response is String ? jsonDecode(response) : response;
       if (result['status'] == 201) {
         OnlineStoreResponseModel onlineStoreResponseModel = OnlineStoreResponseModel.fromJson(result);

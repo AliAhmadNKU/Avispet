@@ -1,3 +1,4 @@
+import 'package:avispets/ui/main_screen/home/filter_screen.dart';
 import 'package:avispets/ui/main_screen/home/post_detail.dart';
 import 'package:avispets/ui/main_screen/profile/profile_screen.dart';
 import 'package:avispets/utils/common_function/header_widget.dart';
@@ -7,8 +8,14 @@ import 'package:avispets/utils/my_routes/route_name.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../models/reviews/get_post_reviews_by_postid_model.dart';
+import '../../../utils/base_date_utils.dart';
+import '../filter_reviews.dart';
+
 class AddReview extends StatefulWidget {
-  const AddReview({super.key});
+  List<Reviews> mReviews = [];
+  int postID;
+   AddReview({super.key,required this.mReviews,required this.postID});
 
   @override
   State<AddReview> createState() => _AddReviewState();
@@ -24,29 +31,7 @@ class _AddReviewState extends State<AddReview> {
     'star4'.tr,
     'star5'.tr
   ];
-  List<review> reviews = [
-    review(
-        date: '10/27/2024',
-        rate: 4,
-        reviewer: 'reviewer',
-        place: 'place',
-        description:
-            'Super lovely product. I love this product because the software is brilliantly helpful Can’t get enough!'),
-    review(
-        date: 'date',
-        rate: 3,
-        reviewer: 'reviewer',
-        place: 'place',
-        description:
-            'Super lovely product. I love this product because the software is brilliantly helpful Can’t get enough!'),
-    review(
-        date: 'date',
-        rate: 5,
-        reviewer: 'reviewer',
-        place: 'place',
-        description:
-            'Super lovely product. I love this product because the software is brilliantly helpful Can’t get enough!'),
-  ];
+
   List<bool> itemBool = List.generate(5, (index) => false);
 
   List<String> items1 = [
@@ -80,7 +65,7 @@ class _AddReviewState extends State<AddReview> {
                 ),
                 child: HeaderWidget(),
               ),
-              MyString.bold('Restaurant - Backers & brothers', 20,
+              MyString.bold('Review', 20,
                   MyColor.title, TextAlign.start),
               Container(
                 margin: const EdgeInsets.only(top: 20, bottom: 15),
@@ -324,13 +309,22 @@ class _AddReviewState extends State<AddReview> {
                 indent: 16, // Start padding
                 endIndent: 16, // End padding
               ),
-              showReviewsList
-                  ? Column(
+
+
+              // showReviewsList
+              //     ?
+
+              Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         GestureDetector(
                           onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => FilterReviews(postId: widget.postID,)),
+                            );
+
                             Navigator.pushNamed(
                                 context, RoutesName.filterReviews);
                           },
@@ -361,219 +355,89 @@ class _AddReviewState extends State<AddReview> {
                         ),
                         Container(
                           margin: EdgeInsets.only(top: 10),
-                          height: 480,
-                          width: double.infinity,
-                          child: ListView.builder(
-                              itemCount: reviews.length,
-                              padding: EdgeInsets.only(top: 20, bottom: 30),
-                              itemBuilder: (context, index) {
-                                var rev = reviews[index];
-                                return Column(
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () async {
-                                        // Handle tap here
-                                      },
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: 25, horizontal: 20),
-                                        decoration: BoxDecoration(
-                                          color: MyColor.card,
-                                          border:
-                                              Border.all(color: MyColor.stroke),
-                                          borderRadius: BorderRadius.circular(
-                                              8), // Optional: adds rounded corners
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            // Review header text
-                                            MyString.reg(
-                                              'Review filed on ${rev.date}',
-                                              12,
-                                              MyColor.textBlack0,
-                                              TextAlign.start,
-                                            ),
-                                            SizedBox(
-                                                height:
-                                                    10), // Spacing between elements
-                                            // Stars
-                                            Row(
-                                              children: List.generate(
-                                                rev.rate!,
-                                                (index) => Padding(
-                                                  padding: const EdgeInsets
-                                                      .only(
-                                                      right:
-                                                          4.0), // Space between stars
-                                                  child: Image.asset(
-                                                    'assets/images/icons/star.png',
-                                                    height: 16,
-                                                    width: 16,
-                                                    semanticLabel:
-                                                        'Star rating',
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                                height:
-                                                    10), // Spacing between elements
-
-                                            MyString.bold(
-                                              '${rev.reviewer} reviews ${rev.place}',
-                                              14,
-                                              MyColor.black,
-                                              TextAlign.start,
-                                            ),
-                                            SizedBox(height: 10), //
-                                            SizedBox(height: 10),
-                                            MyString.regMultiLine(
-                                                '${rev.description}',
-                                                12,
-                                                MyColor.black,
-                                                TextAlign.start,
-                                                3),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    if (index != reviews.length - 1)
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8.0),
-                                        child: Divider(
-                                          color: Color(
-                                              0xffEBEBEB), // Color of the divider
-                                          thickness: 1, // Thickness of the line
-                                          indent: 16, // Start padding
-                                          endIndent: 16, // End padding
-                                        ),
-                                      ),
-                                  ],
-                                );
-                              }),
-                        ),
-                      ],
-                    )
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 3.0),
-                          child: MyString.reg('Customer ratings (8 reviews)',
-                              16, MyColor.redd, TextAlign.start),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              showReviewsList = true;
-                            });
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: 20.0),
-                            child: Row(
-                              children: [
-                                MyString.reg('Show all reviews', 12,
-                                    MyColor.redd, TextAlign.start),
-                                SizedBox(width: 5),
-                                Image.asset(
-                                    'assets/images/icons/noun_arr_right.png')
-                              ],
-                            ),
-                          ),
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            MyString.reg(
-                                '4.5', 20, MyColor.textBlack, TextAlign.start),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Icon(Icons.star, color: Colors.amber, size: 26),
-                          ],
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 10),
                           height: 220,
                           child: ListView.builder(
                             padding: EdgeInsets.zero,
-                            scrollDirection: Axis.horizontal,
-                            itemCount: reviews.length,
+                            scrollDirection: Axis.vertical,
+                            itemCount: widget.mReviews.length,
                             itemBuilder: (context, index) {
-                              var rev = reviews[index];
-                              return GestureDetector(
-                                onTap: () async {
-                                  // Handle tap here
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(right: 20),
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 5, horizontal: 15),
-                                  width: 280,
-                                  decoration: BoxDecoration(
-                                    color: MyColor.card,
-                                    border: Border.all(color: MyColor.stroke),
-                                    borderRadius: BorderRadius.circular(
-                                        8), // Optional: adds rounded corners
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      // Review header text
-                                      MyString.reg(
-                                        'Review filed on ${rev.date}',
-                                        12,
-                                        MyColor.textBlack0,
-                                        TextAlign.start,
-                                      ),
-                                      SizedBox(
-                                          height:
-                                              10), // Spacing between elements
-                                      // Stars
-                                      Row(
-                                        children: List.generate(
-                                          rev.rate!,
-                                          (index) => Padding(
-                                            padding: const EdgeInsets.only(
-                                                right:
-                                                    4.0), // Space between stars
-                                            child: Image.asset(
-                                              'assets/images/icons/star.png',
-                                              height: 16,
-                                              width: 16,
-                                              semanticLabel: 'Star rating',
+                              var rev =  widget.mReviews[index];
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 20),
+                                child: GestureDetector(
+                                  onTap: () async {
+                                    // Handle tap here
+                                  },
+                                  child: Container(
+                                    margin:
+                                    EdgeInsets.only(right: 20),
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 5, horizontal: 15),
+                                    width: 280,
+                                    decoration: BoxDecoration(
+                                      color: MyColor.card,
+                                      border: Border.all(
+                                          color: MyColor.stroke),
+                                      borderRadius: BorderRadius.circular(
+                                          8), // Optional: adds rounded corners
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.center,
+                                      children: [
+                                        // Review header text
+                                        MyString.reg(
+                                          'Review filed on ${BaseDateUtils.formatToMMddyyyy(rev.createdAt!)}',
+                                          12,
+                                          MyColor.textBlack0,
+                                          TextAlign.start,
+                                        ),
+                                        SizedBox(
+                                            height:
+                                            10), // Spacing between elements
+                                        // Stars
+                                        Row(
+                                          children: List.generate(
+                                            rev.overallRating!
+                                                .toInt(),
+                                                (index) => Padding(
+                                              padding: const EdgeInsets
+                                                  .only(
+                                                  right:
+                                                  4.0), // Space between stars
+                                              child: Image.asset(
+                                                'assets/images/icons/star.png',
+                                                height: 16,
+                                                width: 16,
+                                                semanticLabel:
+                                                'Star rating',
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      SizedBox(
-                                          height:
-                                              10), // Spacing between elements
+                                        SizedBox(
+                                            height:
+                                            10), // Spacing between elements
 
-                                      MyString.bold(
-                                        '${rev.reviewer} reviews ${rev.place}',
-                                        14,
-                                        MyColor.black,
-                                        TextAlign.start,
-                                      ),
-                                      SizedBox(height: 10), //
-                                      SizedBox(height: 10),
-                                      MyString.regMultiLine(
-                                          '${rev.description}',
-                                          12,
-                                          MyColor.black,
-                                          TextAlign.start,
-                                          3),
-                                    ],
+                                        if (rev.placeName != null)
+                                          MyString.bold(
+                                            '${rev.placeName}',
+                                            14,
+                                            MyColor.black,
+                                            TextAlign.start,
+                                          ),
+                                        SizedBox(height: 10), //
+                                        if (rev.description != null)
+                                          MyString.regMultiLine(
+                                              '${rev.description}',
+                                              12,
+                                              MyColor.black,
+                                              TextAlign.start,
+                                              3),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               );
@@ -582,6 +446,132 @@ class _AddReviewState extends State<AddReview> {
                         ),
                       ],
                     )
+              //     :
+              //
+              //
+              // Column(
+              //         mainAxisAlignment: MainAxisAlignment.start,
+              //         crossAxisAlignment: CrossAxisAlignment.start,
+              //         children: [
+              //           Padding(
+              //             padding: const EdgeInsets.only(bottom: 3.0),
+              //             child: MyString.reg('Customer ratings (8 reviews)',
+              //                 16, MyColor.redd, TextAlign.start),
+              //           ),
+              //           GestureDetector(
+              //             onTap: () {
+              //               setState(() {
+              //                 showReviewsList = true;
+              //               });
+              //             },
+              //             child: Padding(
+              //               padding: const EdgeInsets.only(bottom: 20.0),
+              //               child: Row(
+              //                 children: [
+              //                   MyString.reg('Show all reviews', 12,
+              //                       MyColor.redd, TextAlign.start),
+              //                   SizedBox(width: 5),
+              //                   Image.asset(
+              //                       'assets/images/icons/noun_arr_right.png')
+              //                 ],
+              //               ),
+              //             ),
+              //           ),
+              //           Row(
+              //             crossAxisAlignment: CrossAxisAlignment.start,
+              //             mainAxisAlignment: MainAxisAlignment.start,
+              //             children: [
+              //               MyString.reg(
+              //                   '4.5', 20, MyColor.textBlack, TextAlign.start),
+              //               SizedBox(
+              //                 width: 5,
+              //               ),
+              //               Icon(Icons.star, color: Colors.amber, size: 26),
+              //             ],
+              //           ),
+              //           Container(
+              //             margin: EdgeInsets.only(top: 10),
+              //             height: 220,
+              //             child: ListView.builder(
+              //               padding: EdgeInsets.zero,
+              //               scrollDirection: Axis.horizontal,
+              //               itemCount: reviews.length,
+              //               itemBuilder: (context, index) {
+              //                 var rev = reviews[index];
+              //                 return GestureDetector(
+              //                   onTap: () async {
+              //                     // Handle tap here
+              //                   },
+              //                   child: Container(
+              //                     margin: EdgeInsets.only(right: 20),
+              //                     padding: EdgeInsets.symmetric(
+              //                         vertical: 5, horizontal: 15),
+              //                     width: 280,
+              //                     decoration: BoxDecoration(
+              //                       color: MyColor.card,
+              //                       border: Border.all(color: MyColor.stroke),
+              //                       borderRadius: BorderRadius.circular(
+              //                           8), // Optional: adds rounded corners
+              //                     ),
+              //                     child: Column(
+              //                       crossAxisAlignment:
+              //                           CrossAxisAlignment.start,
+              //                       mainAxisAlignment: MainAxisAlignment.center,
+              //                       children: [
+              //                         // Review header text
+              //                         MyString.reg(
+              //                           'Review filed on ${rev.date}',
+              //                           12,
+              //                           MyColor.textBlack0,
+              //                           TextAlign.start,
+              //                         ),
+              //                         SizedBox(
+              //                             height:
+              //                                 10), // Spacing between elements
+              //                         // Stars
+              //                         Row(
+              //                           children: List.generate(
+              //                             rev.rate!,
+              //                             (index) => Padding(
+              //                               padding: const EdgeInsets.only(
+              //                                   right:
+              //                                       4.0), // Space between stars
+              //                               child: Image.asset(
+              //                                 'assets/images/icons/star.png',
+              //                                 height: 16,
+              //                                 width: 16,
+              //                                 semanticLabel: 'Star rating',
+              //                               ),
+              //                             ),
+              //                           ),
+              //                         ),
+              //                         SizedBox(
+              //                             height:
+              //                                 10), // Spacing between elements
+              //
+              //                         MyString.bold(
+              //                           '${rev.reviewer} reviews ${rev.place}',
+              //                           14,
+              //                           MyColor.black,
+              //                           TextAlign.start,
+              //                         ),
+              //                         SizedBox(height: 10), //
+              //                         SizedBox(height: 10),
+              //                         MyString.regMultiLine(
+              //                             '${rev.description}',
+              //                             12,
+              //                             MyColor.black,
+              //                             TextAlign.start,
+              //                             3),
+              //                       ],
+              //                     ),
+              //                   ),
+              //                 );
+              //               },
+              //             ),
+              //           ),
+              //         ],
+              //       )
             ],
           ),
         ),

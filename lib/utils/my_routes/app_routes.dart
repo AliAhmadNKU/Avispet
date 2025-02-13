@@ -47,6 +47,7 @@ import 'package:avispets/utils/my_routes/route_name.dart';
 import 'package:avispets/utils/thanks.dart';
 import 'package:flutter/material.dart';
 import '../../models/follower_following_model.dart';
+import '../../models/reviews/get_post_reviews_by_postid_model.dart';
 import '../../ui/main_screen/chats/forums/create_forum.dart';
 import '../../ui/main_screen/chats/forums/forum_question.dart';
 import '../../ui/main_screen/chats/forums/forum_reply.dart';
@@ -92,8 +93,10 @@ class Routes {
             builder: (BuildContext context) => const Thanks());
 
       case RoutesName.addReview:
+        List<Reviews> mReviews = [];
+        int id = 0;
         return MaterialPageRoute(
-            builder: (BuildContext context) => const AddReview());
+            builder: (BuildContext context) => AddReview(mReviews:mReviews,postID: id,));
 
       case RoutesName.selectAnimal:
         Map<String, dynamic> mapData =
@@ -271,8 +274,10 @@ class Routes {
         return MaterialPageRoute(
             builder: (BuildContext context) => const FiltersScreen());
       case RoutesName.filterReviews:
+
+        int id=0;
         return MaterialPageRoute(
-            builder: (BuildContext context) => const FilterReviews());
+            builder: (BuildContext context) => FilterReviews(postId: id,));
       case RoutesName.addPostDetail:
 
         int id=0;

@@ -14,6 +14,7 @@ import '../../../utils/apis/all_api.dart';
 import '../../../utils/apis/api_strings.dart';
 import '../../../utils/common_function/toaster.dart';
 import '../home/home_screen.dart';
+import '../home/post_detail.dart';
 import 'add_post.dart';
 
 class AddPostDetails extends StatefulWidget {
@@ -156,11 +157,13 @@ class _AddPostDetailsState extends State<AddPostDetails> {
       var res = await AllApi.getMethodApi("${ApiStrings.getPostById}/${widget.id}");
       var result = jsonDecode(res.toString());
 
-       print(" result post by id ${result}");
+       print("asdadsadasdsad ${result}");
 
       if (result['status'] == 200) {
 
         addPost = AddPost.fromJson(result);
+
+        print("asdadsadasdsad ${addPost.data.placeId}");
 
         setState(() {
           isSelected = [addPost.data.greenSpaces,addPost.data.child,addPost.data.dogLeash,addPost.data.allDogs,addPost.data.bigDogs,
@@ -198,6 +201,10 @@ class _AddPostDetailsState extends State<AddPostDetails> {
 
 
   Future<void> credentialCheck() async {
+
+
+
+
     List<String> imageArray = [];
     List<String> criteriaTitles = [
       'Atmosphere and environment',
@@ -222,12 +229,13 @@ class _AddPostDetailsState extends State<AddPostDetails> {
       }
     }
 
+
     Map<String, dynamic> mapData = {
-      "postId": addPost.data.userId,
+      "postId": addPost.data.id,
       'userId': addPost.data.userId,
-      'placeId': addPost.data.placeId != null ? int.tryParse(addPost.data.placeId!) : null,
+      'placeId': addPost.data.placeId,
       'images': addPost.data.images,
-      'placeName': addPost.data.placeName,
+      'place_name': addPost.data.placeName,
       'description': addPost.data.description,
       'postRatings': postRatings.map((post) => post.toJson()).toList(),
     };
@@ -242,10 +250,12 @@ class _AddPostDetailsState extends State<AddPostDetails> {
       print('===================+$res=====================');
       var result = jsonDecode(res.toString());
 
-      print(" result post by id ${result}");
+      if (result['status'] == 201) {
 
-      if (result['status'] == 200) {
-        toaster(context, "review Submitted Successfully");
+        print("idhr aya hai");
+        Get.back(result: true);
+         toaster(context, "review Submitted Successfully");
+
       } else if (result['status'] == 401) {
 
 
@@ -608,8 +618,6 @@ class _AddPostDetailsState extends State<AddPostDetails> {
                     }),
               ),
 
-
-
               Container(
                 height: addPost.data.images.length >= 3 ? 230 : 110,
                 width: double.infinity,
@@ -737,12 +745,7 @@ class _AddPostDetailsState extends State<AddPostDetails> {
               ),
               GestureDetector(
                 onTap: () {
-
                   credentialCheck();
-
-
-
-
                 },
                 child: Center(
                   child: Container(
