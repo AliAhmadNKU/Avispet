@@ -14,6 +14,8 @@ import '../../utils/apis/api_strings.dart';
 import '../../utils/apis/get_api.dart';
 import '../../utils/common_function/my_string.dart';
 import '../../utils/my_color.dart';
+import '../../utils/shared_pref.dart';
+import 'comment_screen.dart';
 
 
 
@@ -54,6 +56,8 @@ class _PostCardState extends State<PostCard> {
     if (result['status'] == 401) {
     }
   }
+
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -64,7 +68,7 @@ class _PostCardState extends State<PostCard> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)
       ),
       child: Padding(
-          padding: EdgeInsets.all(10),
+          padding: EdgeInsets.only(left:10,right: 30,top: 10,bottom: 10),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -122,10 +126,10 @@ class _PostCardState extends State<PostCard> {
                               TextAlign.center),
 
                           /// Follow Following
-
+                          widget.post.userId.toString() != sharedPref.getString(SharedKey.userId).toString()?
                             SizedBox(
-                      width: 102,
-                      height: 20,
+                      width: 110,
+                      height: 28,
                       child: ElevatedButton(
                         onPressed: () {
                           setState(() {
@@ -153,7 +157,7 @@ class _PostCardState extends State<PostCard> {
                             TextAlign.center),
 
                       ),
-                    ),
+                    ):SizedBox(),
 
                         ],
                       ),
@@ -179,17 +183,78 @@ class _PostCardState extends State<PostCard> {
                       ),
                       SizedBox(height: 10), // Adds spacing
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment
+                            .spaceBetween,
                         children: [
-                          SvgPicture.asset(
-                              'assets/images/icons/comment_icon.svg', width: 14,
-                              height: 15),
-                          SvgPicture.asset(
-                              'assets/images/icons/heart_solid_icon.svg',
-                              width: 14, height: 15),
-                          SvgPicture.asset(
-                              'assets/images/icons/share_stroke_icon.svg',
-                              width: 14, height: 15),
+
+                          /// comments
+                          GestureDetector(
+                            onTap: () async {
+                              String? userid = sharedPref
+                                  .getString(SharedKey.userId);
+                              await showCommentBottomSheet(
+                                  screenCheck: true,
+                                  context: context,
+                                  postId: widget.post.id,
+                                  comments:['asdsadsad',"asdsadasdsad"]
+                                  // comments: mReviews[index].comments,
+                                  // userId: int.parse(userid!),
+                                  // postReviewId: mReviews[index].id?.toInt(),
+                                  // mReviews: rev
+                              );
+                              print("dsfsdfsdfsdfsdfsdf00");
+                            },
+                            child: Row(
+
+                              children: [
+                                SvgPicture.asset(
+                                    'assets/images/icons/comment_icon.svg',
+                                    width: 14,
+                                    height: 15),
+                                SizedBox(width: 5,),
+                                // Obx(() {
+                                //   return MyString.reg(
+                                //     '${ rev.tcomment.value
+                                //         .toString()}',
+                                //     12,
+                                //     MyColor.commentCountColor,
+                                //     TextAlign.start,
+                                //   );
+                                // }),
+                              ],
+                            ),
+                          ),
+
+
+                          Spacer(),
+
+                          /// likes
+                          GestureDetector(
+                            onTap: () {
+                              // String? userid = sharedPref
+                              //     .getString(SharedKey.userId);
+                              // sendLikes(int.parse(userid!),mReviews[index].id!.toInt(), rev);
+                            },
+                            child: Row(
+                              children: [
+                                SvgPicture.asset(
+                                    'assets/images/icons/heart_solid_icon.svg',
+                                    width: 14, height: 15),
+                                SizedBox(width: 5,),
+                                // Obx(() {
+                                //   return MyString.reg(
+                                //     '${rev.tLikes.value.toString()
+                                //         .toString()}',
+                                //     12,
+                                //     MyColor.commentCountColor,
+                                //     TextAlign.start,
+                                //   );
+                                // }),
+                              ],
+                            ),
+                          ),
+
+                          Spacer(),
                         ],
                       ),
                     ],

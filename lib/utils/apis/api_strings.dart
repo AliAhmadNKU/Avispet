@@ -69,6 +69,15 @@ class ApiStrings {
       'enable-disable-forum-notification';
 
   // PUT METHODS
+
+  static const String postComment = 'post/comment';
+  static const String postLike = 'post/like';
+
+
+  static const String reviewComment = 'review/reply-post-review';
+
+  static const String reviewLikes = 'review/like-post-review';
+
   static const String changePassword = 'auth/change-password';
   static const String resetPassword = 'auth/reset-password';
 

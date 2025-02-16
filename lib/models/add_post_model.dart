@@ -24,6 +24,11 @@ class AddPost {
 }
 
 class PostData {
+  num userRecommendedPercentage;
+  num locationDistance;
+  String locationDistanceUnit;
+  num locationRating;
+  num userRatingCount;
   final int id;
   final int userId;
   final String? placeId;
@@ -54,6 +59,11 @@ class PostData {
   final User user;
 
   PostData({
+    required this.locationDistance,
+    required this.locationDistanceUnit,
+    required this.locationRating,
+    required this.userRatingCount,
+    required this.userRecommendedPercentage,
     required this.id,
     required this.userId,
     this.placeId,
@@ -86,6 +96,12 @@ class PostData {
 
   factory PostData.fromJson(Map<String, dynamic> json) {
     return PostData(
+
+      userRecommendedPercentage: json["user_recommended_percentage"]??0.0,
+      locationDistance: json["location_distance"]??0.0,
+      locationDistanceUnit: json["location_distance_unit"]??"",
+      locationRating: json["location_rating"]??0.0,
+      userRatingCount: json["user_rating_count"]??0,
       id: json['id'] ?? 0,
       userId: json['userId'] ?? 0,
       placeId: json['placeId'],

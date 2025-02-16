@@ -34,6 +34,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 import '../../../utils/common_function/loader_screen.dart';
 import '../../../utils/common_function/toaster.dart';
+import '../../widgets/cached_image.dart';
 import '../map/google_maps_service.dart';
 import '../map/map_page.dart';
 import 'package:http/http.dart' as http;
@@ -245,6 +246,11 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
     });
 
+
+
+
+    print("_locationData  ${_locationData?.distance}");
+
     print('_getLocation | longitude ${longitude}');
     print('_getLocation | latitude ${latitude}');
   }
@@ -345,8 +351,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
         // Parse the response into the GetAllCategories model
 
          location = GetLocatioByName.fromJson(result);
-
-         print(" location.data ${ location.data}");
 
         return location.data!;
         // setState(() {
@@ -534,7 +538,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
   Widget build(BuildContext context) {
 
 
-    print("current position ${currPos}");
 
     return NotificationListener(
       onNotification: (notification) {
@@ -578,9 +581,11 @@ class _AddPostScreenState extends State<AddPostScreen> {
                           Padding(
                             padding: const EdgeInsets.symmetric(
                                 vertical: 15, horizontal: 15),
-                            child: MyString.bold('${'addPost'.tr}', 27,
+                            child: MyString.bold('${'addPostTitle'.tr}', 27,
                                 MyColor.title, TextAlign.center),
                           ),
+
+
                           // buildSearchBar(),
                           SizedBox(
                             height: 20,
@@ -979,6 +984,23 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                         ),
                                         SizedBox(
                                           height: 20,
+                                        ),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                              color: MyColor.card,
+                                              borderRadius: BorderRadius.circular(22)),
+                                          margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(15),
+                                            child: CachedImage(
+                                                width: 130,
+                                                height: 110,
+                                                fit: BoxFit.cover,
+                                                url: _locationData?.profile ?? _onlineStoreModel?.profile ?? "https://myasgeographyaqa.wordpress.com/wp-content/uploads/2016/09/paris-at-night.jpg",
+
+                                            ),
+                                          ),
                                         ),
                                         Padding(
                                           padding: const EdgeInsets.symmetric(
@@ -1879,7 +1901,29 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
 
 
-    print("location data  ${location.data}");
+
+
+
+    num? location_rating;
+    num? user_rating_count;
+    num? location_distance;
+
+
+    final _locationData = this._locationData;
+
+    final _onlineStoreModelData = this._onlineStoreModel;
+
+    if(_locationData!=null)
+      {
+        location_distance= _locationData.distance;
+        location_rating = _locationData.rating;
+        user_rating_count = _locationData.userRating;
+      }
+    else if(_onlineStoreModelData!=null){
+      location_distance= _onlineStoreModel?.distance;
+      location_rating = _onlineStoreModel?.rating;
+      user_rating_count = _onlineStoreModel?.userRating;
+    }
 
 
     _postBloc.add(GetCreatePostEvent(
@@ -1907,6 +1951,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
       postRatings: postRatings,
       distance: _locationData!.distance??0.0,
       totalUserRating: _locationData!.userRating??0.0,
+      user_rating_count: user_rating_count,
+      location_distance: location_distance,
+      location_rating:location_rating,
+      address: currPos!['address']
     ));
   }
 
@@ -2082,6 +2130,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
         long = position.longitude;
         currentTab = 2;
       });
+
+
+
       Future.delayed(Duration(milliseconds: 100), () async {
         Map<String, dynamic>? curPos =
             await GoogleMapsService.getLocationInfo(lat, long);
@@ -2090,6 +2141,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
         });
         if (currPos != null) {
           loader = false;
+          List<LocationData> locations =  await getLocationByNameNew(currPos!['address']);
+           _locationData = locations[0];
+
         }
       });
     } catch (e) {
@@ -2101,10 +2155,20 @@ class _AddPostScreenState extends State<AddPostScreen> {
     }
   }
 
+
+
   _onPlaceSelected(dynamic data) {
+
     print('_onPlaceSelected => ${data.toString()}');
     if(data is LocationData){
       _locationData = data;
+
+
+      setState(() {
+        print("_locationData ${_locationData?.distance}");
+        print("_locationData ${_locationData?.profile}");
+      });
+
       getCurrentLocationNew();
     }
     else if(data is EventsModel){
@@ -2115,8 +2179,11 @@ class _AddPostScreenState extends State<AddPostScreen> {
     else if(data is OnlineStoreModel){
       _onlineStoreModel = data;
       print("online store model");
+
+      print("_onlineStoreModel ${_onlineStoreModel?.profile}");
       getCurrentLocationByStores();
     }
+
 
   }
 

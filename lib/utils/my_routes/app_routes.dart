@@ -277,7 +277,7 @@ class Routes {
 
         int id=0;
         return MaterialPageRoute(
-            builder: (BuildContext context) => FilterReviews(postId: id,));
+            builder: (BuildContext context) => FilterReviews(postId:id));
       case RoutesName.addPostDetail:
 
         int id=0;

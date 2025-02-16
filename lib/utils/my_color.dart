@@ -16,6 +16,10 @@ class MyColor{
   static Color newBackgroundColorTr =const Color(0x4EE66F2B);
   static Color white =const Color(0xFFFFFFFF);
   static Color black =const Color(0xFF000000);
+  static Color commentCountColor =const Color(0xFF687684);
+
+
+
   static Color red =const Color(0xFF800000);
 
   static Color liteGrey =const Color(0xFFD9D9D9);

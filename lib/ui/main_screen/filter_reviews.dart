@@ -6,6 +6,7 @@ import 'package:avispets/utils/my_color.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../models/reviews/get_post_reviews_by_postid_model.dart';
 import '../../utils/apis/all_api.dart';
 import '../../utils/apis/api_strings.dart';
 import '../../utils/common_function/header_widget.dart';
@@ -35,8 +36,12 @@ class _FilterReviewsState extends State<FilterReviews> {
    RefiningItem  refItem = RefiningItem(title: '', conditionCheck: false,value: "");
   List<bool> isActive = [false, false, false, false,false];
 
+  int id=0;
   @override
   void initState() {
+     id=widget.postId;
+
+     print("widget.postId ${widget.postId}");
     super.initState();
     // GetApi.getNotify(context, '');
     // page = 1;
@@ -47,14 +52,15 @@ class _FilterReviewsState extends State<FilterReviews> {
     try {
       var res = await AllApi.getMethodApi("${ApiStrings.filterReview}?postId=$postId&rating=$rating&sortBy=$sort");
       var result = jsonDecode(res.toString());
-
-       print("Filter result ${result}");
       if (result['status'] == 200) {
+        List<Reviews> mReviews = [];
+        mReviews = (result['data'] as List)
+            .map((reviewItem) => Reviews.fromJson(reviewItem))
+            .toList();
+        Get.back(result: mReviews);
 
-
-
-      } else if (result['status'] == 401) {
-
+      } else if (result['status'] == 404) {
+        toaster(context, result['message'].toString());
 
       } else {
         toaster(context, result['message'].toString());
@@ -67,15 +73,9 @@ class _FilterReviewsState extends State<FilterReviews> {
 
   @override
   Widget build(BuildContext context) {
-    return NotificationListener(
-      onNotification: (notification) {
-        if (notification is ScrollEndNotification &&
-            notification.metrics.extentAfter == 0) {
-          page++;
-        }
-        return false;
-      },
-      child: Scaffold(
+
+
+    return Scaffold(
           backgroundColor: MyColor.white,
           body: SafeArea(
             child: SingleChildScrollView(
@@ -444,7 +444,8 @@ class _FilterReviewsState extends State<FilterReviews> {
 
                           if( isActive.indexWhere((element) => element == true) != -1 && refItem.selectedColor== true)
                             {
-                              filterReview( widget.postId, refItem.ratingValue??1 ,refItem.value);
+                              print("widget.postID filter ${widget.postId}");
+                              filterReview(id, refItem.ratingValue??1 ,refItem.value);
 
                             }
 
@@ -468,8 +469,8 @@ class _FilterReviewsState extends State<FilterReviews> {
                 ),
               ),
             ),
-          )),
-    );
+          ));
+
   }
 }
 

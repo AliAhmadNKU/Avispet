@@ -223,7 +223,7 @@ class Lang extends Translations {
           "socialInteractions": "Social Interactions",
           "addPhotos": "Add Photos For You And Your Followers",
           "publish": "Publish",
-          'addPostTitle': 'Add Post',
+          'addPostTitle': 'Add a Post',
           'post': 'Post',
           'sharePost': 'Share post',
           'choosePicture': 'Choose Picture',

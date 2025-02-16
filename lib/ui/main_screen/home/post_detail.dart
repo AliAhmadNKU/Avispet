@@ -14,6 +14,7 @@ import 'package:avispets/utils/base_date_utils.dart';
 import 'package:avispets/utils/common_function/header_widget.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:giphy_get/giphy_get.dart';
 import 'package:pinch_zoom_release_unzoom/pinch_zoom_release_unzoom.dart';
@@ -29,6 +30,7 @@ import '../../../utils/my_color.dart';
 import '../../../utils/common_function/my_string.dart';
 import '../../../utils/my_routes/route_name.dart';
 import '../../../utils/shared_pref.dart';
+import '../../widgets/comment_screen.dart';
 import '../profile/profile_screen.dart';
 
 class PostDetail extends StatefulWidget {
@@ -63,7 +65,6 @@ class _PostDetailState extends State<PostDetail> {
   String video = '';
   late VideoPlayerController videoPlayerController;
   late CustomVideoPlayerController _customVideoPlayerController;
-
   late Post post;
   late Map<String, dynamic> args;
   List<Reviews> mReviews = [];
@@ -135,13 +136,16 @@ class _PostDetailState extends State<PostDetail> {
   ];
 
   bool isLoading = true;
+  late int userRecommendedPercentage;
 
+  @override
   @override
   void initState() {
     super.initState();
+
     print('Received arguments: ${widget.mapData}');
     post = widget.mapData!['post'];
-
+    userRecommendedPercentage = post.userRecommendedPercentage?.toInt() ?? 0;
     print("post.id asdasdasd  ${post.id}");
 
     getPostReviewsById();
@@ -155,7 +159,9 @@ class _PostDetailState extends State<PostDetail> {
     print("URL Data: $url");
 
     // Check if the URL is null or empty
-    if (url == null || url.trim().isEmpty) {
+    if (url == null || url
+        .trim()
+        .isEmpty) {
       print("Invalid URL");
       toaster(context, "There is no website available.");
       return;
@@ -172,7 +178,7 @@ class _PostDetailState extends State<PostDetail> {
       if (await canLaunchUrl(uri)) {
         // Check if the URL can be launched
         bool launched =
-            await launchUrl(uri, mode: LaunchMode.externalApplication);
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
         if (!launched) {
           toaster(context, "Could not open the website.");
         }
@@ -223,7 +229,7 @@ class _PostDetailState extends State<PostDetail> {
             child: SingleChildScrollView(
               child: Container(
                 padding:
-                    EdgeInsets.only(right: 25, left: 25, top: 10, bottom: 20),
+                EdgeInsets.only(right: 25, left: 25, top: 10, bottom: 20),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -309,7 +315,9 @@ class _PostDetailState extends State<PostDetail> {
                               SizedBox(
                                 width: 5,
                               ),
-                              MyString.reg('1.2 KM', 12, MyColor.textBlack0,
+                              MyString.reg('${post.locationDistance} ${post
+                                  .locationDistanceUnit}', 12,
+                                  MyColor.textBlack0,
                                   TextAlign.start),
                             ],
                           ),
@@ -321,7 +329,7 @@ class _PostDetailState extends State<PostDetail> {
                                 width: 5,
                               ),
                               Icon(Icons.star, color: Colors.amber, size: 16),
-                              MyString.reg(post.overallRating.toString(), 12,
+                              MyString.reg(post.locationRating.toString(), 12,
                                   MyColor.textBlack0, TextAlign.start),
                             ],
                           ),
@@ -368,7 +376,7 @@ class _PostDetailState extends State<PostDetail> {
                                         color: MyColor.card,
                                         borderRadius: BorderRadius.circular(22),
                                         border:
-                                            Border.all(color: MyColor.orange2)),
+                                        Border.all(color: MyColor.orange2)),
                                     child: Image.asset(
                                       'assets/images/icons/go.png',
                                     )),
@@ -390,7 +398,7 @@ class _PostDetailState extends State<PostDetail> {
                                         color: MyColor.card,
                                         borderRadius: BorderRadius.circular(22),
                                         border:
-                                            Border.all(color: MyColor.orange2)),
+                                        Border.all(color: MyColor.orange2)),
                                     child: Image.asset(
                                       'assets/images/icons/web.png',
                                     )),
@@ -412,7 +420,7 @@ class _PostDetailState extends State<PostDetail> {
                                         color: MyColor.card,
                                         borderRadius: BorderRadius.circular(22),
                                         border:
-                                            Border.all(color: MyColor.orange2)),
+                                        Border.all(color: MyColor.orange2)),
                                     child: Image.asset(
                                       'assets/images/icons/ph.png',
                                     )),
@@ -433,64 +441,68 @@ class _PostDetailState extends State<PostDetail> {
                       indent: 16, // Start padding
                       endIndent: 16, // End padding
                     ),
-                    // MyString.bold('Infos', 16, MyColor.redd, TextAlign.start),
-                    // Container(
-                    //   padding: EdgeInsets.only(top: 8),
-                    //   decoration: BoxDecoration(
-                    //       borderRadius:
-                    //           const BorderRadius.all(Radius.circular(10))),
-                    //   child: Container(
-                    //     decoration: BoxDecoration(
-                    //         color: MyColor.card,
-                    //         border: Border.all(color: MyColor.orange2),
-                    //         borderRadius:
-                    //             const BorderRadius.all(Radius.circular(10))),
-                    //     child: ExpansionTile(
-                    //       backgroundColor: MyColor.card,
-                    //       shape: RoundedRectangleBorder(
-                    //         borderRadius: BorderRadius.circular(10),
-                    //       ),
-                    //       collapsedBackgroundColor: MyColor.card,
-                    //       collapsedShape: RoundedRectangleBorder(
-                    //         borderRadius: BorderRadius.circular(10),
-                    //       ),
-                    //       title: MyString.bold('Opening Hours', 14,
-                    //           MyColor.redd, TextAlign.start),
-                    //       trailing: Image.asset(
-                    //         'assets/images/icons/addpic.png',
-                    //         width: 20,
-                    //         height: 20,
-                    //       ),
-                    //       onExpansionChanged: (bool expanded) {
-                    //         setState(() {});
-                    //       },
-                    //       children: [
-                    //         MyString.bold(
-                    //             '[${post.openingClosingHour??"no data"}]', 14, MyColor.redd, TextAlign.start),
-                    //       ],
-                    //     ),
-                    //   ),
-                    // ),
-                    // Padding(
-                    //   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    //   child: Image.asset('assets/images/icons/routing.png'),
-                    // ),
-                    // GestureDetector(
-                    //   onTap: () {
-                    //     suggEditSheet(context);
-                    //   },
-                    //   child: Container(
-                    //       margin: EdgeInsets.symmetric(vertical: 15),
-                    //       padding: EdgeInsets.symmetric(vertical: 15),
-                    //       width: double.infinity,
-                    //       decoration: BoxDecoration(
-                    //         color: MyColor.card,
-                    //         border: Border.all(color: MyColor.orange2),
-                    //         borderRadius: BorderRadius.circular(10),
-                    //       ),
-                    //       child: MyString.bold('Suggest an edit  ? ', 14,
-                    //           MyColor.redd, TextAlign.center)),
-                    // ),
+                    MyString.bold('Infos', 16, MyColor.redd, TextAlign.start),
+                    Container(
+                      padding: EdgeInsets.only(top: 8),
+                      decoration: BoxDecoration(
+                          borderRadius:
+                          const BorderRadius.all(Radius.circular(10))),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: MyColor.card,
+                            border: Border.all(color: MyColor.orange2),
+                            borderRadius:
+                            const BorderRadius.all(Radius.circular(10))),
+                        child: ExpansionTile(
+                          backgroundColor: MyColor.card,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          collapsedBackgroundColor: MyColor.card,
+                          collapsedShape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          title: MyString.bold('Opening Hours', 14,
+                              MyColor.redd, TextAlign.start),
+                          trailing: Image.asset(
+                            'assets/images/icons/addpic.png',
+                            width: 20,
+                            height: 20,
+                          ),
+                          onExpansionChanged: (bool expanded) {
+                            setState(() {});
+                          },
+                          children: [
+                            MyString.bold(
+                                '[${post.openingClosingHour ?? "no data"}]', 14,
+                                MyColor.redd, TextAlign.start),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Image.asset('assets/images/icons/routing.png'),
+                    ),
+
+
+                    /// Suggest an Edit
+                    GestureDetector(
+                      onTap: () {
+                        suggEditSheet(context);
+                      },
+                      child: Container(
+                          margin: EdgeInsets.symmetric(vertical: 15),
+                          padding: EdgeInsets.symmetric(vertical: 15),
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: MyColor.card,
+                            border: Border.all(color: MyColor.orange2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: MyString.bold('Suggest an edit  ? ', 14,
+                              MyColor.redd, TextAlign.center)),
+                    ),
                     Divider(
                       color: Color(0xffEBEBEB), // Color of the divider
                       thickness: 1, // Thickness of the line
@@ -504,7 +516,8 @@ class _PostDetailState extends State<PostDetail> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => AddPostDetails(
+                              builder: (context) =>
+                                  AddPostDetails(
                                     id: post.id,
                                   )),
                         );
@@ -559,7 +572,7 @@ class _PostDetailState extends State<PostDetail> {
                                           trackHeight: 11,
                                           thumbColor: Color(0xffFFB400),
                                           thumbShape:
-                                              SliderComponentShape.noThumb,
+                                          SliderComponentShape.noThumb,
                                           trackShape: CustomTrackShape()),
                                     ),
                                   ),
@@ -586,7 +599,7 @@ class _PostDetailState extends State<PostDetail> {
                                           trackHeight: 11,
                                           thumbColor: Color(0xffFFB400),
                                           thumbShape:
-                                              SliderComponentShape.noThumb,
+                                          SliderComponentShape.noThumb,
                                           trackShape: CustomTrackShape()),
                                     ),
                                   ),
@@ -613,7 +626,7 @@ class _PostDetailState extends State<PostDetail> {
                                           trackHeight: 11,
                                           thumbColor: Color(0xffFFB400),
                                           thumbShape:
-                                              SliderComponentShape.noThumb,
+                                          SliderComponentShape.noThumb,
                                           trackShape: CustomTrackShape()),
                                     ),
                                   ),
@@ -640,7 +653,7 @@ class _PostDetailState extends State<PostDetail> {
                                           trackHeight: 11,
                                           thumbColor: Color(0xffFFB400),
                                           thumbShape:
-                                              SliderComponentShape.noThumb,
+                                          SliderComponentShape.noThumb,
                                           trackShape: CustomTrackShape()),
                                     ),
                                   ),
@@ -667,7 +680,7 @@ class _PostDetailState extends State<PostDetail> {
                                           trackHeight: 11,
                                           thumbColor: Color(0xffFFB400),
                                           thumbShape:
-                                              SliderComponentShape.noThumb,
+                                          SliderComponentShape.noThumb,
                                           trackShape: CustomTrackShape()),
                                     ),
                                   ),
@@ -689,12 +702,12 @@ class _PostDetailState extends State<PostDetail> {
                                   children: [
                                     Row(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.center,
+                                      CrossAxisAlignment.center,
                                       mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                      MainAxisAlignment.center,
                                       children: [
                                         MyString.reg(
-                                            post.overallRating.toString(),
+                                            post.locationRating.toString(),
                                             20,
                                             MyColor.textBlack,
                                             TextAlign.start),
@@ -705,7 +718,8 @@ class _PostDetailState extends State<PostDetail> {
                                             color: Colors.amber, size: 26),
                                       ],
                                     ),
-                                    MyString.reg('563 Reviews', 10,
+                                    MyString.reg('${post.locationRating
+                                        .toString()} Reviews', 10,
                                         MyColor.textBlack0, TextAlign.start),
                                   ],
                                 ),
@@ -720,11 +734,12 @@ class _PostDetailState extends State<PostDetail> {
                                   children: [
                                     Row(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.center,
+                                      CrossAxisAlignment.center,
                                       mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                      MainAxisAlignment.center,
                                       children: [
-                                        MyString.reg('88%', 20,
+                                        MyString.reg(
+                                            '${userRecommendedPercentage}%', 20,
                                             MyColor.textBlack, TextAlign.start),
                                       ],
                                     ),
@@ -746,293 +761,383 @@ class _PostDetailState extends State<PostDetail> {
                     ),
                     showReviewsList
                         ? Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.pushNamed(
-                                      context, RoutesName.filterReviews);
-                                },
-                                child: Container(
-                                    margin: EdgeInsets.symmetric(vertical: 15),
-                                    padding: EdgeInsets.symmetric(vertical: 15),
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: MyColor.card,
-                                      border:
-                                          Border.all(color: MyColor.orange2),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        MyString.bold('Filter reviews ', 14,
-                                            MyColor.redd, TextAlign.center),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        Image.asset(
-                                          'assets/images/icons/filtres.png',
-                                          width: 25,
-                                          height: 25,
-                                        )
-                                      ],
-                                    )),
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, RoutesName.filterReviews);
+                          },
+                          child: Container(
+                              margin: EdgeInsets.symmetric(vertical: 15),
+                              padding: EdgeInsets.symmetric(vertical: 15),
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: MyColor.card,
+                                border:
+                                Border.all(color: MyColor.orange2),
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                              Container(
-                                margin: EdgeInsets.only(top: 10),
-                                height: 480,
-                                width: double.infinity,
-                                child: ListView.builder(
-                                    itemCount: mReviews.length,
-                                    padding:
-                                        EdgeInsets.only(top: 20, bottom: 30),
-                                    itemBuilder: (context, index) {
-                                      var rev = mReviews[index];
-                                      return Column(
-                                        children: [
-                                          GestureDetector(
-                                            onTap: () async {
-                                              // Handle tap here
-                                            },
-                                            child: Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  vertical: 25, horizontal: 20),
-                                              decoration: BoxDecoration(
-                                                color: MyColor.card,
-                                                border: Border.all(
-                                                    color: MyColor.stroke),
-                                                borderRadius: BorderRadius.circular(
-                                                    8), // Optional: adds rounded corners
-                                              ),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  // Review header text
-                                                  MyString.reg(
-                                                    'Review filed on ${BaseDateUtils.formatToMMddyyyy(rev.createdAt!)}',
-                                                    12,
-                                                    MyColor.textBlack0,
-                                                    TextAlign.start,
-                                                  ),
-                                                  SizedBox(
-                                                      height:
-                                                          10), // Spacing between elements
-                                                  // Stars
-                                                  Row(
-                                                    children: List.generate(
-                                                      rev.overallRating!
-                                                          .toInt(),
-                                                      (index) => Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(
-                                                                right: 4.0),
-                                                        // Space between stars
-                                                        child: Image.asset(
-                                                          'assets/images/icons/star.png',
-                                                          height: 16,
-                                                          width: 16,
-                                                          semanticLabel:
-                                                              'Star rating',
-                                                        ),
+                              child: Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.center,
+                                children: [
+                                  MyString.bold('Filter reviews ', 14,
+                                      MyColor.redd, TextAlign.center),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Image.asset(
+                                    'assets/images/icons/filtres.png',
+                                    width: 25,
+                                    height: 25,
+                                  )
+                                ],
+                              )),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(top: 10),
+                          height: 480,
+                          width: double.infinity,
+                          child: ListView.builder(
+                              itemCount: mReviews.length,
+                              padding:
+                              EdgeInsets.only(top: 20, bottom: 30),
+                              itemBuilder: (context, index) {
+                                var rev = mReviews[index];
+                                return Column(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () async {
+                                        // Handle tap here
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 25, horizontal: 20),
+                                        decoration: BoxDecoration(
+                                          color: MyColor.card,
+                                          border: Border.all(
+                                              color: MyColor.stroke),
+                                          borderRadius: BorderRadius.circular(
+                                              8), // Optional: adds rounded corners
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                          children: [
+                                            // Review header text
+                                            MyString.reg(
+                                              'Review filed on ${BaseDateUtils
+                                                  .formatToMMddyyyy(
+                                                  rev.createdAt!)}',
+                                              12,
+                                              MyColor.textBlack0,
+                                              TextAlign.start,
+                                            ),
+                                            SizedBox(
+                                                height:
+                                                10), // Spacing between elements
+                                            // Stars
+                                            Row(
+                                              children: List.generate(
+                                                rev.overallRating!
+                                                    .toInt(),
+                                                    (index) =>
+                                                    Padding(
+                                                      padding:
+                                                      const EdgeInsets
+                                                          .only(
+                                                          right: 4.0),
+                                                      // Space between stars
+                                                      child: Image.asset(
+                                                        'assets/images/icons/star.png',
+                                                        height: 16,
+                                                        width: 16,
+                                                        semanticLabel:
+                                                        'Star rating',
                                                       ),
                                                     ),
-                                                  ),
-                                                  SizedBox(
-                                                      height:
-                                                          10), // Spacing between elements
-
-                                                  if (rev.placeName != null)
-                                                    MyString.bold(
-                                                      '${rev.placeName}',
-                                                      14,
-                                                      MyColor.black,
-                                                      TextAlign.start,
-                                                    ),
-                                                  SizedBox(height: 10), //
-                                                  if (rev.description != null)
-                                                    MyString.regMultiLine(
-                                                        '${rev.description}',
-                                                        12,
-                                                        MyColor.black,
-                                                        TextAlign.start,
-                                                        3),
-                                                ],
                                               ),
+                                            ),
+                                            SizedBox(
+                                                height:
+                                                10), // Spacing between elements
+
+                                            if (rev.placeName != null)
+                                              MyString.bold(
+                                                '${rev.placeName}',
+                                                14,
+                                                MyColor.black,
+                                                TextAlign.start,
+                                              ),
+                                            SizedBox(height: 10), //
+                                            if (rev.description != null)
+                                              MyString.regMultiLine(
+                                                  '${rev.description}',
+                                                  12,
+                                                  MyColor.black,
+                                                  TextAlign.start,
+                                                  3),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    if (index != mReviews.length - 1)
+                                      Padding(
+                                        padding:
+                                        const EdgeInsets.symmetric(
+                                            vertical: 8.0),
+                                        child: Divider(
+                                          color: Color(0xffEBEBEB),
+                                          // Color of the divider
+                                          thickness: 1,
+                                          // Thickness of the line
+                                          indent: 16,
+                                          // Start padding
+                                          endIndent: 16, // End padding
+                                        ),
+                                      ),
+                                  ],
+                                );
+                              }),
+                        ),
+                      ],
+                    )
+                        : Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 3.0),
+                          child: MyString.reg(
+                              'Customer ratings (${mReviews.length} reviews)',
+                              16,
+                              MyColor.redd,
+                              TextAlign.start),
+                        ),
+                        GestureDetector(
+                          onTap: () async {
+                            getPostReviewsById();
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) =>
+                                  AddReview(
+                                    mReviews: mReviews, postID: post.id,)),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 20.0),
+                            child: Row(
+                              children: [
+                                MyString.reg('Show all reviews', 12,
+                                    MyColor.redd, TextAlign.start),
+                                SizedBox(width: 5),
+                                Image.asset(
+                                    'assets/images/icons/noun_arr_right.png')
+                              ],
+                            ),
+                          ),
+                        ),
+                        if (mReviews.isNotEmpty)
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              MyString.reg(
+                                  '${post.locationRating}',
+                                  20,
+                                  MyColor.textBlack,
+                                  TextAlign.start),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Icon(Icons.star,
+                                  color: Colors.amber, size: 26),
+                            ],
+                          ),
+                        mReviews.isEmpty || isLoading == true
+                            ? progressBar()
+                            : Container(
+                          margin: EdgeInsets.only(top: 10),
+                          height: 220,
+                          child: ListView.builder(
+                            padding: EdgeInsets.zero,
+                            scrollDirection: Axis.horizontal,
+                            itemCount: mReviews.length,
+                            itemBuilder: (context, index) {
+                              var rev = mReviews[index];
+                              rev.tcomment.value = rev.totalComments!.toInt();
+                              rev.tLikes.value = rev.totalLikes!.toInt();
+
+                              print("review rev.id  ${rev.id}");
+                              return GestureDetector(
+                                onTap: () async {
+                                  // Handle tap here
+                                },
+                                child: Container(
+                                  margin:
+                                  EdgeInsets.only(right: 20),
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 5, horizontal: 15),
+                                  width: 280,
+                                  decoration: BoxDecoration(
+                                    color: MyColor.card,
+                                    border: Border.all(
+                                        color: MyColor.stroke),
+                                    borderRadius: BorderRadius.circular(
+                                        8), // Optional: adds rounded corners
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.center,
+                                    children: [
+                                      // Review header text
+                                      MyString.reg(
+                                        'Review filed on ${BaseDateUtils
+                                            .formatToMMddyyyy(rev.createdAt!)}',
+                                        12,
+                                        MyColor.textBlack0,
+                                        TextAlign.start,
+                                      ),
+                                      SizedBox(
+                                          height:
+                                          10), // Spacing between elements
+                                      // Stars
+                                      Row(
+                                        children: List.generate(
+                                          rev.overallRating!
+                                              .toInt(),
+                                              (index) =>
+                                              Padding(
+                                                padding: const EdgeInsets
+                                                    .only(
+                                                    right:
+                                                    4.0), // Space between stars
+                                                child: Image.asset(
+                                                  'assets/images/icons/star.png',
+                                                  height: 16,
+                                                  width: 16,
+                                                  semanticLabel:
+                                                  'Star rating',
+                                                ),
+                                              ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                          height:
+                                          10), // Spacing between elements
+
+                                      if (rev.placeName != null)
+                                        MyString.bold(
+                                          '${rev.placeName}',
+                                          14,
+                                          MyColor.black,
+                                          TextAlign.start,
+                                        ),
+                                      SizedBox(height: 10), //
+                                      if (rev.description != null)
+                                        MyString.regMultiLine(
+                                            '${rev.description}',
+                                            12,
+                                            MyColor.black,
+                                            TextAlign.start,
+                                            3),
+                                      Spacer(),
+
+
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment
+                                            .spaceBetween,
+                                        children: [
+
+                                          /// comments
+                                          GestureDetector(
+                                            onTap: () async {
+                                              String? userid = sharedPref
+                                                  .getString(SharedKey.userId);
+                                              await showCommentBottomSheet(
+                                                  screenCheck: false,
+                                                  context: context,
+                                                  comments:
+                                                  mReviews[index].comments,
+                                                  userId: int.parse(userid!),
+                                                  postReviewId: mReviews[index]
+                                                      .id
+                                                      ?.toInt(),
+                                                  mReviews: rev
+                                              );
+                                              print("dsfsdfsdfsdfsdfsdf00");
+                                            },
+                                            child: Row(
+
+                                              children: [
+                                                SvgPicture.asset(
+                                                    'assets/images/icons/comment_icon.svg',
+                                                    width: 14,
+                                                    height: 15),
+                                                SizedBox(width: 5,),
+                                                Obx(() {
+                                                  return MyString.reg(
+                                                    '${ rev.tcomment.value
+                                                        .toString()}',
+                                                    12,
+                                                    MyColor.commentCountColor,
+                                                    TextAlign.start,
+                                                  );
+                                                }),
+                                              ],
                                             ),
                                           ),
-                                          if (index != mReviews.length - 1)
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 8.0),
-                                              child: Divider(
-                                                color: Color(0xffEBEBEB),
-                                                // Color of the divider
-                                                thickness: 1,
-                                                // Thickness of the line
-                                                indent: 16,
-                                                // Start padding
-                                                endIndent: 16, // End padding
-                                              ),
-                                            ),
-                                        ],
-                                      );
-                                    }),
-                              ),
-                            ],
-                          )
-                        : Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 3.0),
-                                child: MyString.reg(
-                                    'Customer ratings (${mReviews.length} reviews)',
-                                    16,
-                                    MyColor.redd,
-                                    TextAlign.start),
-                              ),
-                              GestureDetector(
-                                onTap: () async {
-                                  await  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => AddReview(mReviews: mReviews,postID: post.id,)),
-                                  );
 
-                                  // setState(() {
-                                  //   showReviewsList = true;
-                                  // });
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.only(bottom: 20.0),
-                                  child: Row(
-                                    children: [
-                                      MyString.reg('Show all reviews', 12,
-                                          MyColor.redd, TextAlign.start),
-                                      SizedBox(width: 5),
-                                      Image.asset(
-                                          'assets/images/icons/noun_arr_right.png')
+
+                                          Spacer(),
+
+                                          /// likes
+                                          GestureDetector(
+                                            onTap: () {
+                                              String? userid = sharedPref
+                                                  .getString(SharedKey.userId);
+                                              sendLikes(int.parse(userid!),mReviews[index].id!.toInt(), rev);
+                                            },
+                                            child: Row(
+                                              children: [
+                                                SvgPicture.asset(
+                                                    'assets/images/icons/heart_solid_icon.svg',
+                                                    width: 14, height: 15),
+                                                SizedBox(width: 5,),
+                                                Obx(() {
+                                                  return MyString.reg(
+                                                    '${rev.tLikes.value.toString()
+                                                        .toString()}',
+                                                    12,
+                                                    MyColor.commentCountColor,
+                                                    TextAlign.start,
+                                                  );
+                                                }),
+                                              ],
+                                            ),
+                                          ),
+
+                                          Spacer(),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 20,
+                                      )
                                     ],
                                   ),
                                 ),
-                              ),
-                              if (mReviews.isNotEmpty)
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    MyString.reg(
-                                        '${mReviews.first.overallRating}',
-                                        20,
-                                        MyColor.textBlack,
-                                        TextAlign.start),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Icon(Icons.star,
-                                        color: Colors.amber, size: 26),
-                                  ],
-                                ),
-                              mReviews.isEmpty || isLoading == true
-                                  ? progressBar()
-                                  : Container(
-                                      margin: EdgeInsets.only(top: 10),
-                                      height: 220,
-                                      child: ListView.builder(
-                                        padding: EdgeInsets.zero,
-                                        scrollDirection: Axis.horizontal,
-                                        itemCount: mReviews.length,
-                                        itemBuilder: (context, index) {
-                                          var rev = mReviews[index];
-                                          return GestureDetector(
-                                            onTap: () async {
-                                              // Handle tap here
-                                            },
-                                            child: Container(
-                                              margin:
-                                                  EdgeInsets.only(right: 20),
-                                              padding: EdgeInsets.symmetric(
-                                                  vertical: 5, horizontal: 15),
-                                              width: 280,
-                                              decoration: BoxDecoration(
-                                                color: MyColor.card,
-                                                border: Border.all(
-                                                    color: MyColor.stroke),
-                                                borderRadius: BorderRadius.circular(
-                                                    8), // Optional: adds rounded corners
-                                              ),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  // Review header text
-                                                  MyString.reg(
-                                                    'Review filed on ${BaseDateUtils.formatToMMddyyyy(rev.createdAt!)}',
-                                                    12,
-                                                    MyColor.textBlack0,
-                                                    TextAlign.start,
-                                                  ),
-                                                  SizedBox(
-                                                      height:
-                                                          10), // Spacing between elements
-                                                  // Stars
-                                                  Row(
-                                                    children: List.generate(
-                                                      rev.overallRating!
-                                                          .toInt(),
-                                                      (index) => Padding(
-                                                        padding: const EdgeInsets
-                                                            .only(
-                                                            right:
-                                                                4.0), // Space between stars
-                                                        child: Image.asset(
-                                                          'assets/images/icons/star.png',
-                                                          height: 16,
-                                                          width: 16,
-                                                          semanticLabel:
-                                                              'Star rating',
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                      height:
-                                                          10), // Spacing between elements
-
-                                                  if (rev.placeName != null)
-                                                    MyString.bold(
-                                                      '${rev.placeName}',
-                                                      14,
-                                                      MyColor.black,
-                                                      TextAlign.start,
-                                                    ),
-                                                  SizedBox(height: 10), //
-                                                  if (rev.description != null)
-                                                    MyString.regMultiLine(
-                                                        '${rev.description}',
-                                                        12,
-                                                        MyColor.black,
-                                                        TextAlign.start,
-                                                        3),
-                                                ],
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                            ],
-                          )
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    )
                   ],
                 ),
               ),
@@ -1043,7 +1148,26 @@ class _PostDetailState extends State<PostDetail> {
     );
   }
 
-  suggEditSheet(BuildContext context) async {
+  Future<void> sendLikes( int userId, int postReviewId,   Reviews? mReviews,) async {
+    Map<String, dynamic> mapData = {
+      "userId": userId,
+      "postReviewId": postReviewId,
+    };
+
+    print("Sending comment data: $mapData");
+    var res = await AllApi.postMethodApi(ApiStrings.reviewLikes, mapData);
+    var result = jsonDecode(res.toString());
+    print("Likes response: $result");
+
+    if (result['status'] == 201) {
+
+
+      mReviews?.tLikes.value++;
+
+    }
+  }
+
+  Future<Future<String?>> suggEditSheet(BuildContext context) async {
     return showModalBottomSheet<String>(
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -1052,119 +1176,121 @@ class _PostDetailState extends State<PostDetail> {
       enableDrag: true,
       context: context,
       builder: (BuildContext context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              padding:
-                  EdgeInsets.only(right: 20, left: 20, bottom: 20, top: 20),
-              decoration: BoxDecoration(
-                  border: Border.all(color: MyColor.orange2),
-                  color: MyColor.white,
-                  borderRadius: const BorderRadius.only(
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: MyColor.orange2),
+                    color: MyColor.white,
+                    borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(18),
                       bottomLeft: Radius.circular(5),
                       bottomRight: Radius.circular(5),
-                      topRight: Radius.circular(18))),
-              child: Padding(
-                padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).viewInsets.bottom),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Stack(
+                      topRight: Radius.circular(18),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery
+                          .of(context)
+                          .viewInsets
+                          .bottom,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                            width: 300,
-                            alignment: Alignment.center,
-                            margin: EdgeInsets.only(top: 5),
-                            child: MyString.bold(
+                        // Header
+
+                        Row(
+                          children: [
+                            Flexible( // ✅ Prevents overflow while allowing text to wrap
+                              child: MyString.bold(
                                 'What’s your relationship to this business'.tr,
                                 18,
                                 MyColor.redd,
-                                TextAlign.center)),
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                tapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap),
-                            child: Image.asset(
-                              'assets/images/icons/cl.png',
-                              height: 28,
-                              width: 28,
+                                TextAlign.center,
+                              ),
                             ),
+                            SizedBox(width: 10),
+                            // Adds spacing between text and button
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              child: Image.asset(
+                                'assets/images/icons/cl.png',
+                                height: 28,
+                                width: 28,
+                              ),
+                            ),
+                          ],
+                        ),
+
+
+                        SizedBox(height: 10),
+                        Center(
+                          child: MyString.reg(
+                            'Your feedback is important to us. If you notice something incorrect, let us know, and we’ll update it.',
+                            12,
+                            MyColor.title,
+                            TextAlign.center,
                           ),
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Center(
-                      child: MyString.reg(
-                          'Your feedback is important to us, if you notice something that is incorrect, lets us know and we’ill make sure it’s updated. ',
-                          12,
-                          MyColor.title,
-                          TextAlign.center),
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    Center(
-                      child: MyString.bold('Reason(s) for reporting', 12,
-                          MyColor.title, TextAlign.center),
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    Container(
-                      constraints: new BoxConstraints(
-                        minHeight: 100,
-                        maxHeight: MediaQuery.of(context).size.height / 1.5,
-                      ),
-                      padding: EdgeInsets.symmetric(horizontal: 18),
-                      child: ListView.builder(
-                          itemCount: sortingList.length,
-                          padding: EdgeInsets.zero,
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            final item = sortingList[index];
-                            return Padding(
-                              padding: const EdgeInsets.all(7),
-                              child: Container(
+                        ),
+                        SizedBox(height: 15),
+                        Center(
+                          child: MyString.bold(
+                            'Reason(s) for reporting',
+                            12,
+                            MyColor.title,
+                            TextAlign.center,
+                          ),
+                        ),
+                        SizedBox(height: 15),
+
+                        // List of reasons (with toggle functionality)
+                        Container(
+                          constraints: BoxConstraints(
+                            minHeight: 100,
+                            maxHeight: MediaQuery
+                                .of(context)
+                                .size
+                                .height / 1.5,
+                          ),
+                          padding: EdgeInsets.symmetric(horizontal: 18),
+                          child: ListView.builder(
+                            itemCount: sortingList.length,
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              final item = sortingList[index];
+                              return Padding(
+                                padding: const EdgeInsets.all(7),
                                 child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment
+                                      .spaceBetween,
                                   children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width /
-                                              1.5,
-                                          child: MyString.reg(item.title, 12,
-                                              MyColor.title, TextAlign.start),
-                                        ),
-                                      ],
+                                    Expanded(
+                                      child: MyString.reg(
+                                        item.title,
+                                        12,
+                                        MyColor.title,
+                                        TextAlign.start,
+                                      ),
                                     ),
-                                    SizedBox(width: 10),
                                     GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          // Toggle the conditionCheck value for the tapped item
                                           item.conditionCheck =
-                                              !item.conditionCheck;
+                                          !item.conditionCheck;
                                         });
                                       },
                                       child: Container(
@@ -1180,23 +1306,29 @@ class _PostDetailState extends State<PostDetail> {
                                         ),
                                         child: Icon(
                                           Icons.check,
-                                          color: item.conditionCheck
-                                              ? MyColor.orange2
-                                              : MyColor.white,
+                                          color: item.conditionCheck ? MyColor
+                                              .orange2 : MyColor.white,
                                           size: 12,
                                         ),
                                       ),
                                     ),
                                   ],
                                 ),
-                              ),
-                            );
-                          }),
-                    ),
-                    Center(
-                      child: GestureDetector(
-                          onTap: () {},
-                          child: Container(
+                              );
+                            },
+                          ),
+                        ),
+                        SizedBox(height: 15),
+
+                        // Send Button
+                        Center(
+                          child: GestureDetector(
+                            onTap: () {
+                              Get.back();
+                              toaster(context, "Feed back send Successfully");
+                              // Handle send action here
+                            },
+                            child: Container(
                               width: 128,
                               padding: EdgeInsets.symmetric(
                                   horizontal: 20, vertical: 10),
@@ -1206,18 +1338,210 @@ class _PostDetailState extends State<PostDetail> {
                               ),
                               child: Center(
                                 child: MyString.med(
-                                    'Send', 16, MyColor.white, TextAlign.start),
-                              ))),
+                                  'Send',
+                                  16,
+                                  MyColor.white,
+                                  TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          ],
+              ],
+            );
+          },
         );
       },
     );
   }
+
+
+  // suggEditSheet(BuildContext context) async {
+  //   return showModalBottomSheet<String>(
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     elevation: 1,
+  //     isDismissible: true,
+  //     enableDrag: true,
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return Column(
+  //         mainAxisSize: MainAxisSize.min,
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         mainAxisAlignment: MainAxisAlignment.start,
+  //         children: [
+  //           Container(
+  //             padding:
+  //             EdgeInsets.only(right: 20, left: 20, bottom: 20, top: 20),
+  //             decoration: BoxDecoration(
+  //                 border: Border.all(color: MyColor.orange2),
+  //                 color: MyColor.white,
+  //                 borderRadius: const BorderRadius.only(
+  //                     topLeft: Radius.circular(18),
+  //                     bottomLeft: Radius.circular(5),
+  //                     bottomRight: Radius.circular(5),
+  //                     topRight: Radius.circular(18))),
+  //             child: Padding(
+  //               padding: EdgeInsets.only(
+  //                   bottom: MediaQuery
+  //                       .of(context)
+  //                       .viewInsets
+  //                       .bottom),
+  //               child: Column(
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 mainAxisAlignment: MainAxisAlignment.start,
+  //                 children: [
+  //                   Stack(
+  //                     children: [
+  //                       Container(
+  //                           width: 300,
+  //                           alignment: Alignment.center,
+  //                           margin: EdgeInsets.only(top: 5),
+  //                           child: MyString.bold(
+  //                               'What’s your relationship to this business'.tr,
+  //                               18,
+  //                               MyColor.redd,
+  //                               TextAlign.center)),
+  //                       Align(
+  //                         alignment: Alignment.topRight,
+  //                         child: TextButton(
+  //                           onPressed: () {
+  //                             Navigator.pop(context);
+  //                           },
+  //                           style: TextButton.styleFrom(
+  //                               padding: EdgeInsets.zero,
+  //                               tapTargetSize:
+  //                               MaterialTapTargetSize.shrinkWrap),
+  //                           child: Image.asset(
+  //                             'assets/images/icons/cl.png',
+  //                             height: 28,
+  //                             width: 28,
+  //                           ),
+  //                         ),
+  //                       )
+  //                     ],
+  //                   ),
+  //                   SizedBox(
+  //                     height: 10,
+  //                   ),
+  //                   Center(
+  //                     child: MyString.reg(
+  //                         'Your feedback is important to us, if you notice something that is incorrect, lets us know and we’ill make sure it’s updated. ',
+  //                         12,
+  //                         MyColor.title,
+  //                         TextAlign.center),
+  //                   ),
+  //                   SizedBox(
+  //                     height: 15,
+  //                   ),
+  //                   Center(
+  //                     child: MyString.bold('Reason(s) for reporting', 12,
+  //                         MyColor.title, TextAlign.center),
+  //                   ),
+  //                   SizedBox(
+  //                     height: 15,
+  //                   ),
+  //                   Container(
+  //                     constraints: new BoxConstraints(
+  //                       minHeight: 100,
+  //                       maxHeight: MediaQuery
+  //                           .of(context)
+  //                           .size
+  //                           .height / 1.5,
+  //                     ),
+  //                     padding: EdgeInsets.symmetric(horizontal: 18),
+  //                     child: ListView.builder(
+  //                         itemCount: sortingList.length,
+  //                         padding: EdgeInsets.zero,
+  //                         shrinkWrap: true,
+  //                         itemBuilder: (context, index) {
+  //                           final item = sortingList[index];
+  //                           return Padding(
+  //                             padding: const EdgeInsets.all(7),
+  //                             child: Container(
+  //                               child: Row(
+  //                                 mainAxisAlignment:
+  //                                 MainAxisAlignment.spaceBetween,
+  //                                 children: [
+  //                                   Column(
+  //                                     crossAxisAlignment:
+  //                                     CrossAxisAlignment.start,
+  //                                     children: [
+  //                                       Container(
+  //                                         width: MediaQuery
+  //                                             .of(context)
+  //                                             .size
+  //                                             .width /
+  //                                             1.5,
+  //                                         child: MyString.reg(item.title, 12,
+  //                                             MyColor.title, TextAlign.start),
+  //                                       ),
+  //                                     ],
+  //                                   ),
+  //                                   SizedBox(width: 10),
+  //                                   GestureDetector(
+  //                                     onTap: () {
+  //                                       setState(() {
+  //                                         // Toggle the conditionCheck value for the tapped item
+  //                                         item.conditionCheck =
+  //                                         !item.conditionCheck;
+  //                                       });
+  //                                     },
+  //                                     child: Container(
+  //                                       alignment: Alignment.center,
+  //                                       width: 20,
+  //                                       height: 20,
+  //                                       decoration: BoxDecoration(
+  //                                         border: Border.all(
+  //                                             color: MyColor.orange2),
+  //                                         color: MyColor.white,
+  //                                         borderRadius: BorderRadius.all(
+  //                                             Radius.circular(4)),
+  //                                       ),
+  //                                       child: Icon(
+  //                                         Icons.check,
+  //                                         color: item.conditionCheck
+  //                                             ? MyColor.orange2
+  //                                             : MyColor.white,
+  //                                         size: 12,
+  //                                       ),
+  //                                     ),
+  //                                   ),
+  //                                 ],
+  //                               ),
+  //                             ),
+  //                           );
+  //                         }),
+  //                   ),
+  //                   Center(
+  //                     child: GestureDetector(
+  //                         onTap: () {},
+  //                         child: Container(
+  //                             width: 128,
+  //                             padding: EdgeInsets.symmetric(
+  //                                 horizontal: 20, vertical: 10),
+  //                             decoration: BoxDecoration(
+  //                               color: MyColor.orange2,
+  //                               borderRadius: BorderRadius.circular(22),
+  //                             ),
+  //                             child: Center(
+  //                               child: MyString.med(
+  //                                   'Send', 16, MyColor.white, TextAlign.start),
+  //                             ))),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   getPostReviewsById() async {
     isLoading = true;

@@ -95,6 +95,11 @@ class GetCreateAnimalEvent extends CreateAnimalEvent {
 
 //  --createPost
 class GetCreatePostEvent extends CreatePost {
+
+ String address;
+  num? location_distance;
+  num ?location_rating;
+ num ?user_rating_count;
   int userId;
   num lat;
   num lng;
@@ -143,6 +148,11 @@ class GetCreatePostEvent extends CreatePost {
     required this.lng,
     required this.distance,
     required this.totalUserRating,
+    required this.location_distance,
+    required this.location_rating,
+    required this.user_rating_count,
+    required this.address,
+
   });
 }
 

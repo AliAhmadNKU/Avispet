@@ -30,7 +30,7 @@ class _AddPostDetailsState extends State<AddPostDetails> {
   late AddPost addPost;
 
   List<bool> isSelected = [];
-
+  TextEditingController additionalInfo = TextEditingController();
 
   int cr1 = 1;
   int cr2 = 1;
@@ -236,7 +236,7 @@ class _AddPostDetailsState extends State<AddPostDetails> {
       'placeId': addPost.data.placeId,
       'images': addPost.data.images,
       'place_name': addPost.data.placeName,
-      'description': addPost.data.description,
+      'description': additionalInfo.text,
       'postRatings': postRatings.map((post) => post.toJson()).toList(),
     };
 
@@ -294,7 +294,7 @@ class _AddPostDetailsState extends State<AddPostDetails> {
                 padding:
                     const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                 child: MyString.bold(
-                    '${'addPost'.tr}', 27, MyColor.title, TextAlign.center),
+                    '${'addPostTitle'.tr}', 27, MyColor.title, TextAlign.center),
               ),
               GestureDetector(
                 onTap: () async {
@@ -334,12 +334,12 @@ class _AddPostDetailsState extends State<AddPostDetails> {
                               TextAlign.start),
                           MyString.reg(addPost.data.category, 12, MyColor.textBlack0,
                               TextAlign.start),
-                          MyString.reg(post.distance, 12, MyColor.textBlack0,
+                          MyString.reg("${addPost.data.locationDistance.toString() + addPost.data.locationDistanceUnit}", 12, MyColor.textBlack0,
                               TextAlign.start),
                           Row(
                             children: [
                               Icon(Icons.star, color: Colors.amber, size: 16),
-                              MyString.reg('${post.rating} (${post.reviews})',
+                              MyString.reg('${addPost.data.locationRating} (${addPost.data.userRatingCount})',
                                   12, MyColor.textBlack0, TextAlign.start),
                             ],
                           ),
@@ -618,6 +618,34 @@ class _AddPostDetailsState extends State<AddPostDetails> {
                     }),
               ),
 
+              MyString.bold(
+                  '${'Additional information to share & specify : '.tr}',
+                  12,
+                  MyColor.title,
+                  TextAlign.start),
+              TextField(
+                controller: additionalInfo,
+                style: TextStyle(
+                    color: MyColor.black),
+                decoration: InputDecoration(
+                  border:
+                  const OutlineInputBorder(
+                    borderSide:
+                    BorderSide.none,
+                  ),
+                  hintText:
+                  'Add description',
+                  hintStyle: TextStyle(
+                      color:
+                      Color(0xffBEBEBE),
+                      fontSize: 14),
+                  contentPadding:
+                  const EdgeInsets
+                      .symmetric(
+                      vertical: 0,
+                      horizontal: 10),
+                ),
+              ),
               Container(
                 height: addPost.data.images.length >= 3 ? 230 : 110,
                 width: double.infinity,
