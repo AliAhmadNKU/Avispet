@@ -793,14 +793,14 @@ class _MapScreenState extends State<MapScreen> {
                         child: Container(
                           alignment: Alignment.center,
                           height: 55,
-                          width: 130,
+                          width: 135,
                           decoration: BoxDecoration(
                               color: MyColor.orange2,
                               borderRadius:
                                   const BorderRadius.all(Radius.circular(22))),
                           child:
                           MyString.med(
-                              'Reset',
+                              'centerElseWhere'.tr,
                               // 'centerElseWhere'.tr,
                               13,
                               MyColor.white, TextAlign.center)

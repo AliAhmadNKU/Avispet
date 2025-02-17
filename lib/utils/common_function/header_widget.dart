@@ -25,10 +25,11 @@ class HeaderWidget extends StatelessWidget {
               Navigator.pop(context);
             } : onTap,
             child: Container(
-              width: 31,
-              height: 31,
+              width: 20,
+              height: 20,
               child: Image.asset(
                 'assets/images/icons/prev.png',
+                color: Color(0xff5B6170),
               ),
             ),
           ),
@@ -63,8 +64,8 @@ class HeaderWidget extends StatelessWidget {
                       );
                     },
                     child: Container(
-                      width: 25,
-                      height: 25,
+                      width: 20,
+                      height: 20,
                       child: Image.asset(
                         'assets/images/icons/notif.png',
                         color: const Color(0xff5B6170),
@@ -105,12 +106,12 @@ class HeaderWidget extends StatelessWidget {
                   await changeLanguage(context);
                 },
                 child: Container(
-                  width: 25,
-                  height: 25,
+                  width: 20,
+                  height: 20,
                   child: Image.asset(
                     'assets/images/icons/translation.png',
                     // 'assets/images/icons/translation_login.png',
-                    color: const Color(0xff4F2020),
+                    color: Color(0xff5B6170),
                   ),
                 ),
               ),

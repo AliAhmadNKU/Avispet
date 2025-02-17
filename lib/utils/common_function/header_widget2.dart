@@ -18,10 +18,11 @@ class HeaderWidget2 extends StatelessWidget {
           GestureDetector(
             onTap: () => Navigator.pop(context),
             child: Container(
-              width: 31,
-              height: 31,
+              width: 20,
+              height: 20,
               child: Image.asset(
                 'assets/images/icons/prev.png',
+                color: Color(0xff5B6170),
               ),
             ),
           ),
@@ -56,11 +57,11 @@ class HeaderWidget2 extends StatelessWidget {
                       );
                     },
                     child: Container(
-                      width: 25,
-                      height: 25,
+                      width: 20,
+                      height: 20,
                       child: Image.asset(
                         'assets/images/icons/notif.png',
-                        color: const Color(0xff5B6170),
+                        color: Color(0xff5B6170),
                       ),
                     ),
                   ),
@@ -96,11 +97,11 @@ class HeaderWidget2 extends StatelessWidget {
                   await changeLanguage(context);
                 },
                 child: Container(
-                  width: 25,
-                  height: 25,
+                  width: 20,
+                  height: 20,
                   child: Image.asset(
                     'assets/images/icons/translation.png',
-                    color: const Color(0xff4F2020),
+                    color: Color(0xff5B6170),
                   ),
                 ),
               ),

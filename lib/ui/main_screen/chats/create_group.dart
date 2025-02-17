@@ -101,6 +101,13 @@ class _CreateGroupState extends State<CreateGroup> {
                         HeaderWidget(),
                         MyString.bold('creategroup'.tr, 27, MyColor.title,
                             TextAlign.center),
+
+                        MyString.reg('longPressOnAFriendToCreateAConversation'.tr, 15, MyColor.title,
+                            TextAlign.center),
+
+
+
+
                         Container(
                             height: 40,
                             margin: EdgeInsets.symmetric(vertical: 15),

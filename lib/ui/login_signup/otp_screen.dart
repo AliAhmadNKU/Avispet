@@ -63,8 +63,12 @@ class _OtpScreenState extends State<OtpScreen> {
 
       }
     else{
-      print("asdasdasdasd");
+      print("   asdasdasdasd");
       payload = widget.data['data']!;
+
+      print(" payload   asdasdasdasd  ${payload}");
+
+
     }
 
     if(payload['googleLogin'] != null){
@@ -643,7 +647,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     ),
                     children: <TextSpan>[
                       TextSpan(
-                        text: " ${payload["data"]}",
+                        text:screen=="login"?"${payload["data"]}":"${payload["phone_number"]}",
                         style: TextStyle(
                           fontSize: 14,
                           fontFamily: "mont_Med",
