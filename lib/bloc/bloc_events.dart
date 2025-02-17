@@ -95,9 +95,16 @@ class GetCreateAnimalEvent extends CreateAnimalEvent {
 
 //  --createPost
 class GetCreatePostEvent extends CreatePost {
+
+ String address;
+  num? location_distance;
+  num ?location_rating;
+ num ?user_rating_count;
   int userId;
   num lat;
   num lng;
+  num distance;
+  num totalUserRating;
   String placeId;
   String email;
   String phone;
@@ -139,6 +146,13 @@ class GetCreatePostEvent extends CreatePost {
     required this.postRatings,
     required this.lat,
     required this.lng,
+    required this.distance,
+    required this.totalUserRating,
+    required this.location_distance,
+    required this.location_rating,
+    required this.user_rating_count,
+    required this.address,
+
   });
 }
 
@@ -165,6 +179,31 @@ class PostRating {
     };
   }
 }
+
+class PostRatingX {
+  String category;
+  int rating;
+
+  PostRatingX({
+    required this.category,
+    required this.rating,
+  });
+
+  factory PostRatingX.fromJson(Map<String, dynamic> json) {
+    return PostRatingX(
+      category: json['category'],
+      rating: json['rating'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'category': category,
+      'rating': rating,
+    };
+  }
+}
+
 
 //  --editAnimal
 class GetEditAnimalEvent extends EditAnimalEvent {

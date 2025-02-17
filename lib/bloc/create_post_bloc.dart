@@ -38,22 +38,12 @@ class CreatePostBloc extends Bloc<GetCreatePostEvent, BlocStates> {
             'postRatings': event.postRatings.map((post) => post.toJson()).toList(),
             "latitude": event.lat,
             "longitude": event.lng,
+            "location_distance": event.location_distance,
+            "location_distance_unit": "km",
+            "location_rating": event.location_rating,
+            "user_rating_count": event.user_rating_count,
+            "address":event.address,
 
-            // 'category': event.category.toString(),
-            // 'currPos': event.currPos.toString(),
-            // 'lat': event.lat.toString(),
-            // 'long': event.long.toString(),
-            // 'cr1': event.cr1.toString(),
-            // 'cr2': event.cr2.toString(),
-            // 'cr3': event.cr3.toString(),
-            // 'cr4': event.cr4.toString(),
-            // 'cr5': event.cr5.toString(),
-            // 'small_dogs': event.smallDogsAllowed.toString(),
-            // 'big_dogs': event.bigDogsAllowed.toString(),
-            // 'child': event.childPresence.toString(),
-            // 'all_dogs': event.allDogsAllowed.toString(),
-            // 'leashRequired': event.leashRequired.toString(),
-            // 'green_spaces': event.greenSpacesNearby.toString(),
           };
           debugPrint("CREATE-POSTV2 MAP DATA IS : $mapData");
 

@@ -63,9 +63,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     ProfileListModel(
         'assets/images/logos/delete_account.png', 'deleteAccount'.tr, 9),
     ProfileListModel('assets/images/icons/logout.png', 'logout'.tr, 10),
-    ProfileListModel(
-        'assets/images/icons/invite_user.png', 'inviteFriends'.tr, 100),
-    ProfileListModel('assets/images/icons/logout.png', 'passcode'.tr, 99),
+    // ProfileListModel(
+    //     'assets/images/icons/invite_user.png', 'inviteFriends'.tr, 100),
+    // ProfileListModel('assets/images/icons/logout.png', 'passcode'.tr, 99),
   ];
 
   bool loader = true;
@@ -94,7 +94,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       // Create a multipart request
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse("http://16.171.146.189:8001/api/v1/upload/profile-image"),
+        Uri.parse("${ApiStrings.serverURl}api/v1/upload/profile-image"),
       );
 
       // Add headers
@@ -354,7 +354,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                           .profilePicture !=
                                                       null && GetApi.getProfileModel.data!
                                               .profilePicture!.contains('http')
-                                                  ? Image.network(
+                                                  ? CachedImage(
+                                                     url:
                                                       '${GetApi.getProfileModel.data!
                                                           .profilePicture}',
                                                       width: 75,
@@ -817,7 +818,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     } else if (dataList[index].count == 12) {
                                       Navigator.pushNamed(
                                           context, RoutesName.badges);
-                                    } else if (dataList[index].count == 100) {
+                                    }
+                                    else if (dataList[index].count == 100) {
                                       inviteCode(context);
                                     }
                                     setState(() {});
@@ -1174,7 +1176,7 @@ Future<String?> uploadImage(File imageFile) async {
     // Create a multipart request
     var request = http.MultipartRequest(
       'POST',
-      Uri.parse("http://16.171.146.189:8001/api/v1/upload/post-animal-image"),
+      Uri.parse("${ApiStrings.serverURl}/api/v1/upload/post-animal-image"),
     );
 
     // Add headers

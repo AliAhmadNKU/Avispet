@@ -133,76 +133,76 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       ),
 
                       //searching-bar
-                      Container(
-                        height: 40,
-                        margin: const EdgeInsets.only(
-                            bottom: 15, top: 10),
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Color(0xffEBEBEB)),
-                            borderRadius: BorderRadius.all(
-                                Radius.circular(5))),
-
-                        child: TextField(
-                          controller: searchBar,
-                          scrollPadding: const EdgeInsets.only(bottom: 50),
-                          style: TextStyle(color: MyColor.black, fontSize: 14),
-                          decoration: InputDecoration(
-                            border: const OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                            ),
-                            prefixIcon: SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Image.asset(
-                                    'assets/images/icons/search.png',
-                                    width: 20,
-                                    height: 20,
-                                  ),
-                                )),
-                            suffixIcon: (searchBar.text.trim().toString().isNotEmpty)
-                                ? GestureDetector(
-                                    onTap: () async {
-                                      setState(() {
-                                        FocusManager.instance.primaryFocus!.unfocus();
-                                        stackLoader = true;
-                                        searchBar.text = '';
-                                      });
-                                      await GetApi.getNotify(context, '');
-                                      setState(() {
-                                        stackLoader = false;
-                                      });
-                                    },
-                                    child: Icon(
-                                      Icons.cancel,
-                                      color: MyColor.orange,
-                                    ))
-                                : Container(width: 10),
-                            contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
-                            hintText: 'search'.tr,
-                            hintStyle: TextStyle(color: MyColor.textFieldBorder, fontSize: 14),
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              stackLoader = true;
-                            });
-                            searchDelay.run(() async {
-                              FocusManager.instance.primaryFocus!.unfocus();
-                              if (value.isNotEmpty) {
-                                await GetApi.getNotify(context, value);
-                              }
-                              if (value.isEmpty) {
-                                await GetApi.getNotify(context, '');
-                              }
-                              setState(() {
-                                stackLoader = false;
-                              });
-                            });
-                          },
-                        ),
-                      ),
+                      // Container(
+                      //   height: 40,
+                      //   margin: const EdgeInsets.only(
+                      //       bottom: 15, top: 10),
+                      //   decoration: BoxDecoration(
+                      //       border: Border.all(
+                      //           color: Color(0xffEBEBEB)),
+                      //       borderRadius: BorderRadius.all(
+                      //           Radius.circular(5))),
+                      //
+                      //   child: TextField(
+                      //     controller: searchBar,
+                      //     scrollPadding: const EdgeInsets.only(bottom: 50),
+                      //     style: TextStyle(color: MyColor.black, fontSize: 14),
+                      //     decoration: InputDecoration(
+                      //       border: const OutlineInputBorder(
+                      //         borderSide: BorderSide.none,
+                      //       ),
+                      //       prefixIcon: SizedBox(
+                      //           width: 20,
+                      //           height: 20,
+                      //           child: Padding(
+                      //             padding: const EdgeInsets.all(8.0),
+                      //             child: Image.asset(
+                      //               'assets/images/icons/search.png',
+                      //               width: 20,
+                      //               height: 20,
+                      //             ),
+                      //           )),
+                      //       suffixIcon: (searchBar.text.trim().toString().isNotEmpty)
+                      //           ? GestureDetector(
+                      //               onTap: () async {
+                      //                 setState(() {
+                      //                   FocusManager.instance.primaryFocus!.unfocus();
+                      //                   stackLoader = true;
+                      //                   searchBar.text = '';
+                      //                 });
+                      //                 await GetApi.getNotify(context, '');
+                      //                 setState(() {
+                      //                   stackLoader = false;
+                      //                 });
+                      //               },
+                      //               child: Icon(
+                      //                 Icons.cancel,
+                      //                 color: MyColor.orange,
+                      //               ))
+                      //           : Container(width: 10),
+                      //       contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
+                      //       hintText: 'search'.tr,
+                      //       hintStyle: TextStyle(color: MyColor.textFieldBorder, fontSize: 14),
+                      //     ),
+                      //     onChanged: (value) {
+                      //       setState(() {
+                      //         stackLoader = true;
+                      //       });
+                      //       searchDelay.run(() async {
+                      //         FocusManager.instance.primaryFocus!.unfocus();
+                      //         if (value.isNotEmpty) {
+                      //           await GetApi.getNotify(context, value);
+                      //         }
+                      //         if (value.isEmpty) {
+                      //           await GetApi.getNotify(context, '');
+                      //         }
+                      //         setState(() {
+                      //           stackLoader = false;
+                      //         });
+                      //       });
+                      //     },
+                      //   ),
+                      // ),
 
                       //card_Design
                       loader

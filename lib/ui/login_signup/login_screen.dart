@@ -389,6 +389,51 @@ class _LoginScreenState extends State<LoginScreen> {
                                       children: [
                                         GestureDetector(
                                           onTap: () async {
+                                            GoogleSignIn googleSignIn =
+                                            GoogleSignIn();
+                                            await googleSignIn.signOut();
+                                            await googleSignIn.signIn();
+                                            googleSignup(context);
+                                          },
+                                          child: Container(
+                                              padding: const EdgeInsets.symmetric(
+                                                  vertical: 5),
+                                              margin: const EdgeInsets.symmetric(
+                                                  vertical: 5),
+                                              width: double.infinity,
+                                              height: 52,
+                                              decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      color: Color(0xffBEBEBE)),
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                  const BorderRadius.all(
+                                                      Radius.circular(25))),
+                                              child:Row(
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                children: [
+                                                  SizedBox(width: 10,),
+                                                  Image.asset(
+                                                    'assets/images/logos/google.png',
+                                                    height: 25,
+                                                    width: 25,
+                                                  ),
+                                                  Expanded(
+                                                    child: Center(
+                                                      child: MyString.bold(
+                                                        "signingg".tr,
+                                                        12,
+                                                        Color(0xff4F2020),
+                                                        TextAlign.center, // Ensure text is centered
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              )
+                                          ),
+                                        ),
+                                        GestureDetector(
+                                          onTap: () async {
                                             final FirebaseAuth _auth =
                                                 FirebaseAuth.instance;
                                             FacebookAuth.instance.logOut();
@@ -413,67 +458,29 @@ class _LoginScreenState extends State<LoginScreen> {
                                                     const BorderRadius.all(
                                                         Radius.circular(25))),
                                             child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
+                                              mainAxisAlignment: MainAxisAlignment.start,
                                               children: [
+                                                SizedBox(width: 10,),
                                                 Image.asset(
-                                                    'assets/images/logos/facebook.png',
-                                                    height: 25,
-                                                    width: 25),
-                                                SizedBox(
-                                                  width: 20,
+                                                  'assets/images/logos/facebook.png',
+                                                  height: 25,
+                                                  width: 25,
                                                 ),
-                                                MyString.med(
-                                                    "signinfb".tr,
-                                                    12,
-                                                    Color(0xff4F2020),
-                                                    TextAlign.start)
+                                                Expanded(
+                                                  child: Center(
+                                                    child: MyString.bold(
+                                                      "signinfb".tr,
+                                                      12,
+                                                      Color(0xff4F2020),
+                                                      TextAlign.center, // Ensure text is centered
+                                                    ),
+                                                  ),
+                                                ),
                                               ],
-                                            ),
+                                            )
                                           ),
                                         ),
-                                        GestureDetector(
-                                          onTap: () async {
-                                            GoogleSignIn googleSignIn =
-                                                GoogleSignIn();
-                                            await googleSignIn.signOut();
-                                            await googleSignIn.signIn();
-                                            googleSignup(context);
-                                          },
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 5),
-                                            margin: const EdgeInsets.symmetric(
-                                                vertical: 5),
-                                            width: double.infinity,
-                                            height: 52,
-                                            decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    color: Color(0xffBEBEBE)),
-                                                color: Colors.white,
-                                                borderRadius:
-                                                    const BorderRadius.all(
-                                                        Radius.circular(25))),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Image.asset(
-                                                    'assets/images/logos/google.png',
-                                                    height: 25,
-                                                    width: 25),
-                                                SizedBox(
-                                                  width: 20,
-                                                ),
-                                                MyString.med(
-                                                    "signingg".tr,
-                                                    12,
-                                                    Color(0xff4F2020),
-                                                    TextAlign.start)
-                                              ],
-                                            ),
-                                          ),
-                                        ),
+
                                         //apple
                                         if (Platform.isIOS)
                                           GestureDetector(

@@ -80,6 +80,7 @@ class _MapScreenState extends State<MapScreen> {
       if (_shouldFollowUserLocation &&
           locationData.latitude != null &&
           locationData.longitude != null) {
+        _shouldFollowUserLocation = false;
         _mapController?.animateCamera(
           CameraUpdate.newLatLng(
             LatLng(locationData.latitude!, locationData.longitude!),
@@ -352,7 +353,7 @@ class _MapScreenState extends State<MapScreen> {
     _initialPosition = LatLng(latitude, longitude);
 
     setState(() {
-
+      loader = false;
     });
 
     print('_getLocation | longitude ${longitude}');
@@ -372,7 +373,7 @@ class _MapScreenState extends State<MapScreen> {
       child: Scaffold(
           backgroundColor: MyColor.white,
           body: SafeArea(
-            child: Stack(
+            child: loader ? progressBar() : Stack(
               children: [
                 Container(
                     child: currentTab == 1
@@ -425,8 +426,8 @@ class _MapScreenState extends State<MapScreen> {
                                   ),
                                   markers: _markers,
                                   onTap: _onMapTap,
-                                  myLocationEnabled: false,
-                                  myLocationButtonEnabled: false,
+                                  myLocationEnabled: true,
+                                  myLocationButtonEnabled: true,
                                 ),
                               ),
                             ],
@@ -575,7 +576,7 @@ class _MapScreenState extends State<MapScreen> {
                                                           //     TextAlign.start),
                                                           const SizedBox(
                                                               height: 4),
-                                                          Row(
+                                                          if(post.rating != null) Row(
                                                             children: [
                                                               const Icon(
                                                                   Icons.star,

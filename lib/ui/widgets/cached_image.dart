@@ -23,6 +23,7 @@ class CachedImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
+
       imageUrl: '$url',
       width: width,
       height: height,

@@ -6,6 +6,7 @@ import 'package:avispets/models/forum/all_forums_response_model.dart';
 import 'package:avispets/models/forum/get_forum.dart';
 import 'package:avispets/models/get_all_categories_model.dart';
 import 'package:avispets/ui/widgets/no_data_found.dart';
+import 'package:avispets/ui/widgets/post_card.dart';
 
 import 'package:avispets/utils/apis/all_api.dart';
 import 'package:avispets/utils/apis/api_strings.dart';
@@ -36,6 +37,8 @@ enum SampleItem { report, delete }
 
 class _HomeScreenState extends State<HomeScreen> {
   late ScrollController _feedsScrollController;
+  double _previousScrollPosition = 0.0;
+
 
   List<Object> places = [];
 
@@ -76,6 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool pagerLoader = false;
   bool loader = true;
   bool stackLoader = false;
+  bool apiCall = false;
 
   String dogList = '';
   String catList = '';
@@ -170,15 +174,23 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onScroll() {
-    if (_feedsScrollController.position.pixels >= _feedsScrollController.position.maxScrollExtent - 200) {
-      stackLoader = true;
-      feedCurrentPage++;
-      setState(() {
+    double currentPosition = _feedsScrollController.position.pixels;
+    bool isScrollingDown = currentPosition > _previousScrollPosition; // Chec
+    if (isScrollingDown &&
+        currentPosition >= _feedsScrollController.position.maxScrollExtent - 200) {
 
-      });
-      getAllPostsApi();
-      // context.read<PaginationCubit>().fetchItems();
+      if (!apiCall) {
+        apiCall = true;
+        print('_onScroll');
+        stackLoader = true;
+        feedCurrentPage++;
+        setState(() {});
+
+        getAllPostsApi();
+      }
     }
+
+    _previousScrollPosition = currentPosition;
   }
   // Image list
   List<String> images = [
@@ -277,93 +289,96 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                     child: SingleChildScrollView(
                       controller: _feedsScrollController,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 15.0, vertical: 10),
-                        child: Column(
-                          children: [
-                            HeaderWidget(backIcon: false,),
-                            Container(
-                              height: MediaQuery.of(context).size.height * 0.25,
-                              child: Column(
-                                children: [
-                                  _buildForumsUINEW(),
-                                  // _buildForumsUIOLD(),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {},
-                                    child: Image.asset(
-                                        'assets/images/icons/noun_arr_left.png'),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {},
-                                    child: Image.asset(
-                                        'assets/images/icons/noun_arr_right.png'),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              height: 15,
-                            ),
-                            buildSearchBar(),
-                            buildCategoryFilter(),
-                            Container(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {},
-                                    child: Image.asset(
-                                        'assets/images/icons/noun_arr_left.png'),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {},
-                                    child: Image.asset(
-                                        'assets/images/icons/noun_arr_right.png'),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 18.0, vertical: 15),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  MyString.bold('YourNewsFeed'.tr, 14,
-                                      MyColor.title, TextAlign.start),
-                                  GestureDetector(
-                                    onTap: () {
-                                      sortingSheet(context);
-                                    },
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      child: Image.asset(
-                                          'assets/images/icons/sort.png'),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
+                      child: Column(
+                        children: [
+                          HeaderWidget(backIcon: false,),
+                          Container(
+                            height: MediaQuery.of(context).size.height * 0.25,
+                            child: Column(
                               children: [
+                                _buildForumsUINEW(),
+                                // _buildForumsUIOLD(),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {},
+                                  child: Image.asset(
+                                      'assets/images/icons/noun_arr_left.png'),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                GestureDetector(
+                                  onTap: () {},
+                                  child: Image.asset(
+                                      'assets/images/icons/noun_arr_right.png'),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          buildSearchBar(),
+                          buildCategoryFilter(),
+                          Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {},
+                                  child: Image.asset(
+                                      'assets/images/icons/noun_arr_left.png'),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                GestureDetector(
+                                  onTap: () {},
+                                  child: Image.asset(
+                                      'assets/images/icons/noun_arr_right.png'),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 18.0, vertical: 15),
+                            child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                              children: [
+                                MyString.bold('YourNewsFeed'.tr, 14,
+                                    MyColor.title, TextAlign.start),
+                                GestureDetector(
+                                  onTap: () {
+                                    sortingSheet(context);
+                                  },
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    child: Image.asset(
+                                        'assets/images/icons/sort.png'),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
 
-                                ListView.builder(
+
+                          ///Create post
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+
+                              Container(
+                              color: MyColor.card,
+                                child: ListView.builder(
+                                  padding: EdgeInsets.zero,
                                   itemCount: postsList.length ,
                                   shrinkWrap: true,
                                   physics: NeverScrollableScrollPhysics(),
@@ -385,122 +400,126 @@ class _HomeScreenState extends State<HomeScreen> {
                                               'post': post
                                             });
                                       },
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                            color: MyColor.card,
-                                            borderRadius:
-                                                BorderRadius.circular(22)),
-                                        margin: EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 6),
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 10),
-                                        child: Row(
-                                          children: [
-                                            ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                              child: Image.network(
-                                                post.images[
-                                                    0], // URL of the image
-                                                width: 130,
-                                                height: 110,
-                                                fit: BoxFit.cover,
-                                                errorBuilder:
-                                                    (BuildContext context,
-                                                        Object error,
-                                                        StackTrace?
-                                                            stackTrace) {
-                                                  // Fallback widget for error
-                                                  return Container(
-                                                    width: 130,
-                                                    height: 110,
-                                                    color: Colors.grey[
-                                                        300], // Background color for placeholder
-                                                    child: Center(
-                                                      child: Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Icon(
-                                                            Icons
-                                                                .image_not_supported, // Fallback icon
-                                                            color:
-                                                                Colors.grey,
-                                                            size: 40,
-                                                          ),
-                                                          Text(
-                                                            'Image not found',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .grey,
-                                                                fontSize:
-                                                                    12),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: 15,
-                                            ),
-                                            Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                if(post.placeName != null) MyString.reg(
-                                                    post.placeName!,
-                                                    14,
-                                                    MyColor.orange2,
-                                                    TextAlign.start),
-                                                MyString.reg(
-                                                    post.category,
-                                                    12,
-                                                    MyColor.textBlack0,
-                                                    TextAlign.start),
-                                                MyString.reg(
-                                                    post.websiteName ?? "",
-                                                    12,
-                                                    MyColor.textBlack0,
-                                                    TextAlign.start),
-                                                Row(
-                                                  children: [
-                                                    Icon(Icons.star,
-                                                        color: Colors.amber,
-                                                        size: 16),
-                                                    MyString.reg(
-                                                        '${post.overallRating}  ',
-                                                        12,
-                                                        MyColor.textBlack0,
-                                                        TextAlign.start),
-                                                  ],
-                                                ),
-                                                MyString.reg(
-                                                    post.openingClosingHour ??
-                                                        "",
-                                                    8,
-                                                    MyColor.textBlack0,
-                                                    TextAlign.start),
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                      ),
+                                      child: PostCard(post: post),
+
+
+                                      // Container(
+                                      //   decoration: BoxDecoration(
+                                      //       color: MyColor.card,
+                                      //       borderRadius:
+                                      //           BorderRadius.circular(22)),
+                                      //   margin: EdgeInsets.symmetric(
+                                      //       horizontal: 10, vertical: 6),
+                                      //   padding: EdgeInsets.symmetric(
+                                      //       horizontal: 10, vertical: 10),
+                                      //   child: Row(
+                                      //     children: [
+                                      //       ClipRRect(
+                                      //         borderRadius:
+                                      //             BorderRadius.circular(15),
+                                      //         child: Image.network(
+                                      //           post.images[
+                                      //               0], // URL of the image
+                                      //           width: 130,
+                                      //           height: 110,
+                                      //           fit: BoxFit.cover,
+                                      //           errorBuilder:
+                                      //               (BuildContext context,
+                                      //                   Object error,
+                                      //                   StackTrace?
+                                      //                       stackTrace) {
+                                      //             // Fallback widget for error
+                                      //             return Container(
+                                      //               width: 130,
+                                      //               height: 110,
+                                      //               color: Colors.grey[
+                                      //                   300], // Background color for placeholder
+                                      //               child: Center(
+                                      //                 child: Column(
+                                      //                   mainAxisAlignment:
+                                      //                       MainAxisAlignment
+                                      //                           .center,
+                                      //                   children: [
+                                      //                     Icon(
+                                      //                       Icons
+                                      //                           .image_not_supported, // Fallback icon
+                                      //                       color:
+                                      //                           Colors.grey,
+                                      //                       size: 40,
+                                      //                     ),
+                                      //                     Text(
+                                      //                       'Image not found',
+                                      //                       style: TextStyle(
+                                      //                           color: Colors
+                                      //                               .grey,
+                                      //                           fontSize:
+                                      //                               12),
+                                      //                     ),
+                                      //                   ],
+                                      //                 ),
+                                      //               ),
+                                      //             );
+                                      //           },
+                                      //         ),
+                                      //       ),
+                                      //       SizedBox(
+                                      //         width: 15,
+                                      //       ),
+                                      //       Column(
+                                      //         mainAxisAlignment:
+                                      //             MainAxisAlignment.start,
+                                      //         crossAxisAlignment:
+                                      //             CrossAxisAlignment.start,
+                                      //         children: [
+                                      //           if(post.placeName != null) MyString.reg(
+                                      //               post.placeName!,
+                                      //               14,
+                                      //               MyColor.orange2,
+                                      //               TextAlign.start),
+                                      //           MyString.reg(
+                                      //               post.category,
+                                      //               12,
+                                      //               MyColor.textBlack0,
+                                      //               TextAlign.start),
+                                      //           MyString.reg(
+                                      //               post.websiteName ?? "",
+                                      //               12,
+                                      //               MyColor.textBlack0,
+                                      //               TextAlign.start),
+                                      //           Row(
+                                      //             children: [
+                                      //               Icon(Icons.star,
+                                      //                   color: Colors.amber,
+                                      //                   size: 16),
+                                      //               MyString.reg(
+                                      //                   '${post.overallRating}  ',
+                                      //                   12,
+                                      //                   MyColor.textBlack0,
+                                      //                   TextAlign.start),
+                                      //             ],
+                                      //           ),
+                                      //           MyString.reg(
+                                      //               post.openingClosingHour ??
+                                      //                   "",
+                                      //               8,
+                                      //               MyColor.textBlack0,
+                                      //               TextAlign.start),
+                                      //         ],
+                                      //       )
+                                      //     ],
+                                      //   ),
+                                      // ),
                                     );
                                   },
                                 ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 200,
-                            )
-                          ],
-                        ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 200,
+                          ),
+                      if(stackLoader) progressBar()
+                        ],
                       ),
                     ),
                   ),
@@ -623,6 +642,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
       setState(() {
         stackLoader = false;
+        apiCall = false;
         // Update your local state with the data
       });
     } catch (e) {
@@ -1625,60 +1645,60 @@ class _HomeScreenState extends State<HomeScreen> {
                               BoxFit.fitWidth,
                               imageUrls[index]))),
                 ),
-                Positioned(
-                    left: 35,
-                    top: 40,
-                    child: Container(
-                      width: 200,
-                      child: Row(
-                        children: [
-                          // Flexible(
-                          //     child: MyString.bold(
-                          //         '${forum.title.toString()}',
-                          //         22,
-                          //         MyColor.title,
-                          //         TextAlign
-                          //             .start)),
-                        ],
-                      ),
-                    )),
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 25,vertical: 40),
-                      padding:
-                      EdgeInsets.symmetric(
-                          horizontal: 25,
-                          vertical: 10),
-                      decoration: BoxDecoration(
-                          color: MyColor.redd,
-                          borderRadius:
-                          BorderRadius
-                              .circular(
-                              15)),
-                      child: GestureDetector(
-                          onTap: () async {
-                            // await Navigator.pushNamed(
-                            //     context,
-                            //     RoutesName
-                            //         .forumQuestion,
-                            //     arguments: {});
-                            // setState(() {
-                            //   loader = true;
-                            //   page = 1;
-                            //   getForumApi(
-                            //       page,
-                            //       '',
-                            //       currentTabBreed);
-                            // });
-                          },
-                          child: MyString.bold(
-                              'Join Now',
-                              12,
-                              MyColor.white,
-                              TextAlign
-                                  .start))),
-                )
+                // Positioned(
+                //     left: 35,
+                //     top: 40,
+                //     child: Container(
+                //       width: 200,
+                //       child: Row(
+                //         children: [
+                //           Flexible(
+                //               child: MyString.bold(
+                //                   '${forum.title.toString()}',
+                //                   22,
+                //                   MyColor.title,
+                //                   TextAlign
+                //                       .start)),
+                //         ],
+                //       ),
+                //     )),
+                // Align(
+                //   alignment: Alignment.bottomLeft,
+                //   child: Container(
+                //     margin: EdgeInsets.symmetric(horizontal: 25,vertical: 40),
+                //       padding:
+                //       EdgeInsets.symmetric(
+                //           horizontal: 25,
+                //           vertical: 10),
+                //       decoration: BoxDecoration(
+                //           color: MyColor.redd,
+                //           borderRadius:
+                //           BorderRadius
+                //               .circular(
+                //               15)),
+                //       child: GestureDetector(
+                //           onTap: () async {
+                //             // await Navigator.pushNamed(
+                //             //     context,
+                //             //     RoutesName
+                //             //         .forumQuestion,
+                //             //     arguments: {});
+                //             // setState(() {
+                //             //   loader = true;
+                //             //   page = 1;
+                //             //   getForumApi(
+                //             //       page,
+                //             //       '',
+                //             //       currentTabBreed);
+                //             // });
+                //           },
+                //           child: MyString.bold(
+                //               'Join Now',
+                //               12,
+                //               MyColor.white,
+                //               TextAlign
+                //                   .start))),
+                // )
               ],
             ),
           );

@@ -62,15 +62,17 @@ OnlineStoreResponseModel copyWith({  num? status,
 
 class OnlineStoreModel {
   OnlineStoreModel({
-      String? name, 
-      num? latitude, 
-      num? longitude, 
-      String? address, 
-      String? profile, 
-      String? source, 
-      String? placeId, 
-      num? rating, 
-      num? userRating,}){
+    String? name,
+    num? latitude,
+    num? longitude,
+    String? address,
+    String? profile,
+    String? source,
+    String? placeId,
+    num? rating,
+    num? userRating,
+    num? distance,
+  }) {
     _name = name;
     _latitude = latitude;
     _longitude = longitude;
@@ -80,7 +82,8 @@ class OnlineStoreModel {
     _placeId = placeId;
     _rating = rating;
     _userRating = userRating;
-}
+    _distance = distance;
+  }
 
   OnlineStoreModel.fromJson(dynamic json) {
     _name = json['name'];
@@ -92,7 +95,9 @@ class OnlineStoreModel {
     _placeId = json['place_id'];
     _rating = json['rating'];
     _userRating = json['user_rating'];
+    _distance = json['distance'];
   }
+
   String? _name;
   num? _latitude;
   num? _longitude;
@@ -102,25 +107,33 @@ class OnlineStoreModel {
   String? _placeId;
   num? _rating;
   num? _userRating;
-  OnlineStoreModel copyWith({  String? name,
-  num? latitude,
-  num? longitude,
-  String? address,
-  String? profile,
-  String? source,
-  String? placeId,
-  num? rating,
-  num? userRating,
-}) => OnlineStoreModel(  name: name ?? _name,
-  latitude: latitude ?? _latitude,
-  longitude: longitude ?? _longitude,
-  address: address ?? _address,
-  profile: profile ?? _profile,
-  source: source ?? _source,
-  placeId: placeId ?? _placeId,
-  rating: rating ?? _rating,
-  userRating: userRating ?? _userRating,
-);
+  num? _distance;
+
+  OnlineStoreModel copyWith({
+    String? name,
+    num? latitude,
+    num? longitude,
+    String? address,
+    String? profile,
+    String? source,
+    String? placeId,
+    num? rating,
+    num? userRating,
+    num? distance,
+  }) =>
+      OnlineStoreModel(
+        name: name ?? _name,
+        latitude: latitude ?? _latitude,
+        longitude: longitude ?? _longitude,
+        address: address ?? _address,
+        profile: profile ?? _profile,
+        source: source ?? _source,
+        placeId: placeId ?? _placeId,
+        rating: rating ?? _rating,
+        userRating: userRating ?? _userRating,
+        distance: distance ?? _distance,
+      );
+
   String? get name => _name;
   num? get latitude => _latitude;
   num? get longitude => _longitude;
@@ -130,6 +143,7 @@ class OnlineStoreModel {
   String? get placeId => _placeId;
   num? get rating => _rating;
   num? get userRating => _userRating;
+  num? get distance => _distance;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -142,7 +156,7 @@ class OnlineStoreModel {
     map['place_id'] = _placeId;
     map['rating'] = _rating;
     map['user_rating'] = _userRating;
+    map['distance'] = _distance;
     return map;
   }
-
 }

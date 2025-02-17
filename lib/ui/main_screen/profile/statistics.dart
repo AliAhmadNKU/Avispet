@@ -330,7 +330,7 @@ class _StatisticsState extends State<Statistics> {
                                       ),
                                       Center(
                                         child: MyString.med(
-                                          '${ranking.ranking.toString()} XP',
+                                          '${ranking.gamePoints.toString()} XP',
                                           14,
                                           currentUserEmail == ranking.email ? MyColor.white : MyColor.orange2,
                                           TextAlign.start,
@@ -1655,6 +1655,7 @@ class _StatisticsState extends State<Statistics> {
     var res = await AllApi.getMethodApi(
         "${ApiStrings.gamificationRankings}");
     var result = jsonDecode(res.toString());
+    print('getAllGamePoints => $result');
     if (result['status'] == 200) {
       _gamificationRankingsResponseModel = GamificationRankingsResponseModel.fromJson(result);
     }

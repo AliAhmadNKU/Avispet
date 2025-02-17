@@ -1,10 +1,11 @@
 import 'package:avispets/models/get_all_post_modle.dart';
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
 
 class GetPostReviewsByPostidModel {
   GetPostReviewsByPostidModel({
-      num? status, 
-      bool? error, 
-      String? message, 
+      num? status,
+      bool? error,
+      String? message,
       List<Reviews>? data,
       dynamic metadata,}){
     _status = status;
@@ -62,25 +63,28 @@ GetPostReviewsByPostidModel copyWith({  num? status,
 
 }
 
+
+
 class Reviews {
   Reviews({
-      num? id, 
-      num? userId, 
-      String? placeId, 
-      num? postId, 
-      num? overallRating, 
-      String? placeName, 
-      String? description, 
-      List<String>? images, 
-      String? createdAt, 
-      String? updatedAt, 
-      Post? post, 
-      User? user, 
-      List<dynamic>? likes, 
-      List<dynamic>? comments, 
-      List<PostRatings>? postRatings, 
-      num? totalLikes, 
-      num? totalComments,}){
+    num? id,
+    num? userId,
+    String? placeId,
+    num? postId,
+    num? overallRating,
+    String? placeName,
+    String? description,
+    List<String>? images,
+    String? createdAt,
+    String? updatedAt,
+    Post? post,
+    User? user,
+    List<dynamic>? likes,
+    List<dynamic>? comments,
+    List<PostRatings>? postRatings,
+    num? totalLikes,
+    num? totalComments,
+  }) {
     _id = id;
     _userId = userId;
     _placeId = placeId;
@@ -98,7 +102,9 @@ class Reviews {
     _postRatings = postRatings;
     _totalLikes = totalLikes;
     _totalComments = totalComments;
-}
+    _tLikes = Rx<int>(totalLikes?.toInt() ?? 0); // Initialize Rx<int> properly
+    _tcomment = Rx<int>(totalComments?.toInt() ?? 0); // Initialize Rx<int> properly
+  }
 
   Reviews.fromJson(dynamic json) {
     _id = json['id'];
@@ -114,26 +120,21 @@ class Reviews {
     _post = json['post'] != null ? Post.fromJson(json['post']) : null;
     _user = json['user'] != null ? User.fromJson(json['user']) : null;
     if (json['likes'] != null) {
-      _likes = [];
-      json['likes'].forEach((v) {
-        _likes?.add(v);
-      });
+      _likes = List<dynamic>.from(json['likes']);
     }
     if (json['comments'] != null) {
-      _comments = [];
-      json['comments'].forEach((v) {
-        _comments?.add(v);
-      });
+      _comments = List<dynamic>.from(json['comments']);
     }
     if (json['postRatings'] != null) {
-      _postRatings = [];
-      json['postRatings'].forEach((v) {
-        _postRatings?.add(PostRatings.fromJson(v));
-      });
+      _postRatings =
+          json['postRatings'].map<PostRatings>((v) => PostRatings.fromJson(v)).toList();
     }
     _totalLikes = json['totalLikes'];
     _totalComments = json['totalComments'];
+    _tLikes = Rx<int>(_totalLikes?.toInt() ?? 0);
+    _tcomment = Rx<int>(_totalComments?.toInt() ?? 0);
   }
+
   num? _id;
   num? _userId;
   String? _placeId;
@@ -151,41 +152,48 @@ class Reviews {
   List<PostRatings>? _postRatings;
   num? _totalLikes;
   num? _totalComments;
-  Reviews copyWith({  num? id,
-  num? userId,
-  String? placeId,
-  num? postId,
-  num? overallRating,
-  String? placeName,
-  String? description,
-  List<String>? images,
-  String? createdAt,
-  String? updatedAt,
-  Post? post,
-  User? user,
-  List<dynamic>? likes,
-  List<dynamic>? comments,
-  List<PostRatings>? postRatings,
-  num? totalLikes,
-  num? totalComments,
-}) => Reviews(  id: id ?? _id,
-  userId: userId ?? _userId,
-  placeId: placeId ?? _placeId,
-  postId: postId ?? _postId,
-  overallRating: overallRating ?? _overallRating,
-  placeName: placeName ?? _placeName,
-  description: description ?? _description,
-  images: images ?? _images,
-  createdAt: createdAt ?? _createdAt,
-  updatedAt: updatedAt ?? _updatedAt,
-  post: post ?? _post,
-  user: user ?? _user,
-  likes: likes ?? _likes,
-  comments: comments ?? _comments,
-  postRatings: postRatings ?? _postRatings,
-  totalLikes: totalLikes ?? _totalLikes,
-  totalComments: totalComments ?? _totalComments,
-);
+  late Rx<int> _tLikes;
+  late Rx<int> _tcomment; // Reactive variable
+
+  Reviews copyWith({
+    num? id,
+    num? userId,
+    String? placeId,
+    num? postId,
+    num? overallRating,
+    String? placeName,
+    String? description,
+    List<String>? images,
+    String? createdAt,
+    String? updatedAt,
+    Post? post,
+    User? user,
+    List<dynamic>? likes,
+    List<dynamic>? comments,
+    List<PostRatings>? postRatings,
+    num? totalLikes,
+    num? totalComments,
+  }) =>
+      Reviews(
+        id: id ?? _id,
+        userId: userId ?? _userId,
+        placeId: placeId ?? _placeId,
+        postId: postId ?? _postId,
+        overallRating: overallRating ?? _overallRating,
+        placeName: placeName ?? _placeName,
+        description: description ?? _description,
+        images: images ?? _images,
+        createdAt: createdAt ?? _createdAt,
+        updatedAt: updatedAt ?? _updatedAt,
+        post: post ?? _post,
+        user: user ?? _user,
+        likes: likes ?? _likes,
+        comments: comments ?? _comments,
+        postRatings: postRatings ?? _postRatings,
+        totalLikes: totalLikes ?? _totalLikes,
+        totalComments: totalComments ?? _totalComments,
+      );
+
   num? get id => _id;
   num? get userId => _userId;
   String? get placeId => _placeId;
@@ -203,6 +211,8 @@ class Reviews {
   List<PostRatings>? get postRatings => _postRatings;
   num? get totalLikes => _totalLikes;
   num? get totalComments => _totalComments;
+  Rx<int> get tcomment => _tcomment; // Getter for reactive variable
+  Rx<int> get tLikes => _tLikes;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -223,10 +233,10 @@ class Reviews {
       map['user'] = _user?.toJson();
     }
     if (_likes != null) {
-      map['likes'] = _likes?.map((v) => v.toJson()).toList();
+      map['likes'] = _likes;
     }
     if (_comments != null) {
-      map['comments'] = _comments?.map((v) => v.toJson()).toList();
+      map['comments'] = _comments;
     }
     if (_postRatings != null) {
       map['postRatings'] = _postRatings?.map((v) => v.toJson()).toList();
@@ -235,17 +245,17 @@ class Reviews {
     map['totalComments'] = _totalComments;
     return map;
   }
-
 }
+
 
 class PostRatings {
   PostRatings({
-      num? id, 
-      num? postId, 
-      num? reviewId, 
-      String? category, 
-      num? rating, 
-      String? createdAt, 
+      num? id,
+      num? postId,
+      num? reviewId,
+      String? category,
+      num? rating,
+      String? createdAt,
       String? updatedAt,}){
     _id = id;
     _postId = postId;
@@ -311,39 +321,39 @@ PostRatings copyWith({  num? id,
 
 class User {
   User({
-      num? id, 
-      String? name, 
-      String? firstName, 
-      String? lastName, 
-      dynamic isOnline, 
-      String? email, 
-      String? phoneNumber, 
-      String? pseudo, 
-      String? profilePicture, 
-      String? coverPicture, 
-      String? profession, 
-      String? dob, 
-      String? age, 
-      String? gender, 
-      String? city, 
-      String? area, 
-      String? timezone, 
-      dynamic socketId, 
-      String? latitude, 
-      String? longitude, 
-      String? deviceToken, 
-      dynamic socialId, 
-      dynamic socialType, 
-      String? deviceType, 
-      dynamic biography, 
-      dynamic lastActive, 
-      num? gamePoints, 
-      bool? allowPushNotifications, 
-      dynamic resetToken, 
-      dynamic resetTokenExpiresAt, 
-      bool? isVerified, 
-      bool? isActivate, 
-      String? createdAt, 
+      num? id,
+      String? name,
+      String? firstName,
+      String? lastName,
+      dynamic isOnline,
+      String? email,
+      String? phoneNumber,
+      String? pseudo,
+      String? profilePicture,
+      String? coverPicture,
+      String? profession,
+      String? dob,
+      String? age,
+      String? gender,
+      String? city,
+      String? area,
+      String? timezone,
+      dynamic socketId,
+      String? latitude,
+      String? longitude,
+      String? deviceToken,
+      dynamic socialId,
+      dynamic socialType,
+      String? deviceType,
+      dynamic biography,
+      dynamic lastActive,
+      num? gamePoints,
+      bool? allowPushNotifications,
+      dynamic resetToken,
+      dynamic resetTokenExpiresAt,
+      bool? isVerified,
+      bool? isActivate,
+      String? createdAt,
       String? updatedAt,}){
     _id = id;
     _name = name;
@@ -485,6 +495,7 @@ User copyWith({  num? id,
   bool? isActivate,
   String? createdAt,
   String? updatedAt,
+
 }) => User(  id: id ?? _id,
   name: name ?? _name,
   firstName: firstName ?? _firstName,

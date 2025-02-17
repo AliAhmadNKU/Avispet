@@ -35,8 +35,7 @@ class GoogleMapsService {
   static Future<Map<String, dynamic>?> getLocationInfo(
       double latitude, double longitude) async {
     try {
-      final geocodeUrl =
-          'https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&key=$apiKey';
+      final geocodeUrl = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&key=$apiKey';
       final geocodeResponse = await http.get(Uri.parse(geocodeUrl));
 
       if (geocodeResponse.statusCode == 200) {
@@ -51,7 +50,11 @@ class GoogleMapsService {
               await http.get(Uri.parse(placeDetailsUrl));
 
           if (placeDetailsResponse.statusCode == 200) {
+
+
             final placeDetailsData = json.decode(placeDetailsResponse.body);
+
+              print("placeDetailsData asdasda ${placeDetailsData}");
 
             if (placeDetailsData['status'] == 'OK') {
               final result = placeDetailsData['result'];

@@ -2,14 +2,12 @@ import 'package:avispets/bloc/bloc_events.dart';
 import 'package:avispets/bloc/bloc_states.dart';
 import 'package:avispets/bloc/new_password_bloc.dart';
 import 'package:avispets/ui/widgets/header_auth_widget.dart';
-import 'package:avispets/utils/common_function/header_widget2.dart';
-import 'package:avispets/utils/common_function/my_string.dart';
+import 'package:avispets/utils/common_function/toaster.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
 import '../../../utils/common_function/loader_screen.dart';
-import '../../../utils/common_function/toaster.dart';
 import '../../../utils/my_color.dart';
 
 class NewPassword extends StatefulWidget {
@@ -21,26 +19,24 @@ class NewPassword extends StatefulWidget {
 }
 
 class _NewPasswordState extends State<NewPassword> {
-  late NewPasswordBloc _NewPasswordBloc;
-  bool oldPasswordVisible = false;
+  late NewPasswordBloc _newPasswordBloc;
   bool newPasswordVisible = false;
   bool confirmPasswordVisible = false;
 
-  var currentPassword = TextEditingController();
   var newPassword = TextEditingController();
   var confirmPassword = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _NewPasswordBloc = NewPasswordBloc(context);
+    _newPasswordBloc = NewPasswordBloc(context);
   }
 
   @override
   Widget build(BuildContext context) {
     final String email = widget.data['email'] ?? '';
     return BlocProvider(
-      create: (context) => _NewPasswordBloc,
+      create: (context) => _newPasswordBloc,
       child: BlocListener<NewPasswordBloc, BlocStates>(
         listener: (context, state) {
           if (state is ValidationCheck) {
@@ -87,10 +83,6 @@ class _NewPasswordState extends State<NewPassword> {
                         ),
                       ],
                     ),
-                    // Padding(
-                    //   padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                    //   child: HeaderWidget2(),
-                    // ),
                     Expanded(
                       child: SingleChildScrollView(
                         child: Padding(
@@ -101,112 +93,51 @@ class _NewPasswordState extends State<NewPassword> {
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                     vertical: 15, horizontal: 18),
-                                child: MyString.bold('updatePassword'.tr, 27,
-                                    MyColor.title, TextAlign.start),
+                                child: Text(
+                                  'updatePassword'.tr,
+                                  style: TextStyle(
+                                      fontSize: 27, color: MyColor.title),
+                                ),
                               ),
-
-                              // Container(
-                              //   child: TextField(
-                              //     controller: currentPassword,
-                              //     obscureText: oldPasswordVisible ? false : true,
-                              //     scrollPadding: const EdgeInsets.only(bottom: 50),
-                              //     style: TextStyle(color: MyColor.black),
-                              //     decoration: InputDecoration(
-                              //       border: const OutlineInputBorder(
-                              //         borderSide: BorderSide.none,
-                              //       ),
-                              //       prefixIcon: SizedBox(
-                              //           width: 20,
-                              //           height: 20,
-                              //           child: Padding(
-                              //             padding: const EdgeInsets.all(12.0),
-                              //             child: Image.asset(
-                              //               'assets/images/icons/pwd.png',
-                              //               width: 20,
-                              //               height: 20,
-                              //             ),
-                              //           )),
-                              //       suffixIcon: SizedBox(
-                              //           width: 20,
-                              //           height: 20,
-                              //           child: GestureDetector(
-                              //             onTap: () {
-                              //               oldPasswordVisible =
-                              //                   !oldPasswordVisible;
-                              //               setState(() {});
-                              //             },
-                              //             child: Padding(
-                              //               padding: const EdgeInsets.all(12.0),
-                              //               child: Image.asset(
-                              //                 oldPasswordVisible
-                              //                     ? 'assets/images/logos/visible.png'
-                              //                     : 'assets/images/icons/invisible.png',
-                              //                 width: 20,
-                              //                 height: 20,
-                              //               ),
-                              //             ),
-                              //           )),
-                              //       contentPadding: const EdgeInsets.symmetric(
-                              //           vertical: 5, horizontal: 12),
-                              //       hintText: 'oldPassword'.tr,
-                              //       hintStyle: TextStyle(
-                              //           color: MyColor.textFieldBorder,
-                              //           fontSize: 14),
-                              //     ),
-                              //   ),
-                              // ),
                               Divider(
-                                color: Color(0xffEBEBEB), // Color of the divider
-                                thickness: 1, // Thickness of the line
-                                indent: 16, // Start padding
-                                endIndent: 16, // End padding
+                                color: Color(0xffEBEBEB),
+                                thickness: 1,
+                                indent: 16,
+                                endIndent: 16,
                               ),
-
-                              //!@newPassword
                               Container(
                                 child: TextField(
                                   controller: newPassword,
-                                  obscureText: newPasswordVisible ? false : true,
-                                  scrollPadding:
-                                      const EdgeInsets.only(bottom: 50),
+                                  obscureText: !newPasswordVisible,
                                   style: TextStyle(color: MyColor.black),
                                   decoration: InputDecoration(
-                                    border: const OutlineInputBorder(
-                                      borderSide: BorderSide.none,
+                                    border: InputBorder.none,
+                                    prefixIcon: Padding(
+                                      padding: const EdgeInsets.all(12.0),
+                                      child: Image.asset(
+                                        'assets/images/icons/pwd.png',
+                                        width: 20,
+                                        height: 20,
+                                      ),
                                     ),
-                                    prefixIcon: SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(12.0),
-                                          child: Image.asset(
-                                            'assets/images/icons/pwd.png',
-                                            width: 20,
-                                            height: 20,
-                                          ),
-                                        )),
-                                    suffixIcon: SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            newPasswordVisible =
-                                                !newPasswordVisible;
-                                            setState(() {});
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(12.0),
-                                            child: Image.asset(
-                                              newPasswordVisible
-                                                  ? 'assets/images/logos/visible.png'
-                                                  : 'assets/images/icons/invisible.png',
-                                              width: 20,
-                                              height: 20,
-                                            ),
-                                          ),
-                                        )),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        vertical: 5, horizontal: 12),
+                                    suffixIcon: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          newPasswordVisible =
+                                          !newPasswordVisible;
+                                        });
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(12.0),
+                                        child: Image.asset(
+                                          newPasswordVisible
+                                              ? 'assets/images/logos/visible.png'
+                                              : 'assets/images/icons/invisible.png',
+                                          width: 20,
+                                          height: 20,
+                                        ),
+                                      ),
+                                    ),
                                     hintText: 'newPassword'.tr,
                                     hintStyle: TextStyle(
                                         color: MyColor.textFieldBorder,
@@ -220,53 +151,39 @@ class _NewPasswordState extends State<NewPassword> {
                                 indent: 16,
                                 endIndent: 16,
                               ),
-
-                              //!@confirmPassword
                               Container(
                                 child: TextField(
                                   controller: confirmPassword,
-                                  obscureText:
-                                      confirmPasswordVisible ? false : true,
-                                  scrollPadding:
-                                      const EdgeInsets.only(bottom: 50),
+                                  obscureText: !confirmPasswordVisible,
                                   style: TextStyle(color: MyColor.black),
                                   decoration: InputDecoration(
-                                    border: const OutlineInputBorder(
-                                      borderSide: BorderSide.none,
+                                    border: InputBorder.none,
+                                    prefixIcon: Padding(
+                                      padding: const EdgeInsets.all(12.0),
+                                      child: Image.asset(
+                                        'assets/images/icons/pwd.png',
+                                        width: 20,
+                                        height: 20,
+                                      ),
                                     ),
-                                    prefixIcon: SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(12.0),
-                                          child: Image.asset(
-                                            'assets/images/icons/pwd.png',
-                                            width: 20,
-                                            height: 20,
-                                          ),
-                                        )),
-                                    suffixIcon: SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            confirmPasswordVisible =
-                                                !confirmPasswordVisible;
-                                            setState(() {});
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(12.0),
-                                            child: Image.asset(
-                                              confirmPasswordVisible
-                                                  ? 'assets/images/logos/visible.png'
-                                                  : 'assets/images/icons/invisible.png',
-                                              width: 20,
-                                              height: 20,
-                                            ),
-                                          ),
-                                        )),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        vertical: 5, horizontal: 12),
+                                    suffixIcon: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          confirmPasswordVisible =
+                                          !confirmPasswordVisible;
+                                        });
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(12.0),
+                                        child: Image.asset(
+                                          confirmPasswordVisible
+                                              ? 'assets/images/logos/visible.png'
+                                              : 'assets/images/icons/invisible.png',
+                                          width: 20,
+                                          height: 20,
+                                        ),
+                                      ),
+                                    ),
                                     hintText: 'confirmPassword'.tr,
                                     hintStyle: TextStyle(
                                         color: MyColor.textFieldBorder,
@@ -275,25 +192,19 @@ class _NewPasswordState extends State<NewPassword> {
                                 ),
                               ),
                               Divider(
-                                color: Color(0xffEBEBEB), // Color of the divider
-                                thickness: 1, // Thickness of the line
-                                indent: 16, // Start padding
-                                endIndent: 16, // End padding
+                                color: Color(0xffEBEBEB),
+                                thickness: 1,
+                                indent: 16,
+                                endIndent: 16,
                               ),
-                              SizedBox(
-                                height: 100,
-                              ),
-                              //!@mainButton
+                              SizedBox(height: 100),
                               GestureDetector(
                                 onTap: () {
-                                  FocusManager.instance.primaryFocus!.unfocus();
-                                  print(
-                                      '=====================$email==================');
-                                  _NewPasswordBloc.add(GetNewPasswordEvent(
-                                      email.trim().toString(),
-                                      newPassword.text.trim().toString(),
-                                      confirmPassword.text.trim().toString()));
-                                  setState(() {});
+                                  FocusManager.instance.primaryFocus?.unfocus();
+                                  _newPasswordBloc.add(GetNewPasswordEvent(
+                                      email.trim(),
+                                      newPassword.text.trim(),
+                                      confirmPassword.text.trim()));
                                 },
                                 child: Center(
                                   child: Container(
@@ -302,11 +213,13 @@ class _NewPasswordState extends State<NewPassword> {
                                     width: 141,
                                     decoration: BoxDecoration(
                                         color: MyColor.orange2,
-                                        borderRadius: const BorderRadius.all(
+                                        borderRadius: BorderRadius.all(
                                             Radius.circular(22))),
-                                    child: Flexible(
-                                        child: MyString.med('save'.tr, 18,
-                                            MyColor.white, TextAlign.center)),
+                                    child: Text(
+                                      'save'.tr,
+                                      style: TextStyle(
+                                          fontSize: 18, color: MyColor.white),
+                                    ),
                                   ),
                                 ),
                               ),

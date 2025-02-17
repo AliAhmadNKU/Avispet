@@ -1477,6 +1477,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                                           .instance
                                           .primaryFocus!
                                           .unfocus();
+                                      print(followerUser.toJson());
                                       Map<String,
                                           dynamic>
                                       mapData = {

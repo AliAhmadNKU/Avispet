@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:avispets/ui/main_screen/home/filter_screen.dart';
 import 'package:avispets/ui/main_screen/home/post_detail.dart';
 import 'package:avispets/ui/main_screen/profile/profile_screen.dart';
 import 'package:avispets/utils/common_function/header_widget.dart';
@@ -5,10 +8,25 @@ import 'package:avispets/utils/common_function/my_string.dart';
 import 'package:avispets/utils/my_color.dart';
 import 'package:avispets/utils/my_routes/route_name.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
+import '../../../models/get_all_post_modle.dart';
+import '../../../models/reviews/get_post_reviews_by_postid_model.dart';
+import '../../../utils/apis/all_api.dart';
+import '../../../utils/apis/api_strings.dart';
+import '../../../utils/base_date_utils.dart';
+import '../../../utils/shared_pref.dart';
+import '../../widgets/comment_screen.dart';
+import '../filter_reviews.dart';
+
 class AddReview extends StatefulWidget {
-  const AddReview({super.key});
+  List<Reviews> mReviews = [];
+  int postID;
+  Post ?post;
+   int userRecommendedPercentage;
+
+  AddReview({super.key, required this.mReviews, required this.postID,required this.userRecommendedPercentage,required this.post});
 
   @override
   State<AddReview> createState() => _AddReviewState();
@@ -24,29 +42,7 @@ class _AddReviewState extends State<AddReview> {
     'star4'.tr,
     'star5'.tr
   ];
-  List<review> reviews = [
-    review(
-        date: '10/27/2024',
-        rate: 4,
-        reviewer: 'reviewer',
-        place: 'place',
-        description:
-            'Super lovely product. I love this product because the software is brilliantly helpful Can’t get enough!'),
-    review(
-        date: 'date',
-        rate: 3,
-        reviewer: 'reviewer',
-        place: 'place',
-        description:
-            'Super lovely product. I love this product because the software is brilliantly helpful Can’t get enough!'),
-    review(
-        date: 'date',
-        rate: 5,
-        reviewer: 'reviewer',
-        place: 'place',
-        description:
-            'Super lovely product. I love this product because the software is brilliantly helpful Can’t get enough!'),
-  ];
+
   List<bool> itemBool = List.generate(5, (index) => false);
 
   List<String> items1 = [
@@ -65,64 +61,47 @@ class _AddReviewState extends State<AddReview> {
     'star4'.tr,
     'star5'.tr
   ];
+  Future<void> sendLikes( int userId, int postReviewId,   Reviews? mReviews,) async {
+    Map<String, dynamic> mapData = {
+      "userId": userId,
+      "postReviewId": postReviewId,
+    };
+
+    print("Sending comment data: $mapData");
+    var res = await AllApi.postMethodApi(ApiStrings.reviewLikes, mapData);
+    var result = jsonDecode(res.toString());
+    print("like response: $result");
+
+    if (result['status'] == 201) {
+
+
+      mReviews?.tLikes.value++;
+
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MyColor.white,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: EdgeInsets.only(
-                  top: 25,
-                ),
+                padding: EdgeInsets.only(top: 25),
                 child: HeaderWidget(),
               ),
-              MyString.bold('Restaurant - Backers & brothers', 20,
-                  MyColor.title, TextAlign.start),
-              Container(
-                margin: const EdgeInsets.only(top: 20, bottom: 15),
-                decoration: BoxDecoration(
-                    border: Border.all(color: Color(0xffEBEBEB)),
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(13),
-                        topRight: Radius.circular(13),
-                        bottomLeft: Radius.circular(13),
-                        bottomRight: Radius.circular(13))),
-                child: TextField(
-                  controller: searchBar,
-                  scrollPadding: const EdgeInsets.only(bottom: 50),
-                  style: TextStyle(color: MyColor.black, fontSize: 14),
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                    ),
-                    prefixIcon: SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Image.asset(
-                            'assets/images/icons/search.png',
-                            width: 20,
-                            height: 20,
-                          ),
-                        )),
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
-                    hintText: 'search'.tr,
-                    hintStyle:
-                        TextStyle(color: MyColor.textBlack0, fontSize: 14),
+              MyString.bold('Review', 20, MyColor.title, TextAlign.start),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 30.0),
+                    child: MyString.reg('Recommended reviews', 16, MyColor.redd,
+                        TextAlign.start),
                   ),
-                  onChanged: (value) {},
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 30.0),
-                child: MyString.reg(
-                    'Recommended reviews', 16, MyColor.redd, TextAlign.start),
+                ],
               ),
               Row(
                 children: [
@@ -278,7 +257,7 @@ class _AddReviewState extends State<AddReview> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  MyString.reg('4.5', 20, MyColor.textBlack,
+                                  MyString.reg(widget.post!.locationRating.toString(), 20, MyColor.textBlack,
                                       TextAlign.start),
                                   SizedBox(
                                     width: 5,
@@ -287,7 +266,7 @@ class _AddReviewState extends State<AddReview> {
                                       color: Colors.amber, size: 26),
                                 ],
                               ),
-                              MyString.reg('563 Reviews', 10,
+                              MyString.reg('${widget.post?.userRatingCount.toString()} Reviews', 10,
                                   MyColor.textBlack0, TextAlign.start),
                             ],
                           ),
@@ -304,7 +283,7 @@ class _AddReviewState extends State<AddReview> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  MyString.reg('88%', 20, MyColor.textBlack,
+                                  MyString.reg('${widget.userRecommendedPercentage}%', 20, MyColor.textBlack,
                                       TextAlign.start),
                                 ],
                               ),
@@ -324,264 +303,205 @@ class _AddReviewState extends State<AddReview> {
                 indent: 16, // Start padding
                 endIndent: 16, // End padding
               ),
-              showReviewsList
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, RoutesName.filterReviews);
-                          },
-                          child: Container(
-                              margin: EdgeInsets.symmetric(vertical: 15),
-                              padding: EdgeInsets.symmetric(vertical: 15),
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: MyColor.card,
-                                border: Border.all(color: MyColor.orange2),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  MyString.bold('Filter reviews ', 14,
-                                      MyColor.redd, TextAlign.center),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Image.asset(
-                                    'assets/images/icons/filtres.png',
-                                    width: 25,
-                                    height: 25,
-                                  )
-                                ],
-                              )),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 10),
-                          height: 480,
-                          width: double.infinity,
-                          child: ListView.builder(
-                              itemCount: reviews.length,
-                              padding: EdgeInsets.only(top: 20, bottom: 30),
-                              itemBuilder: (context, index) {
-                                var rev = reviews[index];
-                                return Column(
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () async {
-                                        // Handle tap here
-                                      },
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: 25, horizontal: 20),
-                                        decoration: BoxDecoration(
-                                          color: MyColor.card,
-                                          border:
-                                              Border.all(color: MyColor.stroke),
-                                          borderRadius: BorderRadius.circular(
-                                              8), // Optional: adds rounded corners
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            // Review header text
-                                            MyString.reg(
-                                              'Review filed on ${rev.date}',
-                                              12,
-                                              MyColor.textBlack0,
-                                              TextAlign.start,
-                                            ),
-                                            SizedBox(
-                                                height:
-                                                    10), // Spacing between elements
-                                            // Stars
-                                            Row(
-                                              children: List.generate(
-                                                rev.rate!,
-                                                (index) => Padding(
-                                                  padding: const EdgeInsets
-                                                      .only(
-                                                      right:
-                                                          4.0), // Space between stars
-                                                  child: Image.asset(
-                                                    'assets/images/icons/star.png',
-                                                    height: 16,
-                                                    width: 16,
-                                                    semanticLabel:
-                                                        'Star rating',
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                                height:
-                                                    10), // Spacing between elements
+              GestureDetector(
+                onTap: () async {
+                  print("widget.postID ${widget.postID}");
+                  var result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => FilterReviews(
+                              postId: widget.postID,
+                            )),
+                  );
 
-                                            MyString.bold(
-                                              '${rev.reviewer} reviews ${rev.place}',
-                                              14,
-                                              MyColor.black,
-                                              TextAlign.start,
-                                            ),
-                                            SizedBox(height: 10), //
-                                            SizedBox(height: 10),
-                                            MyString.regMultiLine(
-                                                '${rev.description}',
-                                                12,
-                                                MyColor.black,
-                                                TextAlign.start,
-                                                3),
-                                          ],
-                                        ),
+                  if (result != null) {
+                    widget.mReviews.clear();
+                    setState(() {
+                      widget.mReviews = result;
+                    });
+                  }
+                },
+                child: Container(
+                    margin: EdgeInsets.symmetric(vertical: 15),
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: MyColor.card,
+                      border: Border.all(color: MyColor.orange2),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        MyString.bold('Filter reviews ', 14, MyColor.redd,
+                            TextAlign.center),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Image.asset(
+                          'assets/images/icons/filtres.png',
+                          width: 25,
+                          height: 25,
+                        )
+                      ],
+                    )),
+              ),
+              //   Reviews List
+              SizedBox(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  // Ensures ListView takes only needed space
+                  physics: NeverScrollableScrollPhysics(),
+                  // Disables ListView scrolling
+                  padding: EdgeInsets.zero,
+                  itemCount: widget.mReviews.length,
+                  itemBuilder: (context, index) {
+                    var rev = widget.mReviews[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: GestureDetector(
+                        onTap: () async {
+                          // Handle tap here
+                        },
+                        child: Container(
+                          margin: EdgeInsets.only(right: 20),
+                          padding:
+                              EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                          width: 280,
+                          height: 219,
+                          decoration: BoxDecoration(
+                            color: MyColor.card,
+                            border: Border.all(color: MyColor.stroke),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 30,vertical: 30),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+
+                              children: [
+                                MyString.reg(
+                                  'Review filed on ${BaseDateUtils.formatToMMddyyyy(rev.createdAt!)}',
+                                  12,
+                                  MyColor.textBlack0,
+                                  TextAlign.start,
+                                ),
+                                SizedBox(height: 10),
+                                Row(
+                                  children: List.generate(
+                                    rev.overallRating!.toInt(),
+                                    (index) => Padding(
+                                      padding: const EdgeInsets.only(right: 4.0),
+                                      child: Image.asset(
+                                        'assets/images/icons/star.png',
+                                        height: 16,
+                                        width: 16,
+                                        semanticLabel: 'Star rating',
                                       ),
                                     ),
-                                    if (index != reviews.length - 1)
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8.0),
-                                        child: Divider(
-                                          color: Color(
-                                              0xffEBEBEB), // Color of the divider
-                                          thickness: 1, // Thickness of the line
-                                          indent: 16, // Start padding
-                                          endIndent: 16, // End padding
-                                        ),
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                if (rev.placeName != null)
+                                  MyString.bold(
+                                    '${rev.placeName}',
+                                    14,
+                                    MyColor.black,
+                                    TextAlign.start,
+                                  ),
+                                SizedBox(height: 10),
+                                if (rev.description != null)
+                                  MyString.regMultiLine(
+                                    '${rev.description}',
+                                    12,
+                                    MyColor.black,
+                                    TextAlign.start,
+                                    3,
+                                  ),
+                                Spacer(),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    /// comments
+                                    GestureDetector(
+                                      onTap: () async {
+                                        String? userid = sharedPref
+                                            .getString(SharedKey.userId);
+                                        await showCommentBottomSheet(
+                                          screenCheck: false,
+                                            context: context,
+                                            comments: widget. mReviews[index].comments,
+                                            userId: int.parse(userid!),
+                                            postReviewId: widget.mReviews[index].id
+                                                ?.toInt(),
+                                            mReviews: rev
+                                        );
+                                      },
+                                      child: Row(
+
+                                        children: [
+                                          SvgPicture.asset(
+                                              'assets/images/icons/comment_icon.svg',
+                                              width: 14,
+                                              height: 15),
+                                          SizedBox(width: 5,),
+                                          Obx(() {
+                                            return MyString.reg(
+                                              '${ rev.tcomment.value
+                                                  .toString()}',
+                                              12,
+                                              MyColor.commentCountColor,
+                                              TextAlign.start,
+                                            );
+                                          }),
+                                        ],
                                       ),
+                                    ),
+
+
+                                    Spacer(),
+
+                                    /// likes
+                                    GestureDetector(
+                                      onTap: () {
+                                        String? userid = sharedPref
+                                            .getString(SharedKey.userId);
+                                        sendLikes(int.parse(userid!),widget.mReviews[index].id!.toInt(), rev);
+                                      },
+                                      child: Row(
+                                        children: [
+                                          SvgPicture.asset(
+                                              'assets/images/icons/heart_solid_icon.svg',
+                                              width: 14, height: 15),
+                                          SizedBox(width: 5,),
+                                          Obx(() {
+                                            return MyString.reg(
+                                              '${rev.tLikes.value.toString()
+                                                  .toString()}',
+                                              12,
+                                              MyColor.commentCountColor,
+                                              TextAlign.start,
+                                            );
+                                          }),
+                                        ],
+                                      ),
+                                    ),
+
+                                    Spacer(),
+
+
+
                                   ],
-                                );
-                              }),
-                        ),
-                      ],
-                    )
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 3.0),
-                          child: MyString.reg('Customer ratings (8 reviews)',
-                              16, MyColor.redd, TextAlign.start),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              showReviewsList = true;
-                            });
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: 20.0),
-                            child: Row(
-                              children: [
-                                MyString.reg('Show all reviews', 12,
-                                    MyColor.redd, TextAlign.start),
-                                SizedBox(width: 5),
-                                Image.asset(
-                                    'assets/images/icons/noun_arr_right.png')
+                                ),
                               ],
                             ),
                           ),
                         ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            MyString.reg(
-                                '4.5', 20, MyColor.textBlack, TextAlign.start),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Icon(Icons.star, color: Colors.amber, size: 26),
-                          ],
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 10),
-                          height: 220,
-                          child: ListView.builder(
-                            padding: EdgeInsets.zero,
-                            scrollDirection: Axis.horizontal,
-                            itemCount: reviews.length,
-                            itemBuilder: (context, index) {
-                              var rev = reviews[index];
-                              return GestureDetector(
-                                onTap: () async {
-                                  // Handle tap here
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(right: 20),
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 5, horizontal: 15),
-                                  width: 280,
-                                  decoration: BoxDecoration(
-                                    color: MyColor.card,
-                                    border: Border.all(color: MyColor.stroke),
-                                    borderRadius: BorderRadius.circular(
-                                        8), // Optional: adds rounded corners
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      // Review header text
-                                      MyString.reg(
-                                        'Review filed on ${rev.date}',
-                                        12,
-                                        MyColor.textBlack0,
-                                        TextAlign.start,
-                                      ),
-                                      SizedBox(
-                                          height:
-                                              10), // Spacing between elements
-                                      // Stars
-                                      Row(
-                                        children: List.generate(
-                                          rev.rate!,
-                                          (index) => Padding(
-                                            padding: const EdgeInsets.only(
-                                                right:
-                                                    4.0), // Space between stars
-                                            child: Image.asset(
-                                              'assets/images/icons/star.png',
-                                              height: 16,
-                                              width: 16,
-                                              semanticLabel: 'Star rating',
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                          height:
-                                              10), // Spacing between elements
-
-                                      MyString.bold(
-                                        '${rev.reviewer} reviews ${rev.place}',
-                                        14,
-                                        MyColor.black,
-                                        TextAlign.start,
-                                      ),
-                                      SizedBox(height: 10), //
-                                      SizedBox(height: 10),
-                                      MyString.regMultiLine(
-                                          '${rev.description}',
-                                          12,
-                                          MyColor.black,
-                                          TextAlign.start,
-                                          3),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    )
+                      ),
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         ),
