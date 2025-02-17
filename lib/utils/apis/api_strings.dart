@@ -52,7 +52,7 @@ class ApiStrings {
   static const String forgotPassword = 'auth/forgot-password';
   static const String logout = 'logout';
   static const String chats = 'chats';
-  static const String contactUs = 'contact-us';
+  static const String contactUs = 'user/contact_us';
   static const String followUnfollowUser = 'follow-unfollow-user';
   static const String upload = 'upload';
   static const String uploadImage = 'upload-image';
@@ -72,6 +72,8 @@ class ApiStrings {
 
   static const String postComment = 'post/comment';
   static const String postLike = 'post/like';
+
+
 
 
   static const String reviewComment = 'review/reply-post-review';

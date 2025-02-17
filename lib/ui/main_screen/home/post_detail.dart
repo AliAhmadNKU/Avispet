@@ -237,43 +237,43 @@ class _PostDetailState extends State<PostDetail> {
                     HeaderWidget(),
                     MyString.bold(
                         post.category, 18, MyColor.title, TextAlign.start),
-                    Container(
-                      margin: const EdgeInsets.only(top: 15, bottom: 15),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Color(0xffEBEBEB)),
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(13),
-                              topRight: Radius.circular(13),
-                              bottomLeft: Radius.circular(13),
-                              bottomRight: Radius.circular(13))),
-                      child: TextField(
-                        controller: searchBar,
-                        scrollPadding: const EdgeInsets.only(bottom: 50),
-                        style: TextStyle(color: MyColor.black, fontSize: 14),
-                        decoration: InputDecoration(
-                          border: const OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          prefixIcon: SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Image.asset(
-                                  'assets/images/icons/search.png',
-                                  width: 20,
-                                  height: 20,
-                                ),
-                              )),
-                          contentPadding: const EdgeInsets.symmetric(
-                              vertical: 5, horizontal: 12),
-                          hintText: 'search'.tr,
-                          hintStyle: TextStyle(
-                              color: MyColor.textBlack0, fontSize: 14),
-                        ),
-                        onChanged: (value) {},
-                      ),
-                    ),
+                    // Container(
+                    //   margin: const EdgeInsets.only(top: 15, bottom: 15),
+                    //   decoration: BoxDecoration(
+                    //       border: Border.all(color: Color(0xffEBEBEB)),
+                    //       borderRadius: BorderRadius.only(
+                    //           topLeft: Radius.circular(13),
+                    //           topRight: Radius.circular(13),
+                    //           bottomLeft: Radius.circular(13),
+                    //           bottomRight: Radius.circular(13))),
+                    //   child: TextField(
+                    //     controller: searchBar,
+                    //     scrollPadding: const EdgeInsets.only(bottom: 50),
+                    //     style: TextStyle(color: MyColor.black, fontSize: 14),
+                    //     decoration: InputDecoration(
+                    //       border: const OutlineInputBorder(
+                    //         borderSide: BorderSide.none,
+                    //       ),
+                    //       prefixIcon: SizedBox(
+                    //           width: 20,
+                    //           height: 20,
+                    //           child: Padding(
+                    //             padding: const EdgeInsets.all(8.0),
+                    //             child: Image.asset(
+                    //               'assets/images/icons/search.png',
+                    //               width: 20,
+                    //               height: 20,
+                    //             ),
+                    //           )),
+                    //       contentPadding: const EdgeInsets.symmetric(
+                    //           vertical: 5, horizontal: 12),
+                    //       hintText: 'search'.tr,
+                    //       hintStyle: TextStyle(
+                    //           color: MyColor.textBlack0, fontSize: 14),
+                    //     ),
+                    //     onChanged: (value) {},
+                    //   ),
+                    // ),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(15),
                       child: CachedImage(
@@ -925,7 +925,12 @@ class _PostDetailState extends State<PostDetail> {
                               context,
                               MaterialPageRoute(builder: (context) =>
                                   AddReview(
-                                    mReviews: mReviews, postID: post.id,)),
+                                    post: post,
+                                    mReviews: mReviews, postID: post.id,
+                                    userRecommendedPercentage: userRecommendedPercentage,
+
+
+                                  )),
                             );
                           },
                           child: Padding(
@@ -1206,33 +1211,36 @@ class _PostDetailState extends State<PostDetail> {
                       children: [
                         // Header
 
-                        Row(
-                          children: [
-                            Flexible( // ✅ Prevents overflow while allowing text to wrap
-                              child: MyString.bold(
-                                'What’s your relationship to this business'.tr,
-                                18,
-                                MyColor.redd,
-                                TextAlign.center,
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20),
+                          child: Row(
+                            children: [
+                              Flexible( // ✅ Prevents overflow while allowing text to wrap
+                                child: MyString.bold(
+                                  'What’s your relationship to this business'.tr,
+                                  18,
+                                  MyColor.redd,
+                                  TextAlign.center,
+                                ),
                               ),
-                            ),
-                            SizedBox(width: 10),
-                            // Adds spacing between text and button
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              SizedBox(width: 10),
+                              // Adds spacing between text and button
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                style: TextButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                child: Image.asset(
+                                  'assets/images/icons/cl.png',
+                                  height: 28,
+                                  width: 28,
+                                ),
                               ),
-                              child: Image.asset(
-                                'assets/images/icons/cl.png',
-                                height: 28,
-                                width: 28,
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
 
 
@@ -1288,9 +1296,13 @@ class _PostDetailState extends State<PostDetail> {
                                     ),
                                     GestureDetector(
                                       onTap: () {
+
                                         setState(() {
-                                          item.conditionCheck =
-                                          !item.conditionCheck;
+                                          sortingList.forEach((element) {
+                                            element.conditionCheck=false;
+                                          });
+                                          sortingList[index].conditionCheck=true;
+                                          // item.conditionCheck = !item.conditionCheck;
                                         });
                                       },
                                       child: Container(
@@ -1306,7 +1318,7 @@ class _PostDetailState extends State<PostDetail> {
                                         ),
                                         child: Icon(
                                           Icons.check,
-                                          color: item.conditionCheck ? MyColor
+                                          color:   sortingList[index].conditionCheck ? MyColor
                                               .orange2 : MyColor.white,
                                           size: 12,
                                         ),
@@ -1324,6 +1336,16 @@ class _PostDetailState extends State<PostDetail> {
                         Center(
                           child: GestureDetector(
                             onTap: () {
+
+
+                              int? checkedIndex = sortingList.indexWhere((item) => item.conditionCheck);
+                              if (checkedIndex != -1) {
+                                suggestFeedBack(sortingList[checkedIndex].title);
+                              } else {
+                                toaster(context,"Please select at least one option");
+                              }
+
+
                               Get.back();
                               toaster(context, "Feed back send Successfully");
                               // Handle send action here
@@ -1359,189 +1381,21 @@ class _PostDetailState extends State<PostDetail> {
     );
   }
 
+  Future<void> suggestFeedBack(String Message) async {
+    Map<String, dynamic> mapData = {
+      "message": Message
+    };
 
-  // suggEditSheet(BuildContext context) async {
-  //   return showModalBottomSheet<String>(
-  //     isScrollControlled: true,
-  //     backgroundColor: Colors.transparent,
-  //     elevation: 1,
-  //     isDismissible: true,
-  //     enableDrag: true,
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return Column(
-  //         mainAxisSize: MainAxisSize.min,
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         mainAxisAlignment: MainAxisAlignment.start,
-  //         children: [
-  //           Container(
-  //             padding:
-  //             EdgeInsets.only(right: 20, left: 20, bottom: 20, top: 20),
-  //             decoration: BoxDecoration(
-  //                 border: Border.all(color: MyColor.orange2),
-  //                 color: MyColor.white,
-  //                 borderRadius: const BorderRadius.only(
-  //                     topLeft: Radius.circular(18),
-  //                     bottomLeft: Radius.circular(5),
-  //                     bottomRight: Radius.circular(5),
-  //                     topRight: Radius.circular(18))),
-  //             child: Padding(
-  //               padding: EdgeInsets.only(
-  //                   bottom: MediaQuery
-  //                       .of(context)
-  //                       .viewInsets
-  //                       .bottom),
-  //               child: Column(
-  //                 crossAxisAlignment: CrossAxisAlignment.start,
-  //                 mainAxisAlignment: MainAxisAlignment.start,
-  //                 children: [
-  //                   Stack(
-  //                     children: [
-  //                       Container(
-  //                           width: 300,
-  //                           alignment: Alignment.center,
-  //                           margin: EdgeInsets.only(top: 5),
-  //                           child: MyString.bold(
-  //                               'What’s your relationship to this business'.tr,
-  //                               18,
-  //                               MyColor.redd,
-  //                               TextAlign.center)),
-  //                       Align(
-  //                         alignment: Alignment.topRight,
-  //                         child: TextButton(
-  //                           onPressed: () {
-  //                             Navigator.pop(context);
-  //                           },
-  //                           style: TextButton.styleFrom(
-  //                               padding: EdgeInsets.zero,
-  //                               tapTargetSize:
-  //                               MaterialTapTargetSize.shrinkWrap),
-  //                           child: Image.asset(
-  //                             'assets/images/icons/cl.png',
-  //                             height: 28,
-  //                             width: 28,
-  //                           ),
-  //                         ),
-  //                       )
-  //                     ],
-  //                   ),
-  //                   SizedBox(
-  //                     height: 10,
-  //                   ),
-  //                   Center(
-  //                     child: MyString.reg(
-  //                         'Your feedback is important to us, if you notice something that is incorrect, lets us know and we’ill make sure it’s updated. ',
-  //                         12,
-  //                         MyColor.title,
-  //                         TextAlign.center),
-  //                   ),
-  //                   SizedBox(
-  //                     height: 15,
-  //                   ),
-  //                   Center(
-  //                     child: MyString.bold('Reason(s) for reporting', 12,
-  //                         MyColor.title, TextAlign.center),
-  //                   ),
-  //                   SizedBox(
-  //                     height: 15,
-  //                   ),
-  //                   Container(
-  //                     constraints: new BoxConstraints(
-  //                       minHeight: 100,
-  //                       maxHeight: MediaQuery
-  //                           .of(context)
-  //                           .size
-  //                           .height / 1.5,
-  //                     ),
-  //                     padding: EdgeInsets.symmetric(horizontal: 18),
-  //                     child: ListView.builder(
-  //                         itemCount: sortingList.length,
-  //                         padding: EdgeInsets.zero,
-  //                         shrinkWrap: true,
-  //                         itemBuilder: (context, index) {
-  //                           final item = sortingList[index];
-  //                           return Padding(
-  //                             padding: const EdgeInsets.all(7),
-  //                             child: Container(
-  //                               child: Row(
-  //                                 mainAxisAlignment:
-  //                                 MainAxisAlignment.spaceBetween,
-  //                                 children: [
-  //                                   Column(
-  //                                     crossAxisAlignment:
-  //                                     CrossAxisAlignment.start,
-  //                                     children: [
-  //                                       Container(
-  //                                         width: MediaQuery
-  //                                             .of(context)
-  //                                             .size
-  //                                             .width /
-  //                                             1.5,
-  //                                         child: MyString.reg(item.title, 12,
-  //                                             MyColor.title, TextAlign.start),
-  //                                       ),
-  //                                     ],
-  //                                   ),
-  //                                   SizedBox(width: 10),
-  //                                   GestureDetector(
-  //                                     onTap: () {
-  //                                       setState(() {
-  //                                         // Toggle the conditionCheck value for the tapped item
-  //                                         item.conditionCheck =
-  //                                         !item.conditionCheck;
-  //                                       });
-  //                                     },
-  //                                     child: Container(
-  //                                       alignment: Alignment.center,
-  //                                       width: 20,
-  //                                       height: 20,
-  //                                       decoration: BoxDecoration(
-  //                                         border: Border.all(
-  //                                             color: MyColor.orange2),
-  //                                         color: MyColor.white,
-  //                                         borderRadius: BorderRadius.all(
-  //                                             Radius.circular(4)),
-  //                                       ),
-  //                                       child: Icon(
-  //                                         Icons.check,
-  //                                         color: item.conditionCheck
-  //                                             ? MyColor.orange2
-  //                                             : MyColor.white,
-  //                                         size: 12,
-  //                                       ),
-  //                                     ),
-  //                                   ),
-  //                                 ],
-  //                               ),
-  //                             ),
-  //                           );
-  //                         }),
-  //                   ),
-  //                   Center(
-  //                     child: GestureDetector(
-  //                         onTap: () {},
-  //                         child: Container(
-  //                             width: 128,
-  //                             padding: EdgeInsets.symmetric(
-  //                                 horizontal: 20, vertical: 10),
-  //                             decoration: BoxDecoration(
-  //                               color: MyColor.orange2,
-  //                               borderRadius: BorderRadius.circular(22),
-  //                             ),
-  //                             child: Center(
-  //                               child: MyString.med(
-  //                                   'Send', 16, MyColor.white, TextAlign.start),
-  //                             ))),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
+    print("feedback: $mapData");
+    var res = await AllApi.postMethodApi(ApiStrings.contactUs, mapData);
+    var result = jsonDecode(res.toString());
+    print("Contact US: $result");
+    if (result['status'] == 201) {
+
+    }
+  }
+
+
 
   getPostReviewsById() async {
     isLoading = true;

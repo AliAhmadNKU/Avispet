@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
+import '../../../models/get_all_post_modle.dart';
 import '../../../models/reviews/get_post_reviews_by_postid_model.dart';
 import '../../../utils/apis/all_api.dart';
 import '../../../utils/apis/api_strings.dart';
@@ -22,8 +23,10 @@ import '../filter_reviews.dart';
 class AddReview extends StatefulWidget {
   List<Reviews> mReviews = [];
   int postID;
+  Post ?post;
+   int userRecommendedPercentage;
 
-  AddReview({super.key, required this.mReviews, required this.postID});
+  AddReview({super.key, required this.mReviews, required this.postID,required this.userRecommendedPercentage,required this.post});
 
   @override
   State<AddReview> createState() => _AddReviewState();
@@ -254,7 +257,7 @@ class _AddReviewState extends State<AddReview> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  MyString.reg('4.5', 20, MyColor.textBlack,
+                                  MyString.reg(widget.post!.locationRating.toString(), 20, MyColor.textBlack,
                                       TextAlign.start),
                                   SizedBox(
                                     width: 5,
@@ -263,7 +266,7 @@ class _AddReviewState extends State<AddReview> {
                                       color: Colors.amber, size: 26),
                                 ],
                               ),
-                              MyString.reg('563 Reviews', 10,
+                              MyString.reg('${widget.post?.userRatingCount.toString()} Reviews', 10,
                                   MyColor.textBlack0, TextAlign.start),
                             ],
                           ),
@@ -280,7 +283,7 @@ class _AddReviewState extends State<AddReview> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  MyString.reg('88%', 20, MyColor.textBlack,
+                                  MyString.reg('${widget.userRecommendedPercentage}%', 20, MyColor.textBlack,
                                       TextAlign.start),
                                 ],
                               ),

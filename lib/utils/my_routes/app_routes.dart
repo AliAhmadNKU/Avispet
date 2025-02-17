@@ -47,6 +47,7 @@ import 'package:avispets/utils/my_routes/route_name.dart';
 import 'package:avispets/utils/thanks.dart';
 import 'package:flutter/material.dart';
 import '../../models/follower_following_model.dart';
+import '../../models/get_all_post_modle.dart';
 import '../../models/reviews/get_post_reviews_by_postid_model.dart';
 import '../../ui/main_screen/chats/forums/create_forum.dart';
 import '../../ui/main_screen/chats/forums/forum_question.dart';
@@ -95,8 +96,10 @@ class Routes {
       case RoutesName.addReview:
         List<Reviews> mReviews = [];
         int id = 0;
+        int  userRecommendedPercentage =0;
+        Post?post;
         return MaterialPageRoute(
-            builder: (BuildContext context) => AddReview(mReviews:mReviews,postID: id,));
+            builder: (BuildContext context) => AddReview(mReviews:mReviews,postID: id,userRecommendedPercentage: userRecommendedPercentage, post: post,));
 
       case RoutesName.selectAnimal:
         Map<String, dynamic> mapData =
@@ -161,12 +164,12 @@ class Routes {
         return MaterialPageRoute(
             builder: (BuildContext context) => GroupChatScreen(mapData: mapData));
 
-      case RoutesName.reviewScreen:
-        print('APP-ROUTE(CHAT_SCREEN) ::  ${settings.arguments.toString()}');
-        Map<String, dynamic>? mapData =
-            settings.arguments as Map<String, dynamic>?;
-        return MaterialPageRoute(
-            builder: (BuildContext context) => Review(mapData: mapData));
+      // case RoutesName.reviewScreen:
+      //   print('APP-ROUTE(CHAT_SCREEN) ::  ${settings.arguments.toString()}');
+      //   Map<String, dynamic>? mapData =
+      //       settings.arguments as Map<String, dynamic>?;
+      //   return MaterialPageRoute(
+      //       builder: (BuildContext context) => Review(mapData: mapData));
 
       case RoutesName.createGroup:
         print('APP-ROUTE(CHAT_SCREEN) ::  ${settings.arguments.toString()}');
