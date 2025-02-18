@@ -70,7 +70,9 @@ class LocationModel {
       num? userRating, 
       String? profile, 
       String? source, 
-      String? placeId,}){
+      String? placeId, 
+      String? colorTheme, 
+      String? colorCode,}){
     _name = name;
     _latitude = latitude;
     _longitude = longitude;
@@ -80,6 +82,8 @@ class LocationModel {
     _profile = profile;
     _source = source;
     _placeId = placeId;
+    _colorTheme = colorTheme;
+    _colorCode = colorCode;
 }
 
   LocationModel.fromJson(dynamic json) {
@@ -92,6 +96,8 @@ class LocationModel {
     _profile = json['profile'];
     _source = json['source'];
     _placeId = json['place_id'];
+    _colorTheme = json['colorTheme'];
+    _colorCode = json['colorCode'];
   }
   String? _name;
   num? _latitude;
@@ -102,6 +108,8 @@ class LocationModel {
   String? _profile;
   String? _source;
   String? _placeId;
+  String? _colorTheme;
+  String? _colorCode;
   LocationModel copyWith({  String? name,
   num? latitude,
   num? longitude,
@@ -111,6 +119,8 @@ class LocationModel {
   String? profile,
   String? source,
   String? placeId,
+  String? colorTheme,
+  String? colorCode,
 }) => LocationModel(  name: name ?? _name,
   latitude: latitude ?? _latitude,
   longitude: longitude ?? _longitude,
@@ -120,6 +130,8 @@ class LocationModel {
   profile: profile ?? _profile,
   source: source ?? _source,
   placeId: placeId ?? _placeId,
+  colorTheme: colorTheme ?? _colorTheme,
+  colorCode: colorCode ?? _colorCode,
 );
   String? get name => _name;
   num? get latitude => _latitude;
@@ -130,6 +142,8 @@ class LocationModel {
   String? get profile => _profile;
   String? get source => _source;
   String? get placeId => _placeId;
+  String? get colorTheme => _colorTheme;
+  String? get colorCode => _colorCode;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -142,6 +156,8 @@ class LocationModel {
     map['profile'] = _profile;
     map['source'] = _source;
     map['place_id'] = _placeId;
+    map['colorTheme'] = _colorTheme;
+    map['colorCode'] = _colorCode;
     return map;
   }
 
