@@ -648,6 +648,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     children: <TextSpan>[
                       TextSpan(
                         text:screen=="login"?"${payload["data"]}":"${payload["phone_number"]}",
+
                         style: TextStyle(
                           fontSize: 14,
                           fontFamily: "mont_Med",

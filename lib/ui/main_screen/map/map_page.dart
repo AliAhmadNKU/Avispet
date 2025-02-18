@@ -10,6 +10,7 @@ import 'package:avispets/utils/apis/api_strings.dart';
 import 'package:avispets/utils/common_function/header_widget.dart';
 import 'package:avispets/utils/common_function/loader_screen.dart';
 import 'package:avispets/utils/common_function/toaster.dart';
+import 'package:avispets/utils/location_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
@@ -104,17 +105,27 @@ class _MapScreenState extends State<MapScreen> {
     print('_onPlaceSelected => $data');
     if(data is LocationData){
       _locationData = data;
+      latitude = _locationData!.latitude!.toDouble();
+      longitude = _locationData!.longitude!.toDouble();
+      // LoadingDialog.show(context);
       // await _convertAddressToLatLng(_locationData!.address!);
     }
     else if(data is EventsModel){
       _eventsModel = data;
+      latitude = double.parse(_eventsModel!.latitude!);
+      longitude = double.parse(_eventsModel!.longitude!);
       // await _convertAddressToLatLng(_eventsModel!.name!);
     }
     else if(data is OnlineStoreModel){
       _onlineStoreModel = data;
+      latitude = _onlineStoreModel!.latitude!.toDouble();
+      longitude = _onlineStoreModel!.longitude!.toDouble();
       // await _convertAddressToLatLng(_onlineStoreModel!.address!);
     }
-
+    setState(() {
+      loader = true;
+    });
+    await getLocationByCategories(null);
   }
 
   // _onPlaceSelected(dynamic locationData) async {
@@ -400,21 +411,21 @@ class _MapScreenState extends State<MapScreen> {
                                     MyColor.title, TextAlign.center),
                               ),
 
-                              //!@search-bar
-                              // Container(
-                              //   height: 50,
-                              //   margin: EdgeInsets.only(
-                              //       bottom: 25, right: 30, left: 30),
-                              //   child: Row(
-                              //     mainAxisAlignment: MainAxisAlignment.center,
-                              //     crossAxisAlignment: CrossAxisAlignment.center,
-                              //     children: [
-                              //       Flexible(
-                              //         child: buildSearchBar(),
-                              //       ),
-                              //     ],
-                              //   ),
-                              // ),
+                              // !@search-bar
+                              Container(
+                                height: 50,
+                                margin: EdgeInsets.only(
+                                    bottom: 25, right: 30, left: 30),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Flexible(
+                                      child: buildSearchBar(),
+                                    ),
+                                  ],
+                                ),
+                              ),
                               // Suggestions List
                               buildCategoryFilter(),
                               Expanded(
@@ -895,6 +906,7 @@ class _MapScreenState extends State<MapScreen> {
       child: SearchingBar(
         onChanged: _updateSuggestions,
         onPlaceSelected: _onPlaceSelected,
+        allowFilter: false,
       ),
     );
     return SizedBox();
@@ -1050,6 +1062,8 @@ class _MapScreenState extends State<MapScreen> {
           filteredPostsNew.clear();
           filteredPostsNew.addAll(locations);
           for(int i=0; i < locations.length; i++){
+            final item = locations[i];
+            final BitmapDescriptor customIcon = await LocationUtils.createCustomPinMarker(item.colorCode != null && item.colorCode!.isNotEmpty ? Color(int.parse(item.colorCode!.replaceFirst('#', '0xFF'))) : Colors.red); // Hex color #2196F3 (Blue)
             newMarkers.add(
                 Marker(
                   markerId: MarkerId(locations[i].address!),
@@ -1067,19 +1081,23 @@ class _MapScreenState extends State<MapScreen> {
                     setState(() {
 
                     });
-                  }
+                  },
+                  icon: customIcon
                 ));
           }
         }
       }
       _markers.clear();
+      print('ddddd => $newMarkers');
       _markers.addAll(newMarkers);
       if(tempContext != null){
         LoadingDialog.hide(tempContext);
       }
-      setState(() {
-
-      });
+      if(mounted){
+        setState(() {
+          loader = false;
+        });
+      }
     } catch (e) {
       debugPrint("Error: $e");
       toaster(context, "An error occurred while fetching categories.");

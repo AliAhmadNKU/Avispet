@@ -354,7 +354,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 horizontal: 18.0, vertical: 15),
                             child: Row(
                               mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              MainAxisAlignment.spaceBetween,
                               children: [
                                 MyString.bold('YourNewsFeed'.tr, 14,
                                     MyColor.title, TextAlign.start),
@@ -379,7 +379,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
 
                               Container(
-                              color: MyColor.card,
+                                color: MyColor.card,
                                 child: ListView.builder(
                                   padding: EdgeInsets.zero,
                                   itemCount: postsList.length ,
@@ -521,7 +521,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           SizedBox(
                             height: 200,
                           ),
-                      if(stackLoader) progressBar()
+                          if(stackLoader) progressBar()
                         ],
                       ),
                     ),
@@ -721,7 +721,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Image.asset('assets/images/icons/filter.png')),
           ),
           contentPadding:
-              const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
+          const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
           hintText: 'search'.tr,
           hintStyle: TextStyle(color: MyColor.textBlack0, fontSize: 14),
         ),
@@ -774,13 +774,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       categoriesList[index].icon != null
                           ? Image.network(
-                              categoriesList[index].icon!,
-                              height: 40,
-                              width: 40,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  Icon(Icons.error),
-                            )
+                        categoriesList[index].icon!,
+                        height: 40,
+                        width: 40,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            Icon(Icons.error),
+                      )
                           : Icon(Icons.category, size: 40),
                       SizedBox(height: 5),
                       Flexible(
@@ -818,7 +818,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void generateLink(BuildContext context, int index) async {
     debugPrint("~~~generateLink~~~~");
     BranchResponse response =
-        await FlutterBranchSdk.getShortUrl(buo: buo!, linkProperties: lp);
+    await FlutterBranchSdk.getShortUrl(buo: buo!, linkProperties: lp);
     if (response.success) {
       if (followList.isNotEmpty) {
         message.clear();
@@ -848,10 +848,10 @@ class _HomeScreenState extends State<HomeScreen> {
           (type == "0")
               ? "postPage"
               : (type == "1")
-                  ? "adsPage"
-                  : (type == "2")
-                      ? "servicePage"
-                      : "postPage")
+              ? "adsPage"
+              : (type == "2")
+              ? "servicePage"
+              : "postPage")
       ..addCustomMetadata('page', 'home')
       ..addCustomMetadata('custom_bool', true)
       ..addCustomMetadata('from', 'deepLinking')
@@ -861,13 +861,13 @@ class _HomeScreenState extends State<HomeScreen> {
     buo = BranchUniversalObject(
         canonicalIdentifier: 'Avispets',
         canonicalUrl:
-            '${ApiStrings.baseURl}${GetApi.getPost1[index].feedImages.toString()}',
+        '${ApiStrings.baseURl}${GetApi.getPost1[index].feedImages.toString()}',
         // canonicalUrl: 'https://avispets-app.com/',
         title: 'Avispets',
         imageUrl:
-            '${ApiStrings.baseURl}${GetApi.getPost1[index].feedImages.toString()}',
+        '${ApiStrings.baseURl}${GetApi.getPost1[index].feedImages.toString()}',
         contentDescription:
-            'Hey there! Check out this fantastic post just uploaded on the Avispets App. To view the post, simply click on the following deep link',
+        'Hey there! Check out this fantastic post just uploaded on the Avispets App. To view the post, simply click on the following deep link',
         contentMetadata: metadata,
         keywords: ['Plugin', 'Branch', 'Flutter'],
         publiclyIndex: true,
@@ -961,7 +961,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       MyColor.black,
                                       TextAlign.center)),
                               Container(
-                                  // width: double.infinity,
+                                // width: double.infinity,
                                   height: 60,
                                   alignment: Alignment.centerRight,
                                   decoration: BoxDecoration(
@@ -975,7 +975,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: Container(
                                         decoration: BoxDecoration(
                                             borderRadius:
-                                                BorderRadius.circular(20),
+                                            BorderRadius.circular(20),
                                             color: MyColor.newBackgroundColor),
                                         padding: EdgeInsets.symmetric(
                                             horizontal: 10, vertical: 5),
@@ -1011,7 +1011,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               controller: searchBarBottom,
                               scrollPadding: const EdgeInsets.only(bottom: 50),
                               style:
-                                  TextStyle(color: MyColor.black, fontSize: 14),
+                              TextStyle(color: MyColor.black, fontSize: 14),
                               decoration: InputDecoration(
                                 border: const OutlineInputBorder(
                                   borderSide: BorderSide.none,
@@ -1055,18 +1055,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                           top: 10),
                                       child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                        MainAxisAlignment.spaceBetween,
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                        CrossAxisAlignment.center,
                                         children: [
                                           InkWell(
                                             onTap: () {
                                               followList[index]
-                                                      .userRef!
-                                                      .conditionCheck =
-                                                  !followList[index]
-                                                      .userRef!
-                                                      .conditionCheck;
+                                                  .userRef!
+                                                  .conditionCheck =
+                                              !followList[index]
+                                                  .userRef!
+                                                  .conditionCheck;
                                               if (followList[index]
                                                   .userRef!
                                                   .conditionCheck) {
@@ -1074,13 +1074,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     .add(followList[index]);
                                               } else {
                                                 for (var i = 0;
-                                                    i <
-                                                        selectedFollowList
-                                                            .length;
-                                                    i++) {
+                                                i <
+                                                    selectedFollowList
+                                                        .length;
+                                                i++) {
                                                   if (followList[index]
-                                                          .userRef!
-                                                          .id ==
+                                                      .userRef!
+                                                      .id ==
                                                       selectedFollowList[index]
                                                           .userRef!
                                                           .id) {
@@ -1095,52 +1095,52 @@ class _HomeScreenState extends State<HomeScreen> {
                                               children: [
                                                 ClipRRect(
                                                   borderRadius:
-                                                      const BorderRadius.all(
-                                                          Radius.circular(50)),
+                                                  const BorderRadius.all(
+                                                      Radius.circular(50)),
                                                   child: followList[index]
-                                                              .userRef!
-                                                              .profilePicture !=
-                                                          null
+                                                      .userRef!
+                                                      .profilePicture !=
+                                                      null
                                                       ? Image.network(
-                                                          '${ApiStrings.mediaURl}${followList[index].userRef!.profilePicture.toString()}',
-                                                          height: 30,
+                                                      '${ApiStrings.mediaURl}${followList[index].userRef!.profilePicture.toString()}',
+                                                      height: 30,
+                                                      width: 30,
+                                                      fit: BoxFit.cover,
+                                                      loadingBuilder: (context,
+                                                          child,
+                                                          loadingProgress) =>
+                                                      (loadingProgress ==
+                                                          null)
+                                                          ? child
+                                                          : Container(
+                                                          height:
+                                                          30,
                                                           width: 30,
-                                                          fit: BoxFit.cover,
-                                                          loadingBuilder: (context,
-                                                                  child,
-                                                                  loadingProgress) =>
-                                                              (loadingProgress ==
-                                                                      null)
-                                                                  ? child
-                                                                  : Container(
-                                                                      height:
-                                                                          30,
-                                                                      width: 30,
-                                                                      child:
-                                                                          customProgressBar()))
+                                                          child:
+                                                          customProgressBar()))
                                                       : Image.asset(
-                                                          'assets/images/onboard/placeholder_image.png',
-                                                          width: 30,
-                                                          height: 30,
-                                                        ),
+                                                    'assets/images/onboard/placeholder_image.png',
+                                                    width: 30,
+                                                    height: 30,
+                                                  ),
                                                 ),
                                                 const SizedBox(width: 8),
                                                 Container(
                                                     width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            .43,
+                                                    MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                        .43,
                                                     child:
-                                                        MyString.medMultiLine(
-                                                            followList[index]
-                                                                .userRef!
-                                                                .name
-                                                                .toString(),
-                                                            16,
-                                                            MyColor.textBlack2,
-                                                            TextAlign.start,
-                                                            1)),
+                                                    MyString.medMultiLine(
+                                                        followList[index]
+                                                            .userRef!
+                                                            .name
+                                                            .toString(),
+                                                        16,
+                                                        MyColor.textBlack2,
+                                                        TextAlign.start,
+                                                        1)),
                                               ],
                                             ),
                                           ),
@@ -1148,11 +1148,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                             child: InkWell(
                                               onTap: () {
                                                 followList[index]
-                                                        .userRef!
-                                                        .conditionCheck =
-                                                    !followList[index]
-                                                        .userRef!
-                                                        .conditionCheck;
+                                                    .userRef!
+                                                    .conditionCheck =
+                                                !followList[index]
+                                                    .userRef!
+                                                    .conditionCheck;
                                                 if (followList[index]
                                                     .userRef!
                                                     .conditionCheck) {
@@ -1160,15 +1160,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       .add(followList[index]);
                                                 } else {
                                                   for (var i = 0;
-                                                      i <
-                                                          selectedFollowList
-                                                              .length;
-                                                      i++) {
+                                                  i <
+                                                      selectedFollowList
+                                                          .length;
+                                                  i++) {
                                                     if (followList[index]
-                                                            .userRef!
-                                                            .id ==
+                                                        .userRef!
+                                                        .id ==
                                                         selectedFollowList[
-                                                                index]
+                                                        index]
                                                             .userRef!
                                                             .id) {
                                                       selectedFollowList
@@ -1184,22 +1184,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 height: 20,
                                                 decoration: BoxDecoration(
                                                     color: followList[index]
-                                                            .userRef!
-                                                            .conditionCheck
+                                                        .userRef!
+                                                        .conditionCheck
                                                         ? MyColor.orange
                                                         : MyColor.white,
                                                     borderRadius:
-                                                        const BorderRadius.all(
-                                                            Radius.circular(
-                                                                5))),
+                                                    const BorderRadius.all(
+                                                        Radius.circular(
+                                                            5))),
                                                 child: followList[index]
-                                                        .userRef!
-                                                        .conditionCheck
+                                                    .userRef!
+                                                    .conditionCheck
                                                     ? Icon(
-                                                        Icons.check,
-                                                        color: MyColor.white,
-                                                        size: 15,
-                                                      )
+                                                  Icons.check,
+                                                  color: MyColor.white,
+                                                  size: 15,
+                                                )
                                                     : Container(),
                                               ),
                                             ),
@@ -1224,7 +1224,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               controller: message,
                               scrollPadding: const EdgeInsets.only(bottom: 50),
                               style:
-                                  TextStyle(color: MyColor.black, fontSize: 14),
+                              TextStyle(color: MyColor.black, fontSize: 14),
                               onTap: () {
                                 _scrollDown();
                               },
@@ -1249,7 +1249,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               for (var i = 0; i < followList.length; i++) {
                                 if (followList[i].userRef!.conditionCheck) {
                                   String id =
-                                      followList[i].userRef!.id.toString();
+                                  followList[i].userRef!.id.toString();
                                   if (selectedFollowList.isNotEmpty) {
                                     sendMessage(
                                         message.text.toString(),
@@ -1353,7 +1353,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Container(
               padding:
-                  EdgeInsets.only(right: 20, left: 20, bottom: 20, top: 20),
+              EdgeInsets.only(right: 20, left: 20, bottom: 20, top: 20),
               decoration: BoxDecoration(
                   border: Border.all(color: MyColor.orange2),
                   color: MyColor.white,
@@ -1386,7 +1386,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             style: TextButton.styleFrom(
                                 padding: EdgeInsets.zero,
                                 tapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap),
+                                MaterialTapTargetSize.shrinkWrap),
                             child: Image.asset(
                               'assets/images/icons/cl.png',
                               height: 28,
@@ -1416,16 +1416,16 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: Container(
                                 child: Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment.spaceBetween,
                                   children: [
                                     Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      CrossAxisAlignment.start,
                                       children: [
                                         Container(
                                           width: MediaQuery.of(context)
-                                                  .size
-                                                  .width /
+                                              .size
+                                              .width /
                                               1.5,
                                           child: MyString.reg(item.title, 12,
                                               MyColor.title, TextAlign.start),
@@ -1441,7 +1441,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         setState(() {
                                           // Toggle the conditionCheck value for the tapped item
                                           item.conditionCheck =
-                                              !item.conditionCheck;
+                                          !item.conditionCheck;
                                         });
                                       },
                                       child: Container(
@@ -1623,7 +1623,7 @@ class _HomeScreenState extends State<HomeScreen> {
         scrollDirection: Axis.horizontal,
         itemCount:imageUrls.length, /*_allForumsResponseModel.data != null ? _allForumsResponseModel.data!.length: 0,*/
         itemBuilder: (context, index) {
-         // final forum = _allForumsResponseModel.data![index];
+          // final forum = _allForumsResponseModel.data![index];
           return Container(
             width: MediaQuery.of(context)
                 .size
