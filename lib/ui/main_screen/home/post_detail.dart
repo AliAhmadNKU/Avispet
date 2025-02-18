@@ -1114,7 +1114,14 @@ class _PostDetailState extends State<PostDetail> {
 
 
                                                 SvgPicture.asset(
+                                                  'assets/images/icons/heart_solid_icon.svg',
+                                                  width: 14,
+                                                  height: 15,
+                                                  colorFilter: ColorFilter.mode(Colors.grey.withOpacity(0.5), BlendMode.srcIn),
+                                                ),
+                                                SvgPicture.asset(
                                                     'assets/images/icons/heart_solid_icon.svg',
+
                                                     width: 14, height: 15),
                                                 SizedBox(width: 5,),
                                                 Obx(() {
