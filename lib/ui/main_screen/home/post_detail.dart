@@ -1111,6 +1111,8 @@ class _PostDetailState extends State<PostDetail> {
                                             },
                                             child: Row(
                                               children: [
+
+
                                                 SvgPicture.asset(
                                                     'assets/images/icons/heart_solid_icon.svg',
                                                     width: 14, height: 15),

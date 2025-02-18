@@ -105,9 +105,6 @@ class _CreateGroupState extends State<CreateGroup> {
                         MyString.reg('longPressOnAFriendToCreateAConversation'.tr, 15, MyColor.title,
                             TextAlign.center),
 
-
-
-
                         Container(
                             height: 40,
                             margin: EdgeInsets.symmetric(vertical: 15),
