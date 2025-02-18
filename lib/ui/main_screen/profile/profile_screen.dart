@@ -438,6 +438,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               )
                                             ],
                                           ),
+
                                           // if (GetApi.getProfileModel.data!
                                           //         .biography
                                           //         .toString() !=

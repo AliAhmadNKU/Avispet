@@ -5,6 +5,7 @@ class Lang extends Translations {
   Map<String, Map<String, String>> get keys => {
         // English
         'en_en': {
+          "longPressOnAFriendToCreateAConversation":"Long press on a friend to create a conversation",
           "Explore":"Explore",
           "Reviews":" Reviews",
           "Authentic":" Authentic",
@@ -18,7 +19,7 @@ class Lang extends Translations {
           "FindTheBestsHotelsRestaurantsParksToVisitWithYourFurryLovedOnes":"Find the bests hotels, restaurants, parks ... to visit with your furry loved-ones.",
           "GiveYourPetTheBest":"Share your opinion, for places where your dog thrives",
           'YourNewsFeed': 'Your News Feed',
-          'centerElseWhere': 'Center Elsewhere',
+          'centerElseWhere': 'Center else where',
           'useCurrLoc': 'Use your current location',
           'Animalerie': 'Petstore',
           'Bars': 'Bars',
@@ -93,7 +94,7 @@ class Lang extends Translations {
           'moreChoices': 'More Choices',
           'otpNote': "Note: Don't forget to check your junk/SPAM messages",
           'sendDes': 'Select the friends with whom you want to share this post',
-          'notReceived': 'This code will expire in 2 minute. Need a new code?',
+          'notReceived': 'This code will expire in 2 minutes. Need a new code?',
           'otpDec':
               'We just sent you a 6-digit verification code to your email',
           'otpDec2':
@@ -498,6 +499,7 @@ class Lang extends Translations {
 
         // French
         'fr_fr': {
+          "longPressOnAFriendToCreateAConversation":"Appui long sur un ami pour créer une conversation",
           'city': 'Pays',
           "Explore":"Explorer",
           "Reviews":" Avis",
@@ -586,8 +588,7 @@ class Lang extends Translations {
           'toUpgrade': 'PTS pour atteindre le niveau supérieur',
           'earnMore': 'Le tableau des points ',
           'scoredPoints': 'Points Gagnés',
-          'notReceived':
-              "Ce code expirera dans 2 minute. Besoin d'un nouveau code ?",
+          'notReceived': "Ce code expirera dans 2 minutes. Besoin d'un nouveau code ?",
           'otpInvalid': 'Otp invalide',
           'enterReferral': 'Veuillez entrer le code de parrainage',
           'enterOtp': 'Veuillez entrer votre OTP',

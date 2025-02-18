@@ -125,7 +125,6 @@ class _MyAnimalsState extends State<MyAnimals> {
                                 setState(() {});
                               },
                               child: ListView.builder(
-                                reverse: true,
                                 itemCount: GetApi.getAnimal.length,
                                 padding: EdgeInsets.zero,
                                 itemBuilder: (context, index) {

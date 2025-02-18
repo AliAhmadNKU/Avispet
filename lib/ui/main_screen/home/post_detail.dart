@@ -1103,6 +1103,7 @@ class _PostDetailState extends State<PostDetail> {
                                           Spacer(),
 
                                           /// likes
+
                                           GestureDetector(
                                             onTap: () {
                                               String? userid = sharedPref
@@ -1111,6 +1112,14 @@ class _PostDetailState extends State<PostDetail> {
                                             },
                                             child: Row(
                                               children: [
+
+                                                rev.isLiked.value ==false?
+                                                SvgPicture.asset(
+                                                  'assets/images/icons/heart_solid_icon.svg',
+                                                  width: 14,
+                                                  height: 15,
+                                                  colorFilter: ColorFilter.mode(Colors.grey.withOpacity(0.5), BlendMode.srcIn),
+                                                ):
                                                 SvgPicture.asset(
                                                     'assets/images/icons/heart_solid_icon.svg',
                                                     width: 14, height: 15),
@@ -1164,10 +1173,25 @@ class _PostDetailState extends State<PostDetail> {
     var result = jsonDecode(res.toString());
     print("Likes response: $result");
 
-    if (result['status'] == 201) {
+    if (result['status'] == 200) {
+
+      if(result['data']['isLiked']==false)
+        {
+
+            mReviews?.tLikes.value--;
+
+        }
+      else{
+
+        setState(() {
+          mReviews?.isLiked.value=true;
+          mReviews?.tLikes.value++;
+        });
+
+      }
 
 
-      mReviews?.tLikes.value++;
+
 
     }
   }
@@ -1400,6 +1424,10 @@ class _PostDetailState extends State<PostDetail> {
   getPostReviewsById() async {
     isLoading = true;
     try {
+
+      String? userid = sharedPref
+          .getString(SharedKey.userId);
+      
       var res = await AllApi.getMethodApi(
           "${ApiStrings.getPostReviewsByPostId}${post.id}");
       var result = jsonDecode(res.toString());
@@ -1409,6 +1437,19 @@ class _PostDetailState extends State<PostDetail> {
         mReviews = (result['data'] as List)
             .map((reviewItem) => Reviews.fromJson(reviewItem))
             .toList();
+
+        mReviews.forEach((element) {
+          element.likes?.forEach((e) {
+              if(e.userId == int.parse(userid!) )
+                {
+                  print("asdasdasdasda idhr aya hai");
+                  element.isLiked.value=true;
+
+                }
+          });
+        });
+
+
         if (this.mounted) {
           setState(() {});
         }

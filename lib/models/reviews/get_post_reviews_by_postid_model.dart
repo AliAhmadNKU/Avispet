@@ -63,8 +63,6 @@ GetPostReviewsByPostidModel copyWith({  num? status,
 
 }
 
-
-
 class Reviews {
   Reviews({
     num? id,
@@ -79,11 +77,12 @@ class Reviews {
     String? updatedAt,
     Post? post,
     User? user,
-    List<dynamic>? likes,
+    List<Like>? likes, // Changed from dynamic to List<Like>
     List<dynamic>? comments,
     List<PostRatings>? postRatings,
     num? totalLikes,
     num? totalComments,
+    bool? isLiked,
   }) {
     _id = id;
     _userId = userId;
@@ -97,13 +96,14 @@ class Reviews {
     _updatedAt = updatedAt;
     _post = post;
     _user = user;
-    _likes = likes;
+    _likes = likes ?? []; // Ensure it's initialized properly
     _comments = comments;
     _postRatings = postRatings;
     _totalLikes = totalLikes;
     _totalComments = totalComments;
-    _tLikes = Rx<int>(totalLikes?.toInt() ?? 0); // Initialize Rx<int> properly
-    _tcomment = Rx<int>(totalComments?.toInt() ?? 0); // Initialize Rx<int> properly
+    _tLikes = Rx<int>(totalLikes?.toInt() ?? 0);
+    _tcomment = Rx<int>(totalComments?.toInt() ?? 0);
+    _isLiked = Rx<bool>(isLiked ?? false);
   }
 
   Reviews.fromJson(dynamic json) {
@@ -114,21 +114,18 @@ class Reviews {
     _overallRating = json['overall_rating'];
     _placeName = json['place_name'];
     _description = json['description'];
-    _images = json['images'] != null ? json['images'].cast<String>() : [];
+    _images = json['images'] != null ? List<String>.from(json['images']) : [];
     _createdAt = json['createdAt'];
     _updatedAt = json['updatedAt'];
     _post = json['post'] != null ? Post.fromJson(json['post']) : null;
     _user = json['user'] != null ? User.fromJson(json['user']) : null;
-    if (json['likes'] != null) {
-      _likes = List<dynamic>.from(json['likes']);
-    }
-    if (json['comments'] != null) {
-      _comments = List<dynamic>.from(json['comments']);
-    }
-    if (json['postRatings'] != null) {
-      _postRatings =
-          json['postRatings'].map<PostRatings>((v) => PostRatings.fromJson(v)).toList();
-    }
+    _likes = json['likes'] != null
+        ? List<Like>.from(json['likes'].map((v) => Like.fromJson(v))) // Parse into List<Like>
+        : [];
+    _comments = json['comments'] != null ? List<dynamic>.from(json['comments']) : [];
+    _postRatings = json['postRatings'] != null
+        ? List<PostRatings>.from(json['postRatings'].map((v) => PostRatings.fromJson(v)))
+        : [];
     _totalLikes = json['totalLikes'];
     _totalComments = json['totalComments'];
     _tLikes = Rx<int>(_totalLikes?.toInt() ?? 0);
@@ -147,52 +144,14 @@ class Reviews {
   String? _updatedAt;
   Post? _post;
   User? _user;
-  List<dynamic>? _likes;
+  List<Like>? _likes; // Now using List<Like> instead of dynamic
   List<dynamic>? _comments;
   List<PostRatings>? _postRatings;
   num? _totalLikes;
   num? _totalComments;
   late Rx<int> _tLikes;
-  late Rx<int> _tcomment; // Reactive variable
-
-  Reviews copyWith({
-    num? id,
-    num? userId,
-    String? placeId,
-    num? postId,
-    num? overallRating,
-    String? placeName,
-    String? description,
-    List<String>? images,
-    String? createdAt,
-    String? updatedAt,
-    Post? post,
-    User? user,
-    List<dynamic>? likes,
-    List<dynamic>? comments,
-    List<PostRatings>? postRatings,
-    num? totalLikes,
-    num? totalComments,
-  }) =>
-      Reviews(
-        id: id ?? _id,
-        userId: userId ?? _userId,
-        placeId: placeId ?? _placeId,
-        postId: postId ?? _postId,
-        overallRating: overallRating ?? _overallRating,
-        placeName: placeName ?? _placeName,
-        description: description ?? _description,
-        images: images ?? _images,
-        createdAt: createdAt ?? _createdAt,
-        updatedAt: updatedAt ?? _updatedAt,
-        post: post ?? _post,
-        user: user ?? _user,
-        likes: likes ?? _likes,
-        comments: comments ?? _comments,
-        postRatings: postRatings ?? _postRatings,
-        totalLikes: totalLikes ?? _totalLikes,
-        totalComments: totalComments ?? _totalComments,
-      );
+  late Rx<int> _tcomment;
+  Rx<bool> _isLiked = false.obs; // Added isLiked as Rx<bool>
 
   num? get id => _id;
   num? get userId => _userId;
@@ -206,13 +165,14 @@ class Reviews {
   String? get updatedAt => _updatedAt;
   Post? get post => _post;
   User? get user => _user;
-  List<dynamic>? get likes => _likes;
+  List<Like>? get likes => _likes; // Getter for likes
   List<dynamic>? get comments => _comments;
   List<PostRatings>? get postRatings => _postRatings;
   num? get totalLikes => _totalLikes;
   num? get totalComments => _totalComments;
-  Rx<int> get tcomment => _tcomment; // Getter for reactive variable
+  Rx<int> get tcomment => _tcomment;
   Rx<int> get tLikes => _tLikes;
+  Rx<bool> get isLiked => _isLiked; // Getter for isLiked
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -233,7 +193,7 @@ class Reviews {
       map['user'] = _user?.toJson();
     }
     if (_likes != null) {
-      map['likes'] = _likes;
+      map['likes'] = _likes?.map((v) => v.toJson()).toList(); // Convert likes back to JSON
     }
     if (_comments != null) {
       map['comments'] = _comments;
@@ -243,9 +203,59 @@ class Reviews {
     }
     map['totalLikes'] = _totalLikes;
     map['totalComments'] = _totalComments;
+
     return map;
   }
 }
+
+class Like {
+  Like({
+    num? id,
+    num? postReviewId,
+    num? userId,
+    String? createdAt,
+    String? updatedAt,
+  }) {
+    _id = id;
+    _postReviewId = postReviewId;
+    _userId = userId;
+    _createdAt = createdAt;
+    _updatedAt = updatedAt;
+  }
+
+  Like.fromJson(dynamic json) {
+    _id = json['id'];
+    _postReviewId = json['postReviewId'];
+    _userId = json['userId'];
+    _createdAt = json['createdAt'];
+    _updatedAt = json['updatedAt'];
+  }
+
+  num? _id;
+  num? _postReviewId;
+  num? _userId;
+  String? _createdAt;
+  String? _updatedAt;
+
+  num? get id => _id;
+  num? get postReviewId => _postReviewId;
+  num? get userId => _userId;
+  String? get createdAt => _createdAt;
+  String? get updatedAt => _updatedAt;
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['id'] = _id;
+    map['postReviewId'] = _postReviewId;
+    map['userId'] = _userId;
+    map['createdAt'] = _createdAt;
+    map['updatedAt'] = _updatedAt;
+    return map;
+  }
+}
+
+
+
 
 
 class PostRatings {

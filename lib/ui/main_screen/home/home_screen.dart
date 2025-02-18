@@ -291,7 +291,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       controller: _feedsScrollController,
                       child: Column(
                         children: [
-                          HeaderWidget(backIcon: false,),
+                          Padding(
+                            padding: const EdgeInsets.only(right:10),
+                            child: HeaderWidget(backIcon: false,),
+                          ),
                           Container(
                             height: MediaQuery.of(context).size.height * 0.25,
                             child: Column(
