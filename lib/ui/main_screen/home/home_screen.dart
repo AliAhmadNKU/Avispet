@@ -624,20 +624,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
       // Decode the response
       var result = jsonDecode(res.toString());
-
       if (result['status'] == 200) {
         // Parse the response into the GetAllPostModel
         var posts = GetAllPostModel.fromJson(result);
-        // print("posts.data.data.post[0]  ${posts.data.data.post[0].}" );
         if(feedCurrentPage == 1){
           postsList.clear();
         }
         final feeds = posts.data!.data!.post!
             .map((post) => Post.fromJson(post.toJson()))
             .toList();
-
-
-
         postsList.addAll(feeds);
         print('getAllPostsApi => total_post ${postsList.length}');
       } else if (result['status'] == 401) {
@@ -1315,9 +1310,6 @@ class _HomeScreenState extends State<HomeScreen> {
     var res = await AllApi.getMethodApi(
         "${ApiStrings.followersFollowing}?page=${loadPage.toString()}&limit=1000&search=$searchValues&type=${type.toString()}");
     var result = jsonDecode(res.toString());
-
-    print("result post ${result}");
-
     if (result['status'] == 200) {
       loader = false;
       followList.clear();
