@@ -57,6 +57,7 @@ class PostData {
   final String updatedAt;
   final List<PostRating> postRatings;
   final User user;
+  final String address;
 
   PostData({
     required this.locationDistance,
@@ -92,6 +93,7 @@ class PostData {
     required this.updatedAt,
     required this.postRatings,
     required this.user,
+    required this.address,
   });
 
   factory PostData.fromJson(Map<String, dynamic> json) {
@@ -130,6 +132,7 @@ class PostData {
       updatedAt: json['updatedAt'] ?? '',
       postRatings: (json['postRatings'] as List?)?.map((e) => PostRating.fromJson(e)).toList() ?? [],
       user: User.fromJson(json['user'] ?? {}),
+      address: json["address"]
     );
   }
 }

@@ -117,7 +117,7 @@ class Post {
   bool greenSpaces;
   bool currentlyOpen;
   bool isFavorite;
-  // UserModel user;
+  User? user;
   // List<CommentModel>? comments; // ✅ Include list of comments
   // int likeCount;
   // List<dynamic>? likes;
@@ -154,7 +154,7 @@ class Post {
     required this.locationRating,
     required this.userRatingCount,
     required this.userRecommendedPercentage,
-    // required this.user,
+      this.user,
     // required this.likeCount,
     // this.comments,
     // this.likes,
@@ -190,7 +190,7 @@ class Post {
         isFavorite: json["isFavorite"],
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
-        // user: UserModel.fromJson(json["user"]),
+     //   user: json["user"] != null ? User.fromJson(json["user"]) : null,
         // comments: json["comments"] != null
         //     ? (json["comments"] as List)
         //         .map((comment) => CommentModel.fromJson(comment))
@@ -231,7 +231,8 @@ class Post {
         "isFavorite": isFavorite,
         "createdAt": createdAt.toIso8601String(),
         "updatedAt": updatedAt.toIso8601String(),
-        // "user": user.toJson(),
+        //"user": this.user!.toJson(),
+
         // "comments": comments != null
         //     ? comments!.map((comment) => comment.toJson()).toList()
         //     : null, // ✅ Convert list of comments to JSON
@@ -240,215 +241,159 @@ class Post {
       };
 }
 
-class UserModel {
-  int id;
-  String name;
-  String firstName;
-  String lastName;
-  String? isOnline;
-  String email;
-  String phoneNumber;
-  String pseudo;
-  String profilePicture;
-  String? coverPicture;
-  String? profession;
-  String? dob;
-  String? age;
-  String? gender;
-  String city;
-  String area;
-  String timezone;
-  String? socketId;
-  String latitude;
-  String longitude;
-  String deviceToken;
-  String socialId;
-  String socialType;
-  String deviceType;
-  String biography;
-  String? lastActive;
-  bool isActivate;
-  int gamePoints;
-  bool allowPushNotifications;
-  String? resetToken;
-  String? resetTokenExpiresAt;
-  bool isVerified;
-  DateTime createdAt;
-  DateTime updatedAt;
 
-  UserModel({
-    required this.id,
-    required this.name,
-    required this.firstName,
-    required this.lastName,
+class User {
+  int? id;
+  String? name;
+  String? firstName;
+  String? lastName;
+  dynamic isOnline;
+  String? email;
+  String? phoneNumber;
+  String? pseudo;
+  dynamic profilePicture;
+  dynamic coverPicture;
+  dynamic profession;
+  dynamic dob;
+  dynamic age;
+  dynamic gender;
+  String? city;
+  String? area;
+  String? timezone;
+  dynamic socketId;
+  String? latitude;
+  String? longitude;
+  String? deviceToken;
+  dynamic socialId;
+  dynamic socialType;
+  String? deviceType;
+  String? biography;
+  dynamic lastActive;
+  bool? isActivate;
+  int? gamePoints;
+  bool? allowPushNotifications;
+  dynamic resetToken;
+  dynamic resetTokenExpiresAt;
+  bool? isVerified;
+  String? createdAt;
+  String? updatedAt;
+
+  User({
+    this.id,
+    this.name,
+    this.firstName,
+    this.lastName,
     this.isOnline,
-    required this.email,
-    required this.phoneNumber,
-    required this.pseudo,
-    required this.profilePicture,
+    this.email,
+    this.phoneNumber,
+    this.pseudo,
+    this.profilePicture,
     this.coverPicture,
     this.profession,
     this.dob,
     this.age,
     this.gender,
-    required this.city,
-    required this.area,
-    required this.timezone,
+    this.city,
+    this.area,
+    this.timezone,
     this.socketId,
-    required this.latitude,
-    required this.longitude,
-    required this.deviceToken,
-    required this.socialId,
-    required this.socialType,
-    required this.deviceType,
-    required this.biography,
+    this.latitude,
+    this.longitude,
+    this.deviceToken,
+    this.socialId,
+    this.socialType,
+    this.deviceType,
+    this.biography,
     this.lastActive,
-    required this.isActivate,
-    required this.gamePoints,
-    required this.allowPushNotifications,
+    this.isActivate,
+    this.gamePoints,
+    this.allowPushNotifications,
     this.resetToken,
     this.resetTokenExpiresAt,
-    required this.isVerified,
-    required this.createdAt,
-    required this.updatedAt,
+    this.isVerified,
+    this.createdAt,
+    this.updatedAt,
   });
 
-  // Convert JSON to UserModel
-  factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
-      id: json["id"],
-      name: json["name"],
-      firstName: json["first_name"],
-      lastName: json["last_name"],
-      isOnline: json["is_online"],
-      email: json["email"],
-      phoneNumber: json["phone_number"],
-      pseudo: json["pseudo"],
-      profilePicture: json["profile_picture"],
-      coverPicture: json["coverPicture"],
-      profession: json["profession"],
-      dob: json["dob"],
-      age: json["age"],
-      gender: json["gender"],
-      city: json["city"],
-      area: json["area"],
-      timezone: json["timezone"],
-      socketId: json["socket_id"],
-      latitude: json["latitude"],
-      longitude: json["longitude"],
-      deviceToken: json["deviceToken"],
-      socialId: json["socialId"],
-      socialType: json["socialType"],
-      deviceType: json["deviceType"],
-      biography: json["biography"],
-      lastActive: json["last_active"],
-      isActivate: json["is_activate"],
-      gamePoints: json["gamePoints"],
-      allowPushNotifications: json["allowPushNotifications"],
-      resetToken: json["reset_token"],
-      resetTokenExpiresAt: json["reset_token_expires_at"],
-      isVerified: json["is_verified"],
-      createdAt: DateTime.parse(json["createdAt"]),
-      updatedAt: DateTime.parse(json["updatedAt"]),
-    );
+  User.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    firstName = json['first_name'];
+    lastName = json['last_name'];
+    isOnline = json['is_online'];
+    email = json['email'];
+    phoneNumber = json['phone_number'];
+    pseudo = json['pseudo'];
+    profilePicture = json['profile_picture'];
+    coverPicture = json['coverPicture'];
+    profession = json['profession'];
+    dob = json['dob'];
+    age = json['age'];
+    gender = json['gender'];
+    city = json['city'];
+    area = json['area'];
+    timezone = json['timezone'];
+    socketId = json['socket_id'];
+    latitude = json['latitude'];
+    longitude = json['longitude'];
+    deviceToken = json['deviceToken'];
+    socialId = json['socialId'];
+    socialType = json['socialType'];
+    deviceType = json['deviceType'];
+    biography = json['biography'];
+    lastActive = json['last_active'];
+    isActivate = json['is_activate'];
+    gamePoints = json['gamePoints'];
+    allowPushNotifications = json['allowPushNotifications'];
+    resetToken = json['reset_token'];
+    resetTokenExpiresAt = json['reset_token_expires_at'];
+    isVerified = json['is_verified'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
   }
 
-  // Convert UserModel to JSON
   Map<String, dynamic> toJson() {
-    return {
-      "id": id,
-      "name": name,
-      "first_name": firstName,
-      "last_name": lastName,
-      "is_online": isOnline,
-      "email": email,
-      "phone_number": phoneNumber,
-      "pseudo": pseudo,
-      "profile_picture": profilePicture,
-      "coverPicture": coverPicture,
-      "profession": profession,
-      "dob": dob,
-      "age": age,
-      "gender": gender,
-      "city": city,
-      "area": area,
-      "timezone": timezone,
-      "socket_id": socketId,
-      "latitude": latitude,
-      "longitude": longitude,
-      "deviceToken": deviceToken,
-      "socialId": socialId,
-      "socialType": socialType,
-      "deviceType": deviceType,
-      "biography": biography,
-      "last_active": lastActive,
-      "is_activate": isActivate,
-      "gamePoints": gamePoints,
-      "allowPushNotifications": allowPushNotifications,
-      "reset_token": resetToken,
-      "reset_token_expires_at": resetTokenExpiresAt,
-      "is_verified": isVerified,
-      "createdAt": createdAt.toIso8601String(),
-      "updatedAt": updatedAt.toIso8601String(),
-    };
-  }
-
-  // Convert JSON String to UserModel
-  static UserModel fromJsonString(String jsonString) {
-    return UserModel.fromJson(json.decode(jsonString));
-  }
-
-  // Convert UserModel to JSON String
-  String toJsonString() {
-    return json.encode(toJson());
+    final Map<String, dynamic> data = {};
+    data['id'] = id;
+    data['name'] = name;
+    data['first_name'] = firstName;
+    data['last_name'] = lastName;
+    data['is_online'] = isOnline;
+    data['email'] = email;
+    data['phone_number'] = phoneNumber;
+    data['pseudo'] = pseudo;
+    data['profile_picture'] = profilePicture;
+    data['coverPicture'] = coverPicture;
+    data['profession'] = profession;
+    data['dob'] = dob;
+    data['age'] = age;
+    data['gender'] = gender;
+    data['city'] = city;
+    data['area'] = area;
+    data['timezone'] = timezone;
+    data['socket_id'] = socketId;
+    data['latitude'] = latitude;
+    data['longitude'] = longitude;
+    data['deviceToken'] = deviceToken;
+    data['socialId'] = socialId;
+    data['socialType'] = socialType;
+    data['deviceType'] = deviceType;
+    data['biography'] = biography;
+    data['last_active'] = lastActive;
+    data['is_activate'] = isActivate;
+    data['gamePoints'] = gamePoints;
+    data['allowPushNotifications'] = allowPushNotifications;
+    data['reset_token'] = resetToken;
+    data['reset_token_expires_at'] = resetTokenExpiresAt;
+    data['is_verified'] = isVerified;
+    data['createdAt'] = createdAt;
+    data['updatedAt'] = updatedAt;
+    return data;
   }
 }
 
-class CommentModel {
-  int id;
-  String commentText;
-  int userId;
-  String createdAt;
-  String updatedAt;
-  int postId;
-  UserModel user; // ✅ Embedded user model
 
-  CommentModel({
-    required this.id,
-    required this.commentText,
-    required this.userId,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.postId,
-    required this.user,
-  });
 
-  // Convert JSON to CommentModel
-  factory CommentModel.fromJson(Map<String, dynamic> json) {
-    return CommentModel(
-      id: json["id"],
-      commentText: json["commentText"],
-      userId: json["userId"],
-      createdAt: json["createdAt"],
-      updatedAt: json["updatedAt"],
-      postId: json["postId"],
-      user: UserModel.fromJson(json["user"]), // ✅ Parse user inside comment
-    );
-  }
-
-  // Convert CommentModel to JSON
-  Map<String, dynamic> toJson() {
-    return {
-      "id": id,
-      "commentText": commentText,
-      "userId": userId,
-      "createdAt": createdAt,
-      "updatedAt": updatedAt,
-      "postId": postId,
-      "user": user.toJson(), // ✅ Convert user to JSON
-    };
-  }
-}
 
 class Review {
   int id;

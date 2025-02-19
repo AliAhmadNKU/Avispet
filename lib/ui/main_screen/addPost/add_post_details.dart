@@ -330,8 +330,11 @@ class _AddPostDetailsState extends State<AddPostDetails> {
                         children: [
                           MyString.reg(
                               addPost.data.placeName, 14, MyColor.orange2, TextAlign.start),
-                          MyString.reg(post.location, 12, MyColor.textBlack0,
-                              TextAlign.start),
+                          Container(
+                            width: 160,
+                            child: MyString.reg(addPost.data.address, 12, MyColor.textBlack0,
+                                TextAlign.start),
+                          ),
                           MyString.reg(addPost.data.category, 12, MyColor.textBlack0,
                               TextAlign.start),
                           MyString.reg("${addPost.data.locationDistance.toString() + addPost.data.locationDistanceUnit}", 12, MyColor.textBlack0,

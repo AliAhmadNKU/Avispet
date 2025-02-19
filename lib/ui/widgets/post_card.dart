@@ -37,6 +37,10 @@ class _PostCardState extends State<PostCard> {
 
   @override
   void initState() {
+
+    print("widget.post.user ${widget.post}");
+    print("widget.post.user ${widget.post.user}");
+
     // TODO: implement initState
     super.initState();
   }
@@ -86,7 +90,8 @@ class _PostCardState extends State<PostCard> {
                         width: 2.0, // Adjust the width as needed
                       ),
                       image: DecorationImage(
-                        image: NetworkImage(widget.post.images[0]),
+                        image:widget.post.user==null? NetworkImage("https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png?20200919003010"):
+                          NetworkImage(widget.post.user!.profilePicture??"https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png?20200919003010"),
                         fit: BoxFit.cover,
                       ),
                     ),

@@ -1108,33 +1108,40 @@ class _PostDetailState extends State<PostDetail> {
                                             onTap: () {
                                               String? userid = sharedPref
                                                   .getString(SharedKey.userId);
-                                              sendLikes(int.parse(userid!),mReviews[index].id!.toInt(), rev);
+                                              sendLikes(int.parse(userid!),
+                                                  mReviews[index].id!.toInt(),
+                                                  rev);
                                             },
-                                            child: Row(
-                                              children: [
+                                            child: Obx(() {
+                                              return Row(
+                                                children: [
 
-                                                rev.isLiked.value ==false?
-                                                SvgPicture.asset(
-                                                  'assets/images/icons/heart_solid_icon.svg',
-                                                  width: 14,
-                                                  height: 15,
-                                                  colorFilter: ColorFilter.mode(Colors.grey.withOpacity(0.5), BlendMode.srcIn),
-                                                ):
-                                                SvgPicture.asset(
+                                                  rev.isLiked.value == false ?
+                                                  SvgPicture.asset(
                                                     'assets/images/icons/heart_solid_icon.svg',
-                                                    width: 14, height: 15),
-                                                SizedBox(width: 5,),
-                                                Obx(() {
-                                                  return MyString.reg(
-                                                    '${rev.tLikes.value.toString()
+                                                    width: 14,
+                                                    height: 15,
+                                                    colorFilter: ColorFilter
+                                                        .mode(
+                                                        Colors.grey.withOpacity(
+                                                            0.5),
+                                                        BlendMode.srcIn),
+                                                  ) :
+                                                  SvgPicture.asset(
+                                                      'assets/images/icons/heart_solid_icon.svg',
+                                                      width: 14, height: 15),
+                                                  SizedBox(width: 5,),
+                                                  MyString.reg(
+                                                    '${rev.tLikes.value
+                                                        .toString()
                                                         .toString()}',
                                                     12,
                                                     MyColor.commentCountColor,
                                                     TextAlign.start,
-                                                  );
-                                                }),
-                                              ],
-                                            ),
+                                                  )
+                                                ],
+                                              );
+                                            }),
                                           ),
 
                                           Spacer(),
@@ -1162,7 +1169,8 @@ class _PostDetailState extends State<PostDetail> {
     );
   }
 
-  Future<void> sendLikes( int userId, int postReviewId,   Reviews? mReviews,) async {
+  Future<void> sendLikes(int userId, int postReviewId,
+      Reviews? mReviews,) async {
     Map<String, dynamic> mapData = {
       "userId": userId,
       "postReviewId": postReviewId,
@@ -1174,25 +1182,17 @@ class _PostDetailState extends State<PostDetail> {
     print("Likes response: $result");
 
     if (result['status'] == 200) {
+      if (result['data']['isLiked'] == false) {
 
-      if(result['data']['isLiked']==false)
-        {
-
-            mReviews?.tLikes.value--;
-
+        if (mReviews!.tLikes.value >= 0) {
+          mReviews.isLiked.value = false;
+          mReviews.tLikes.value--; // Decrease only if greater than 0
         }
-      else{
-
-        setState(() {
-          mReviews?.isLiked.value=true;
-          mReviews?.tLikes.value++;
-        });
-
       }
-
-
-
-
+      else {
+          mReviews?.isLiked.value = true;
+          mReviews?.tLikes.value++;
+      }
     }
   }
 
@@ -1241,7 +1241,8 @@ class _PostDetailState extends State<PostDetail> {
                             children: [
                               Flexible( // ✅ Prevents overflow while allowing text to wrap
                                 child: MyString.bold(
-                                  'What’s your relationship to this business'.tr,
+                                  'What’s your relationship to this business'
+                                      .tr,
                                   18,
                                   MyColor.redd,
                                   TextAlign.center,
@@ -1255,7 +1256,8 @@ class _PostDetailState extends State<PostDetail> {
                                 },
                                 style: TextButton.styleFrom(
                                   padding: EdgeInsets.zero,
-                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  tapTargetSize: MaterialTapTargetSize
+                                      .shrinkWrap,
                                 ),
                                 child: Image.asset(
                                   'assets/images/icons/cl.png',
@@ -1320,12 +1322,12 @@ class _PostDetailState extends State<PostDetail> {
                                     ),
                                     GestureDetector(
                                       onTap: () {
-
                                         setState(() {
                                           sortingList.forEach((element) {
-                                            element.conditionCheck=false;
+                                            element.conditionCheck = false;
                                           });
-                                          sortingList[index].conditionCheck=true;
+                                          sortingList[index].conditionCheck =
+                                          true;
                                           // item.conditionCheck = !item.conditionCheck;
                                         });
                                       },
@@ -1342,7 +1344,8 @@ class _PostDetailState extends State<PostDetail> {
                                         ),
                                         child: Icon(
                                           Icons.check,
-                                          color:   sortingList[index].conditionCheck ? MyColor
+                                          color: sortingList[index]
+                                              .conditionCheck ? MyColor
                                               .orange2 : MyColor.white,
                                           size: 12,
                                         ),
@@ -1360,13 +1363,14 @@ class _PostDetailState extends State<PostDetail> {
                         Center(
                           child: GestureDetector(
                             onTap: () {
-
-
-                              int? checkedIndex = sortingList.indexWhere((item) => item.conditionCheck);
+                              int? checkedIndex = sortingList.indexWhere((
+                                  item) => item.conditionCheck);
                               if (checkedIndex != -1) {
-                                suggestFeedBack(sortingList[checkedIndex].title);
+                                suggestFeedBack(
+                                    sortingList[checkedIndex].title);
                               } else {
-                                toaster(context,"Please select at least one option");
+                                toaster(context,
+                                    "Please select at least one option");
                               }
 
 
@@ -1420,14 +1424,12 @@ class _PostDetailState extends State<PostDetail> {
   }
 
 
-
   getPostReviewsById() async {
     isLoading = true;
     try {
-
       String? userid = sharedPref
           .getString(SharedKey.userId);
-      
+
       var res = await AllApi.getMethodApi(
           "${ApiStrings.getPostReviewsByPostId}${post.id}");
       var result = jsonDecode(res.toString());
@@ -1440,12 +1442,10 @@ class _PostDetailState extends State<PostDetail> {
 
         mReviews.forEach((element) {
           element.likes?.forEach((e) {
-              if(e.userId == int.parse(userid!) )
-                {
-                  print("asdasdasdasda idhr aya hai");
-                  element.isLiked.value=true;
-
-                }
+            if (e.userId == int.parse(userid!)) {
+              print("asdasdasdasda idhr aya hai");
+              element.isLiked.value = true;
+            }
           });
         });
 
