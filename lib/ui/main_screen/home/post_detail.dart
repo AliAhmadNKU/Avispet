@@ -17,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:giphy_get/giphy_get.dart';
+import 'package:intl/intl.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:pinch_zoom_release_unzoom/pinch_zoom_release_unzoom.dart';
 import 'package:readmore/readmore.dart';
@@ -103,6 +104,7 @@ class _PostDetailState extends State<PostDetail> {
   // ];
   List<bool> itemBool = List.generate(5, (index) => false);
 
+
   List<String> items1 = [
     'star1'.tr,
     'star2'.tr,
@@ -111,6 +113,15 @@ class _PostDetailState extends State<PostDetail> {
     'star5'.tr
   ];
   List<bool> item1Bool = List.generate(5, (index) => false);
+
+
+
+  // This is the data string you mentioned
+ late final String dataString ;
+
+  late final String scheduleString;
+
+
 
   List<String> items2 = [
     'star1'.tr,
@@ -136,6 +147,90 @@ class _PostDetailState extends State<PostDetail> {
     sortingItem(title: 'Other', conditionCheck: false),
   ];
 
+
+  // Example: Use the current time as the user time.
+  DateTime userTime = DateTime.now();
+  /// Determines if the shop is open at [userTime] using the provided [scheduleString].
+  bool isShopOpen(String scheduleString, DateTime userTime) {
+    // Remove the surrounding square brackets.
+    String trimmed = scheduleString.substring(1, scheduleString.length - 1).trim();
+
+    // Split by commas to get each day's token.
+    List<String> tokens = trimmed.split(',');
+
+    // Create a map for day -> time range string.
+    Map<String, String> scheduleMap = {};
+    for (String token in tokens) {
+      token = token.trim();
+      // Split at the first colon to separate day and time.
+      int colonIndex = token.indexOf(':');
+      if (colonIndex > -1) {
+        String day = token.substring(0, colonIndex).trim();
+        String times = token.substring(colonIndex + 1).trim();
+        scheduleMap[day] = times;
+      }
+    }
+
+    // Determine the current day name based on userTime.
+    // DateTime.weekday: 1=Monday, 2=Tuesday, ..., 7=Sunday.
+    List<String> dayNames = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ];
+    String currentDay = dayNames[userTime.weekday - 1];
+
+    // Get the time range for the current day.
+    String? timesString = scheduleMap[currentDay];
+    if (timesString == null || timesString.toLowerCase() == "closed") {
+      return false;
+    }
+
+    // Replace any special dash characters with a standard hyphen.
+    timesString = timesString.replaceAll('–', '-');
+
+    // Split into opening and closing times.
+    List<String> parts = timesString.split('-');
+    if (parts.length != 2) return false;
+
+    String openTimeString = parts[0].trim();
+    String closeTimeString = parts[1].trim();
+
+    // Use DateFormat to parse time strings like "9:00 AM".
+    DateFormat format = DateFormat("h:mm a");
+    try {
+      // Parse the times. These parsed DateTime objects have an arbitrary date.
+      DateTime openTime = format.parse(openTimeString);
+      DateTime closeTime = format.parse(closeTimeString);
+
+      // Build DateTime objects using the user's date.
+      DateTime openDateTime = DateTime(
+        userTime.year,
+        userTime.month,
+        userTime.day,
+        openTime.hour,
+        openTime.minute,
+      );
+      DateTime closeDateTime = DateTime(
+        userTime.year,
+        userTime.month,
+        userTime.day,
+        closeTime.hour,
+        closeTime.minute,
+      );
+
+      // Check if the userTime falls between openDateTime and closeDateTime.
+      return userTime.isAfter(openDateTime) && userTime.isBefore(closeDateTime);
+    } catch (e) {
+      print("Error parsing times: $e");
+      return false;
+    }
+  }
+
   bool isLoading = true;
   late int userRecommendedPercentage;
 
@@ -146,11 +241,14 @@ class _PostDetailState extends State<PostDetail> {
 
     print('Received arguments: ${widget.mapData}');
     post = widget.mapData!['post'];
+  //  dataString =  post.openingClosingHour.toString();
 
     print("phone ${post.phone}");
     userRecommendedPercentage = post.userRecommendedPercentage?.toInt() ?? 0;
     print("post.id asdasdasd  ${post.id}");
 
+    scheduleString= post.openingClosingHour.toString();
+    dataString = post.openingClosingHour.toString();
     getPostReviewsById();
 
     setState(() {
@@ -215,9 +313,60 @@ class _PostDetailState extends State<PostDetail> {
   }
 
   bool opening = false;
+  List<Map<String, dynamic>> parseSchedule(String raw) {
+    // Remove the surrounding '[' and ']' and trim any extra spaces.
+    final trimmed = raw.substring(1, raw.length - 1).trim();
+
+    // Split by comma.
+    final tokens = trimmed.split(',');
+
+    // List of day names to check against.
+    final daysList = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+    String? currentDay;
+    List<String> currentTimes = [];
+    final List<Map<String, dynamic>> schedule = [];
+
+    for (var token in tokens) {
+      token = token.trim();
+      // Check if the token starts with one of the days (followed by a colon).
+      bool isDayToken = daysList.any((day) => token.startsWith("$day:"));
+
+      if (isDayToken) {
+        // If a day is already being processed, save it.
+        if (currentDay != null) {
+          schedule.add({
+            'day': currentDay,
+            'times': currentTimes,
+          });
+        }
+        // Extract the day and its first time.
+        final indexOfColon = token.indexOf(':');
+        currentDay = token.substring(0, indexOfColon).trim();
+        final timePart = token.substring(indexOfColon + 1).trim();
+        currentTimes = [timePart];
+      } else {
+        // If it's not a day token, then it's an extra time for the current day.
+        currentTimes.add(token);
+      }
+    }
+
+    // Add the last processed day.
+    if (currentDay != null) {
+      schedule.add({
+        'day': currentDay,
+        'times': currentTimes,
+      });
+    }
+
+    return schedule;
+  }
 
   @override
   Widget build(BuildContext context) {
+    final scheduleData = parseSchedule(dataString);
+    bool open = isShopOpen(scheduleString, userTime);
+
     return NotificationListener(
       onNotification: (notification) {
         if (notification is ScrollEndNotification &&
@@ -340,6 +489,9 @@ class _PostDetailState extends State<PostDetail> {
                               SizedBox(
                                 width: 5,
                               ),
+                              open?
+                              MyString.reg('Opened', 12, MyColor.textBlack0,
+                                  TextAlign.start):
                               MyString.reg('Closed', 12, MyColor.textBlack0,
                                   TextAlign.start),
                             ],
@@ -537,10 +689,70 @@ class _PostDetailState extends State<PostDetail> {
                             });
                           },
                           children: [
+                            SizedBox(
+                              height: 180, // Adjusted height for days with multiple time slots.
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: scheduleData.length,
+                                itemBuilder: (context, index) {
+                                  final dayInfo = scheduleData[index];
+                                  final dayName = dayInfo['day'] as String;
+                                  final timesList = dayInfo['times'] as List<String>;
 
-                            MyString.bold(
-                                '[${post.openingClosingHour ?? "no data"}]', 14,
-                                MyColor.redd, TextAlign.start),
+                                  return Container(
+                                    width: 180,
+                                    margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                                    decoration: BoxDecoration(
+                                      color: MyColor.card,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: const Color(0xFFD8D8D8),
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12),
+                                      child: Column(
+
+                                        children: [
+                                          // Day Name
+                                          Text(
+                                            dayName,
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontFamily: 'poppins_regular',
+                                              fontWeight: FontWeight.w600,
+                                              color: Color(0xFF4B2A2A),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          // Display each time entry.
+                                          for (var time in timesList)
+                                            Padding(
+                                              padding: const EdgeInsets.only(bottom: 4),
+                                              child: Text(
+                                                time,
+                                                style: const TextStyle(
+                                                  fontSize: 14,
+                                                  fontFamily: 'poppins_regular',
+                                                  color: Color(0xFF4B2A2A),
+                                                ),
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+
+
+
+                            // MyString.bold(
+                            //     '[${post.openingClosingHour ?? "no data"}]', 14,
+                            //     MyColor.redd, TextAlign.start),
                           ],
                         ),
                       ),
@@ -1800,3 +2012,12 @@ class review {
     required this.description,
   });
 }
+
+
+
+
+
+
+
+
+

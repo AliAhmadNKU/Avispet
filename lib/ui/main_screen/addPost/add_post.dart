@@ -1927,11 +1927,19 @@ class _AddPostScreenState extends State<AddPostScreen> {
     }
 
 
+
+    print("currPos?openingHours ${currPos?["openingHours"]}");
+
+    String ? a = currPos?["openingHours"].toString();
+
+    print("a  asdsada $a");
+
+
     _postBloc.add(GetCreatePostEvent(
       userId: int.parse(sharedPref.getString(SharedKey.userId)!),
       placeId: currPos!['placeId'],
       websiteName: currPos?["website"],
-     // openingCloseHour:currPos?["openingHours"] ,
+      openingCloseHour:currPos?["openingHours"].toString() ,
       email: currPos!['email'],
       phone: currPos!['phone'],
       images: imageUrlList,
