@@ -51,6 +51,14 @@ class GoogleMapsService {
 
           if (placeDetailsResponse.statusCode == 200) {
 
+            final openingClosingHours =  "https://maps.googleapis.com/maps/api/place/details/json?placeid=$placeId&fields=name,opening_hours&key=$apiKey";
+
+            final openingClosingHoursResponse =
+            await http.get(Uri.parse(openingClosingHours));
+
+            final  openingClosingHoursData = json.decode( openingClosingHoursResponse.body);
+
+            print("openingClosingHours ${openingClosingHoursData}");
 
             final placeDetailsData = json.decode(placeDetailsResponse.body);
 

@@ -63,6 +63,8 @@ GetPostReviewsByPostidModel copyWith({  num? status,
 
 }
 
+
+
 class Reviews {
   Reviews({
     num? id,
@@ -75,14 +77,12 @@ class Reviews {
     List<String>? images,
     String? createdAt,
     String? updatedAt,
-    Post? post,
-    User? user,
-    List<Like>? likes, // Changed from dynamic to List<Like>
+    List<Like>? likes,
     List<dynamic>? comments,
-    List<PostRatings>? postRatings,
     num? totalLikes,
     num? totalComments,
     bool? isLiked,
+    User? user,
   }) {
     _id = id;
     _userId = userId;
@@ -94,16 +94,14 @@ class Reviews {
     _images = images;
     _createdAt = createdAt;
     _updatedAt = updatedAt;
-    _post = post;
-    _user = user;
-    _likes = likes ?? []; // Ensure it's initialized properly
+    _likes = likes ?? [];
     _comments = comments;
-    _postRatings = postRatings;
     _totalLikes = totalLikes;
     _totalComments = totalComments;
     _tLikes = Rx<int>(totalLikes?.toInt() ?? 0);
     _tcomment = Rx<int>(totalComments?.toInt() ?? 0);
     _isLiked = Rx<bool>(isLiked ?? false);
+    _user = user;
   }
 
   Reviews.fromJson(dynamic json) {
@@ -117,19 +115,20 @@ class Reviews {
     _images = json['images'] != null ? List<String>.from(json['images']) : [];
     _createdAt = json['createdAt'];
     _updatedAt = json['updatedAt'];
-    _post = json['post'] != null ? Post.fromJson(json['post']) : null;
-    _user = json['user'] != null ? User.fromJson(json['user']) : null;
     _likes = json['likes'] != null
-        ? List<Like>.from(json['likes'].map((v) => Like.fromJson(v))) // Parse into List<Like>
+        ? List<Like>.from(json['likes'].map((v) => Like.fromJson(v)))
         : [];
-    _comments = json['comments'] != null ? List<dynamic>.from(json['comments']) : [];
-    _postRatings = json['postRatings'] != null
-        ? List<PostRatings>.from(json['postRatings'].map((v) => PostRatings.fromJson(v)))
+    _comments = json['comments'] != null
+        ? List<dynamic>.from(json['comments'])
         : [];
     _totalLikes = json['totalLikes'];
     _totalComments = json['totalComments'];
     _tLikes = Rx<int>(_totalLikes?.toInt() ?? 0);
     _tcomment = Rx<int>(_totalComments?.toInt() ?? 0);
+    _isLiked = Rx<bool>(false);
+    if (json['user'] != null) {
+      _user = User.fromJson(json['user']);
+    }
   }
 
   num? _id;
@@ -142,16 +141,14 @@ class Reviews {
   List<String>? _images;
   String? _createdAt;
   String? _updatedAt;
-  Post? _post;
-  User? _user;
-  List<Like>? _likes; // Now using List<Like> instead of dynamic
+  List<Like>? _likes;
   List<dynamic>? _comments;
-  List<PostRatings>? _postRatings;
   num? _totalLikes;
   num? _totalComments;
   late Rx<int> _tLikes;
   late Rx<int> _tcomment;
-  Rx<bool> _isLiked = false.obs; // Added isLiked as Rx<bool>
+  Rx<bool> _isLiked = false.obs;
+  User? _user; // New field for the user
 
   num? get id => _id;
   num? get userId => _userId;
@@ -163,16 +160,14 @@ class Reviews {
   List<String>? get images => _images;
   String? get createdAt => _createdAt;
   String? get updatedAt => _updatedAt;
-  Post? get post => _post;
-  User? get user => _user;
-  List<Like>? get likes => _likes; // Getter for likes
+  List<Like>? get likes => _likes;
   List<dynamic>? get comments => _comments;
-  List<PostRatings>? get postRatings => _postRatings;
   num? get totalLikes => _totalLikes;
   num? get totalComments => _totalComments;
-  Rx<int> get tcomment => _tcomment;
   Rx<int> get tLikes => _tLikes;
-  Rx<bool> get isLiked => _isLiked; // Getter for isLiked
+  Rx<int> get tcomment => _tcomment;
+  Rx<bool> get isLiked => _isLiked;
+  User? get user => _user; // Getter for user
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -186,27 +181,442 @@ class Reviews {
     map['images'] = _images;
     map['createdAt'] = _createdAt;
     map['updatedAt'] = _updatedAt;
-    if (_post != null) {
-      map['post'] = _post?.toJson();
-    }
-    if (_user != null) {
-      map['user'] = _user?.toJson();
-    }
     if (_likes != null) {
-      map['likes'] = _likes?.map((v) => v.toJson()).toList(); // Convert likes back to JSON
+      map['likes'] = _likes!.map((v) => v.toJson()).toList();
     }
     if (_comments != null) {
       map['comments'] = _comments;
     }
-    if (_postRatings != null) {
-      map['postRatings'] = _postRatings?.map((v) => v.toJson()).toList();
-    }
     map['totalLikes'] = _totalLikes;
     map['totalComments'] = _totalComments;
-
+    if (_user != null) {
+      map['user'] = _user!.toJson();
+    }
     return map;
   }
 }
+
+class User {
+  User({
+    this.id,
+    this.name,
+    this.firstName,
+    this.lastName,
+    this.isOnline,
+    this.email,
+    this.phoneNumber,
+    this.pseudo,
+    this.profilePicture,
+    this.coverPicture,
+    this.profession,
+    this.dob,
+    this.age,
+    this.gender,
+    this.city,
+    this.area,
+    this.timezone,
+    this.socketId,
+    this.latitude,
+    this.longitude,
+    this.deviceToken,
+    this.socialId,
+    this.socialType,
+    this.deviceType,
+    this.biography,
+    this.lastActive,
+    this.isActivate,
+    this.gamePoints,
+    this.allowPushNotifications,
+    this.resetToken,
+    this.resetTokenExpiresAt,
+    this.isVerified,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  int? id;
+  String? name;
+  String? firstName;
+  String? lastName;
+  dynamic isOnline;
+  String? email;
+  String? phoneNumber;
+  String? pseudo;
+  dynamic profilePicture;
+  dynamic coverPicture;
+  dynamic profession;
+  dynamic dob;
+  dynamic age;
+  dynamic gender;
+  String? city;
+  String? area;
+  String? timezone;
+  dynamic socketId;
+  String? latitude;
+  String? longitude;
+  String? deviceToken;
+  dynamic socialId;
+  dynamic socialType;
+  String? deviceType;
+  dynamic biography;
+  dynamic lastActive;
+  bool? isActivate;
+  int? gamePoints;
+  bool? allowPushNotifications;
+  dynamic resetToken;
+  dynamic resetTokenExpiresAt;
+  bool? isVerified;
+  String? createdAt;
+  String? updatedAt;
+
+  factory User.fromJson(Map<String, dynamic> json) => User(
+    id: json['id'],
+    name: json['name'],
+    firstName: json['first_name'],
+    lastName: json['last_name'],
+    isOnline: json['is_online'],
+    email: json['email'],
+    phoneNumber: json['phone_number'],
+    pseudo: json['pseudo'],
+    profilePicture: json['profile_picture'],
+    coverPicture: json['coverPicture'],
+    profession: json['profession'],
+    dob: json['dob'],
+    age: json['age'],
+    gender: json['gender'],
+    city: json['city'],
+    area: json['area'],
+    timezone: json['timezone'],
+    socketId: json['socket_id'],
+    latitude: json['latitude'],
+    longitude: json['longitude'],
+    deviceToken: json['deviceToken'],
+    socialId: json['socialId'],
+    socialType: json['socialType'],
+    deviceType: json['deviceType'],
+    biography: json['biography'],
+    lastActive: json['last_active'],
+    isActivate: json['is_activate'],
+    gamePoints: json['gamePoints'],
+    allowPushNotifications: json['allowPushNotifications'],
+    resetToken: json['reset_token'],
+    resetTokenExpiresAt: json['reset_token_expires_at'],
+    isVerified: json['is_verified'],
+    createdAt: json['createdAt'],
+    updatedAt: json['updatedAt'],
+  );
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'first_name': firstName,
+    'last_name': lastName,
+    'is_online': isOnline,
+    'email': email,
+    'phone_number': phoneNumber,
+    'pseudo': pseudo,
+    'profile_picture': profilePicture,
+    'coverPicture': coverPicture,
+    'profession': profession,
+    'dob': dob,
+    'age': age,
+    'gender': gender,
+    'city': city,
+    'area': area,
+    'timezone': timezone,
+    'socket_id': socketId,
+    'latitude': latitude,
+    'longitude': longitude,
+    'deviceToken': deviceToken,
+    'socialId': socialId,
+    'socialType': socialType,
+    'deviceType': deviceType,
+    'biography': biography,
+    'last_active': lastActive,
+    'is_activate': isActivate,
+    'gamePoints': gamePoints,
+    'allowPushNotifications': allowPushNotifications,
+    'reset_token': resetToken,
+    'reset_token_expires_at': resetTokenExpiresAt,
+    'is_verified': isVerified,
+    'createdAt': createdAt,
+    'updatedAt': updatedAt,
+  };
+}
+
+
+
+//
+// class Reviews {
+//   Reviews({
+//     num? id,
+//     num? userId,
+//     String? placeId,
+//     num? postId,
+//     num? overallRating,
+//     String? placeName,
+//     String? description,
+//     List<String>? images,
+//     String? createdAt,
+//     String? updatedAt,
+//     List<Like>? likes,
+//     List<dynamic>? comments,
+//     num? totalLikes,
+//     num? totalComments,
+//     bool? isLiked,
+//   }) {
+//     _id = id;
+//     _userId = userId;
+//     _placeId = placeId;
+//     _postId = postId;
+//     _overallRating = overallRating;
+//     _placeName = placeName;
+//     _description = description;
+//     _images = images;
+//     _createdAt = createdAt;
+//     _updatedAt = updatedAt;
+//     _likes = likes ?? [];
+//     _comments = comments;
+//     _totalLikes = totalLikes;
+//     _totalComments = totalComments;
+//     _tLikes = Rx<int>(totalLikes?.toInt() ?? 0);
+//     _tcomment = Rx<int>(totalComments?.toInt() ?? 0);
+//     _isLiked = Rx<bool>(isLiked ?? false);
+//   }
+//
+//   Reviews.fromJson(dynamic json) {
+//     _id = json['id'];
+//     _userId = json['userId'];
+//     _placeId = json['placeId'];
+//     _postId = json['postId'];
+//     _overallRating = json['overall_rating'];
+//     _placeName = json['place_name'];
+//     _description = json['description'];
+//     _images = json['images'] != null ? List<String>.from(json['images']) : [];
+//     _createdAt = json['createdAt'];
+//     _updatedAt = json['updatedAt'];
+//     _likes = json['likes'] != null
+//         ? List<Like>.from(json['likes'].map((v) => Like.fromJson(v)))
+//         : [];
+//     _comments = json['comments'] != null
+//         ? List<dynamic>.from(json['comments'])
+//         : [];
+//     // Removed postRatings parsing
+//     _totalLikes = json['totalLikes'];
+//     _totalComments = json['totalComments'];
+//     _tLikes = Rx<int>(_totalLikes?.toInt() ?? 0);
+//     _tcomment = Rx<int>(_totalComments?.toInt() ?? 0);
+//     _isLiked = Rx<bool>(false);
+//   }
+//
+//   num? _id;
+//   num? _userId;
+//   String? _placeId;
+//   num? _postId;
+//   num? _overallRating;
+//   String? _placeName;
+//   String? _description;
+//   List<String>? _images;
+//   String? _createdAt;
+//   String? _updatedAt;
+//   List<Like>? _likes;
+//   List<dynamic>? _comments;
+//   // Removed _postRatings field
+//   num? _totalLikes;
+//   num? _totalComments;
+//   late Rx<int> _tLikes;
+//   late Rx<int> _tcomment;
+//   Rx<bool> _isLiked = false.obs;
+//
+//   num? get id => _id;
+//   num? get userId => _userId;
+//   String? get placeId => _placeId;
+//   num? get postId => _postId;
+//   num? get overallRating => _overallRating;
+//   String? get placeName => _placeName;
+//   String? get description => _description;
+//   List<String>? get images => _images;
+//   String? get createdAt => _createdAt;
+//   String? get updatedAt => _updatedAt;
+//   List<Like>? get likes => _likes;
+//   List<dynamic>? get comments => _comments;
+//   // Removed postRatings getter
+//   num? get totalLikes => _totalLikes;
+//   num? get totalComments => _totalComments;
+//   Rx<int> get tLikes => _tLikes;
+//   Rx<int> get tcomment => _tcomment;
+//   Rx<bool> get isLiked => _isLiked;
+//
+//   Map<String, dynamic> toJson() {
+//     final map = <String, dynamic>{};
+//     map['id'] = _id;
+//     map['userId'] = _userId;
+//     map['placeId'] = _placeId;
+//     map['postId'] = _postId;
+//     map['overall_rating'] = _overallRating;
+//     map['place_name'] = _placeName;
+//     map['description'] = _description;
+//     map['images'] = _images;
+//     map['createdAt'] = _createdAt;
+//     map['updatedAt'] = _updatedAt;
+//     if (_likes != null) {
+//       map['likes'] = _likes!.map((v) => v.toJson()).toList();
+//     }
+//     if (_comments != null) {
+//       map['comments'] = _comments;
+//     }
+//     // Removed postRatings serialization
+//     map['totalLikes'] = _totalLikes;
+//     map['totalComments'] = _totalComments;
+//     return map;
+//   }
+// }
+
+
+// class Reviews {
+//   Reviews({
+//     num? id,
+//     num? userId,
+//     String? placeId,
+//     num? postId,
+//     num? overallRating,
+//     String? placeName,
+//     String? description,
+//     List<String>? images,
+//     String? createdAt,
+//     String? updatedAt,
+//     Post? post,
+//     User? user,
+//     List<Like>? likes, // Changed from dynamic to List<Like>
+//     List<dynamic>? comments,
+//     List<PostRatings>? postRatings,
+//     num? totalLikes,
+//     num? totalComments,
+//     bool? isLiked,
+//   }) {
+//     _id = id;
+//     _userId = userId;
+//     _placeId = placeId;
+//     _postId = postId;
+//     _overallRating = overallRating;
+//     _placeName = placeName;
+//     _description = description;
+//     _images = images;
+//     _createdAt = createdAt;
+//     _updatedAt = updatedAt;
+//     _post = post;
+//     _user = user;
+//     _likes = likes ?? []; // Ensure it's initialized properly
+//     _comments = comments;
+//     _postRatings = postRatings;
+//     _totalLikes = totalLikes;
+//     _totalComments = totalComments;
+//     _tLikes = Rx<int>(totalLikes?.toInt() ?? 0);
+//     _tcomment = Rx<int>(totalComments?.toInt() ?? 0);
+//     _isLiked = Rx<bool>(isLiked ?? false);
+//   }
+//
+//   Reviews.fromJson(dynamic json) {
+//     _id = json['id'];
+//     _userId = json['userId'];
+//     _placeId = json['placeId'];
+//     _postId = json['postId'];
+//     _overallRating = json['overall_rating'];
+//     _placeName = json['place_name'];
+//     _description = json['description'];
+//     _images = json['images'] != null ? List<String>.from(json['images']) : [];
+//     _createdAt = json['createdAt'];
+//     _updatedAt = json['updatedAt'];
+//     _post = json['post'] != null ? Post.fromJson(json['post']) : null;
+//     _user = json['user'] != null ? User.fromJson(json['user']) : null;
+//     _likes = json['likes'] != null
+//         ? List<Like>.from(json['likes'].map((v) => Like.fromJson(v))) // Parse into List<Like>
+//         : [];
+//     _comments = json['comments'] != null ? List<dynamic>.from(json['comments']) : [];
+//     _postRatings = json['postRatings'] != null
+//         ? List<PostRatings>.from(json['postRatings'].map((v) => PostRatings.fromJson(v)))
+//         : [];
+//     _totalLikes = json['totalLikes'];
+//     _totalComments = json['totalComments'];
+//     _tLikes = Rx<int>(_totalLikes?.toInt() ?? 0);
+//     _tcomment = Rx<int>(_totalComments?.toInt() ?? 0);
+//   }
+//
+//   num? _id;
+//   num? _userId;
+//   String? _placeId;
+//   num? _postId;
+//   num? _overallRating;
+//   String? _placeName;
+//   String? _description;
+//   List<String>? _images;
+//   String? _createdAt;
+//   String? _updatedAt;
+//   Post? _post;
+//   User? _user;
+//   List<Like>? _likes; // Now using List<Like> instead of dynamic
+//   List<dynamic>? _comments;
+//   List<PostRatings>? _postRatings;
+//   num? _totalLikes;
+//   num? _totalComments;
+//   late Rx<int> _tLikes;
+//   late Rx<int> _tcomment;
+//   Rx<bool> _isLiked = false.obs; // Added isLiked as Rx<bool>
+//
+//   num? get id => _id;
+//   num? get userId => _userId;
+//   String? get placeId => _placeId;
+//   num? get postId => _postId;
+//   num? get overallRating => _overallRating;
+//   String? get placeName => _placeName;
+//   String? get description => _description;
+//   List<String>? get images => _images;
+//   String? get createdAt => _createdAt;
+//   String? get updatedAt => _updatedAt;
+//   Post? get post => _post;
+//   User? get user => _user;
+//   List<Like>? get likes => _likes; // Getter for likes
+//   List<dynamic>? get comments => _comments;
+//   List<PostRatings>? get postRatings => _postRatings;
+//   num? get totalLikes => _totalLikes;
+//   num? get totalComments => _totalComments;
+//   Rx<int> get tcomment => _tcomment;
+//   Rx<int> get tLikes => _tLikes;
+//   Rx<bool> get isLiked => _isLiked; // Getter for isLiked
+//
+//   Map<String, dynamic> toJson() {
+//     final map = <String, dynamic>{};
+//     map['id'] = _id;
+//     map['userId'] = _userId;
+//     map['placeId'] = _placeId;
+//     map['postId'] = _postId;
+//     map['overall_rating'] = _overallRating;
+//     map['place_name'] = _placeName;
+//     map['description'] = _description;
+//     map['images'] = _images;
+//     map['createdAt'] = _createdAt;
+//     map['updatedAt'] = _updatedAt;
+//     if (_post != null) {
+//       map['post'] = _post?.toJson();
+//     }
+//     if (_user != null) {
+//       map['user'] = _user?.toJson();
+//     }
+//     if (_likes != null) {
+//       map['likes'] = _likes?.map((v) => v.toJson()).toList(); // Convert likes back to JSON
+//     }
+//     if (_comments != null) {
+//       map['comments'] = _comments;
+//     }
+//     if (_postRatings != null) {
+//       map['postRatings'] = _postRatings?.map((v) => v.toJson()).toList();
+//     }
+//     map['totalLikes'] = _totalLikes;
+//     map['totalComments'] = _totalComments;
+//
+//     return map;
+//   }
+// }
 
 class Like {
   Like({
@@ -329,290 +739,3 @@ PostRatings copyWith({  num? id,
 
 }
 
-class User {
-  User({
-      num? id,
-      String? name,
-      String? firstName,
-      String? lastName,
-      dynamic isOnline,
-      String? email,
-      String? phoneNumber,
-      String? pseudo,
-      String? profilePicture,
-      String? coverPicture,
-      String? profession,
-      String? dob,
-      String? age,
-      String? gender,
-      String? city,
-      String? area,
-      String? timezone,
-      dynamic socketId,
-      String? latitude,
-      String? longitude,
-      String? deviceToken,
-      dynamic socialId,
-      dynamic socialType,
-      String? deviceType,
-      dynamic biography,
-      dynamic lastActive,
-      num? gamePoints,
-      bool? allowPushNotifications,
-      dynamic resetToken,
-      dynamic resetTokenExpiresAt,
-      bool? isVerified,
-      bool? isActivate,
-      String? createdAt,
-      String? updatedAt,}){
-    _id = id;
-    _name = name;
-    _firstName = firstName;
-    _lastName = lastName;
-    _isOnline = isOnline;
-    _email = email;
-    _phoneNumber = phoneNumber;
-    _pseudo = pseudo;
-    _profilePicture = profilePicture;
-    _coverPicture = coverPicture;
-    _profession = profession;
-    _dob = dob;
-    _age = age;
-    _gender = gender;
-    _city = city;
-    _area = area;
-    _timezone = timezone;
-    _socketId = socketId;
-    _latitude = latitude;
-    _longitude = longitude;
-    _deviceToken = deviceToken;
-    _socialId = socialId;
-    _socialType = socialType;
-    _deviceType = deviceType;
-    _biography = biography;
-    _lastActive = lastActive;
-    _gamePoints = gamePoints;
-    _allowPushNotifications = allowPushNotifications;
-    _resetToken = resetToken;
-    _resetTokenExpiresAt = resetTokenExpiresAt;
-    _isVerified = isVerified;
-    _isActivate = isActivate;
-    _createdAt = createdAt;
-    _updatedAt = updatedAt;
-}
-
-  User.fromJson(dynamic json) {
-    _id = json['id'];
-    _name = json['name'];
-    _firstName = json['first_name'];
-    _lastName = json['last_name'];
-    _isOnline = json['is_online'];
-    _email = json['email'];
-    _phoneNumber = json['phone_number'];
-    _pseudo = json['pseudo'];
-    _profilePicture = json['profile_picture'];
-    _coverPicture = json['coverPicture'];
-    _profession = json['profession'];
-    _dob = json['dob'];
-    _age = json['age'];
-    _gender = json['gender'];
-    _city = json['city'];
-    _area = json['area'];
-    _timezone = json['timezone'];
-    _socketId = json['socket_id'];
-    _latitude = json['latitude'];
-    _longitude = json['longitude'];
-    _deviceToken = json['deviceToken'];
-    _socialId = json['socialId'];
-    _socialType = json['socialType'];
-    _deviceType = json['deviceType'];
-    _biography = json['biography'];
-    _lastActive = json['last_active'];
-    _gamePoints = json['gamePoints'];
-    _allowPushNotifications = json['allowPushNotifications'];
-    _resetToken = json['reset_token'];
-    _resetTokenExpiresAt = json['reset_token_expires_at'];
-    _isVerified = json['is_verified'];
-    _isActivate = json['is_activate'];
-    _createdAt = json['createdAt'];
-    _updatedAt = json['updatedAt'];
-  }
-  num? _id;
-  String? _name;
-  String? _firstName;
-  String? _lastName;
-  dynamic _isOnline;
-  String? _email;
-  String? _phoneNumber;
-  String? _pseudo;
-  String? _profilePicture;
-  String? _coverPicture;
-  String? _profession;
-  String? _dob;
-  String? _age;
-  String? _gender;
-  String? _city;
-  String? _area;
-  String? _timezone;
-  dynamic _socketId;
-  String? _latitude;
-  String? _longitude;
-  String? _deviceToken;
-  dynamic _socialId;
-  dynamic _socialType;
-  String? _deviceType;
-  dynamic _biography;
-  dynamic _lastActive;
-  num? _gamePoints;
-  bool? _allowPushNotifications;
-  dynamic _resetToken;
-  dynamic _resetTokenExpiresAt;
-  bool? _isVerified;
-  bool? _isActivate;
-  String? _createdAt;
-  String? _updatedAt;
-User copyWith({  num? id,
-  String? name,
-  String? firstName,
-  String? lastName,
-  dynamic isOnline,
-  String? email,
-  String? phoneNumber,
-  String? pseudo,
-  String? profilePicture,
-  String? coverPicture,
-  String? profession,
-  String? dob,
-  String? age,
-  String? gender,
-  String? city,
-  String? area,
-  String? timezone,
-  dynamic socketId,
-  String? latitude,
-  String? longitude,
-  String? deviceToken,
-  dynamic socialId,
-  dynamic socialType,
-  String? deviceType,
-  dynamic biography,
-  dynamic lastActive,
-  num? gamePoints,
-  bool? allowPushNotifications,
-  dynamic resetToken,
-  dynamic resetTokenExpiresAt,
-  bool? isVerified,
-  bool? isActivate,
-  String? createdAt,
-  String? updatedAt,
-
-}) => User(  id: id ?? _id,
-  name: name ?? _name,
-  firstName: firstName ?? _firstName,
-  lastName: lastName ?? _lastName,
-  isOnline: isOnline ?? _isOnline,
-  email: email ?? _email,
-  phoneNumber: phoneNumber ?? _phoneNumber,
-  pseudo: pseudo ?? _pseudo,
-  profilePicture: profilePicture ?? _profilePicture,
-  coverPicture: coverPicture ?? _coverPicture,
-  profession: profession ?? _profession,
-  dob: dob ?? _dob,
-  age: age ?? _age,
-  gender: gender ?? _gender,
-  city: city ?? _city,
-  area: area ?? _area,
-  timezone: timezone ?? _timezone,
-  socketId: socketId ?? _socketId,
-  latitude: latitude ?? _latitude,
-  longitude: longitude ?? _longitude,
-  deviceToken: deviceToken ?? _deviceToken,
-  socialId: socialId ?? _socialId,
-  socialType: socialType ?? _socialType,
-  deviceType: deviceType ?? _deviceType,
-  biography: biography ?? _biography,
-  lastActive: lastActive ?? _lastActive,
-  gamePoints: gamePoints ?? _gamePoints,
-  allowPushNotifications: allowPushNotifications ?? _allowPushNotifications,
-  resetToken: resetToken ?? _resetToken,
-  resetTokenExpiresAt: resetTokenExpiresAt ?? _resetTokenExpiresAt,
-  isVerified: isVerified ?? _isVerified,
-  isActivate: isActivate ?? _isActivate,
-  createdAt: createdAt ?? _createdAt,
-  updatedAt: updatedAt ?? _updatedAt,
-);
-  num? get id => _id;
-  String? get name => _name;
-  String? get firstName => _firstName;
-  String? get lastName => _lastName;
-  dynamic get isOnline => _isOnline;
-  String? get email => _email;
-  String? get phoneNumber => _phoneNumber;
-  String? get pseudo => _pseudo;
-  String? get profilePicture => _profilePicture;
-  String? get coverPicture => _coverPicture;
-  String? get profession => _profession;
-  String? get dob => _dob;
-  String? get age => _age;
-  String? get gender => _gender;
-  String? get city => _city;
-  String? get area => _area;
-  String? get timezone => _timezone;
-  dynamic get socketId => _socketId;
-  String? get latitude => _latitude;
-  String? get longitude => _longitude;
-  String? get deviceToken => _deviceToken;
-  dynamic get socialId => _socialId;
-  dynamic get socialType => _socialType;
-  String? get deviceType => _deviceType;
-  dynamic get biography => _biography;
-  dynamic get lastActive => _lastActive;
-  num? get gamePoints => _gamePoints;
-  bool? get allowPushNotifications => _allowPushNotifications;
-  dynamic get resetToken => _resetToken;
-  dynamic get resetTokenExpiresAt => _resetTokenExpiresAt;
-  bool? get isVerified => _isVerified;
-  bool? get isActivate => _isActivate;
-  String? get createdAt => _createdAt;
-  String? get updatedAt => _updatedAt;
-
-  Map<String, dynamic> toJson() {
-    final map = <String, dynamic>{};
-    map['id'] = _id;
-    map['name'] = _name;
-    map['first_name'] = _firstName;
-    map['last_name'] = _lastName;
-    map['is_online'] = _isOnline;
-    map['email'] = _email;
-    map['phone_number'] = _phoneNumber;
-    map['pseudo'] = _pseudo;
-    map['profile_picture'] = _profilePicture;
-    map['coverPicture'] = _coverPicture;
-    map['profession'] = _profession;
-    map['dob'] = _dob;
-    map['age'] = _age;
-    map['gender'] = _gender;
-    map['city'] = _city;
-    map['area'] = _area;
-    map['timezone'] = _timezone;
-    map['socket_id'] = _socketId;
-    map['latitude'] = _latitude;
-    map['longitude'] = _longitude;
-    map['deviceToken'] = _deviceToken;
-    map['socialId'] = _socialId;
-    map['socialType'] = _socialType;
-    map['deviceType'] = _deviceType;
-    map['biography'] = _biography;
-    map['last_active'] = _lastActive;
-    map['gamePoints'] = _gamePoints;
-    map['allowPushNotifications'] = _allowPushNotifications;
-    map['reset_token'] = _resetToken;
-    map['reset_token_expires_at'] = _resetTokenExpiresAt;
-    map['is_verified'] = _isVerified;
-    map['is_activate'] = _isActivate;
-    map['createdAt'] = _createdAt;
-    map['updatedAt'] = _updatedAt;
-    return map;
-  }
-
-}

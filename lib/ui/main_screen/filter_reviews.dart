@@ -137,11 +137,13 @@ class _FilterReviewsState extends State<FilterReviews> {
                               GestureDetector(
                                 onTap: () async {
                                       setState(() {
-                                        refItem = item;
+                                        refItem.value = item.value;
+
                                         refiningList.forEach((element) {
                                           element.selectedColor=false;
                                         });
                                         refiningList[index].selectedColor=true;
+                                        refItem.selectedColor= true;
                                       });
                                 },
                                 child: Container(
@@ -445,6 +447,11 @@ class _FilterReviewsState extends State<FilterReviews> {
                           if( isActive.indexWhere((element) => element == true) != -1 && refItem.selectedColor== true)
                             {
                               print("widget.postID filter ${widget.postId}");
+
+
+                              print("refItem.ratingValue  ${refItem.ratingValue}");
+
+                              print("refItem.value  ${refItem.value}");
                               filterReview(id, refItem.ratingValue??1 ,refItem.value);
 
                             }

@@ -17,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:giphy_get/giphy_get.dart';
+import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:pinch_zoom_release_unzoom/pinch_zoom_release_unzoom.dart';
 import 'package:readmore/readmore.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -145,6 +146,8 @@ class _PostDetailState extends State<PostDetail> {
 
     print('Received arguments: ${widget.mapData}');
     post = widget.mapData!['post'];
+
+    print("phone ${post.phone}");
     userRecommendedPercentage = post.userRecommendedPercentage?.toInt() ?? 0;
     print("post.id asdasdasd  ${post.id}");
 
@@ -158,47 +161,47 @@ class _PostDetailState extends State<PostDetail> {
   Future<void> _launchURL(String? url) async {
     print("URL Data: $url");
 
+
+
     // Check if the URL is null or empty
-    if (url == null || url
-        .trim()
-        .isEmpty) {
+    if (url == null || url.trim().isEmpty || url=="null"||url=="") {
       print("Invalid URL");
-      toaster(context, "There is no website available.");
+      toaster(context, "Webiste not found");
       return;
     }
 
-    // Ensure the URL starts with a valid scheme (http or https)
-    if (!url.startsWith("http://") && !url.startsWith("https://")) {
-      url = "https://$url"; // Add default https scheme if missing
-    }
-
-    Uri uri = Uri.parse(url);
-
     try {
-      if (await canLaunchUrl(uri)) {
-        // Check if the URL can be launched
-        bool launched =
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-        if (!launched) {
-          toaster(context, "Could not open the website.");
-        }
-      } else {
-        toaster(context, "Could not open the website");
+      final uri = Uri.parse(url);
+      if (!await launchUrl(uri)) {
+        toaster(context, "Website not found");
       }
     } catch (e) {
-      print("Launch error: $e");
-      toaster(context, "Failed to open the website.");
+      toaster(context, "Website not found");
+      print('Error launching URL: $e');
     }
   }
 
-  void makePhoneCall(BuildContext context, String phoneNumber) async {
-    final Uri uri = Uri.parse("tel:$phoneNumber");
+  void makePhoneCall(BuildContext context, String ? phoneNumber) async {
 
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
-      toaster(context, "Could not launch phone dialer.");
+
+    print("phoneNumber ${phoneNumber}");
+    if(phoneNumber =="No phone number found" || phoneNumber==null)
+      {
+        toaster(context, "No phone number found");
+
+      }
+    else{
+
+
+      final Uri uri = Uri.parse("tel:$phoneNumber");
+
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri);
+      } else {
+        toaster(context, "Could not launch phone dialer.");
+      }
     }
+
   }
 
   @override
@@ -210,6 +213,8 @@ class _PostDetailState extends State<PostDetail> {
     }
     super.dispose();
   }
+
+  bool opening = false;
 
   @override
   Widget build(BuildContext context) {
@@ -235,8 +240,34 @@ class _PostDetailState extends State<PostDetail> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     HeaderWidget(),
-                    MyString.bold(
-                        post.category, 18, MyColor.title, TextAlign.start),
+                    Row(
+                      children: [
+                        MyString.bold(
+                            post.category, 18, MyColor.title, TextAlign.start),
+
+                        post.placeName =="No Name" || post.placeName==null?
+                        SizedBox():
+
+                        Expanded(
+                          child: Text(
+                            " - ${post.placeName}"??"",
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontSize: 18,
+                                color:MyColor.title,
+                                fontFamily: 'poppins_bold',
+                                fontWeight: FontWeight.w700,
+                            ),
+                          )
+                        )
+
+
+
+
+
+                      ],
+                    ),
+                    SizedBox(height: 10,),
                     // Container(
                     //   margin: const EdgeInsets.only(top: 15, bottom: 15),
                     //   decoration: BoxDecoration(
@@ -288,8 +319,21 @@ class _PostDetailState extends State<PostDetail> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          MyString.bold(post.category, 18, MyColor.title,
-                              TextAlign.start),
+                          post.placeName =="No Name" || post.placeName==null?
+                              SizedBox():
+                          Expanded(
+                              child: Text(
+                                "${post.placeName}"??"",
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color:MyColor.title,
+                                  fontFamily: 'poppins_bold',
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              )
+                          ),
+                          SizedBox(width: 20,),
                           Row(
                             children: [
                               Image.asset('assets/images/icons/close.png'),
@@ -367,7 +411,7 @@ class _PostDetailState extends State<PostDetail> {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  _launchURL(post.websiteName.toString());
+                                  _launchURL(post.websiteName);
                                 },
                                 child: Container(
                                     padding: EdgeInsets.symmetric(
@@ -389,7 +433,7 @@ class _PostDetailState extends State<PostDetail> {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  _launchURL(post.websiteName.toString());
+                                  // _launchURL(post.websiteName.toString());
                                 },
                                 child: Container(
                                     padding: EdgeInsets.symmetric(
@@ -411,7 +455,8 @@ class _PostDetailState extends State<PostDetail> {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  makePhoneCall(context, post.phone.toString());
+
+                                  makePhoneCall(context, post.phone);
                                 },
                                 child: Container(
                                     padding: EdgeInsets.symmetric(
@@ -464,15 +509,35 @@ class _PostDetailState extends State<PostDetail> {
                           ),
                           title: MyString.bold('Opening Hours', 14,
                               MyColor.redd, TextAlign.start),
-                          trailing: Image.asset(
+                          trailing:
+                          opening==true?
+                          Container(
+                            width: 20,  // Adjust size as needed
+                            height: 20,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: MyColor.orange,
+                            ),
+                            child: Center(
+                              child: Icon(
+                                Icons.remove, // Flutter’s built-in minus icon
+                                color: Colors.white,
+                                size: 15,
+                              ),
+                            ),
+                          ):
+                          Image.asset(
                             'assets/images/icons/addpic.png',
                             width: 20,
                             height: 20,
                           ),
                           onExpansionChanged: (bool expanded) {
-                            setState(() {});
+                            setState(() {
+                              opening = !opening;
+                            });
                           },
                           children: [
+
                             MyString.bold(
                                 '[${post.openingClosingHour ?? "no data"}]', 14,
                                 MyColor.redd, TextAlign.start),
@@ -512,15 +577,17 @@ class _PostDetailState extends State<PostDetail> {
                     MyString.bold(
                         'Leave a review', 16, MyColor.redd, TextAlign.start),
                     GestureDetector(
-                      onTap: () {
-                        Navigator.push(
+                      onTap: () async {
+                        final result = await Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  AddPostDetails(
-                                    id: post.id,
-                                  )),
+                            builder: (context) =>
+                                AddPostDetails(id: post.id),
+                          ),
                         );
+                        if (result == true) {
+                          getPostReviewsById();
+                        }
                       },
                       child: Container(
                           margin: EdgeInsets.symmetric(vertical: 15),
@@ -967,196 +1034,431 @@ class _PostDetailState extends State<PostDetail> {
                             ? progressBar()
                             : Container(
                           margin: EdgeInsets.only(top: 10),
-                          height: 220,
-                          child: ListView.builder(
-                            padding: EdgeInsets.zero,
+                          child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
-                            itemCount: mReviews.length,
-                            itemBuilder: (context, index) {
-                              var rev = mReviews[index];
-                              rev.tcomment.value = rev.totalComments!.toInt();
-                              rev.tLikes.value = rev.totalLikes!.toInt();
+                            child: Row(
+                              children: mReviews.map((rev) {
+                                // Update your review properties
+                                rev.tcomment.value = rev.totalComments!.toInt();
+                                rev.tLikes.value = rev.totalLikes!.toInt();
 
-                              print("review rev.id  ${rev.id}");
-                              return GestureDetector(
-                                onTap: () async {
-                                  // Handle tap here
-                                },
-                                child: Container(
-                                  margin:
-                                  EdgeInsets.only(right: 20),
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 5, horizontal: 15),
-                                  width: 280,
-                                  decoration: BoxDecoration(
-                                    color: MyColor.card,
-                                    border: Border.all(
-                                        color: MyColor.stroke),
-                                    borderRadius: BorderRadius.circular(
-                                        8), // Optional: adds rounded corners
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.center,
-                                    children: [
-                                      // Review header text
-                                      MyString.reg(
-                                        'Review filed on ${BaseDateUtils
-                                            .formatToMMddyyyy(rev.createdAt!)}',
-                                        12,
-                                        MyColor.textBlack0,
-                                        TextAlign.start,
-                                      ),
-                                      SizedBox(
-                                          height:
-                                          10), // Spacing between elements
-                                      // Stars
-                                      Row(
-                                        children: List.generate(
-                                          rev.overallRating!
-                                              .toInt(),
-                                              (index) =>
-                                              Padding(
-                                                padding: const EdgeInsets
-                                                    .only(
-                                                    right:
-                                                    4.0), // Space between stars
-                                                child: Image.asset(
-                                                  'assets/images/icons/star.png',
-                                                  height: 16,
-                                                  width: 16,
-                                                  semanticLabel:
-                                                  'Star rating',
-                                                ),
-                                              ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                          height:
-                                          10), // Spacing between elements
-
-                                      if (rev.placeName != null)
-                                        MyString.bold(
-                                          '${rev.placeName}',
-                                          14,
-                                          MyColor.black,
+                                return GestureDetector(
+                                  onTap: () async {
+                                    // Handle tap
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.only(right: 20),
+                                    padding: EdgeInsets.symmetric(vertical: 30, horizontal: 15),
+                                    width: 280,
+                                    decoration: BoxDecoration(
+                                      color: MyColor.card,
+                                      border: Border.all(color: MyColor.stroke),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min, // Lets the column size itself dynamically.
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        MyString.reg(
+                                          'Review filed on ${BaseDateUtils.formatToMMddyyyy(rev.createdAt!)}',
+                                          12,
+                                          MyColor.textBlack0,
                                           TextAlign.start,
                                         ),
-                                      SizedBox(height: 10), //
-                                      if (rev.description != null)
-                                        MyString.regMultiLine(
-                                            '${rev.description}',
-                                            12,
-                                            MyColor.black,
-                                            TextAlign.start,
-                                            3),
-                                      Spacer(),
-
-
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .spaceBetween,
-                                        children: [
-
-                                          /// comments
-                                          GestureDetector(
-                                            onTap: () async {
-                                              String? userid = sharedPref
-                                                  .getString(SharedKey.userId);
-                                              await showCommentBottomSheet(
-                                                  screenCheck: false,
-                                                  context: context,
-                                                  comments:
-                                                  mReviews[index].comments,
-                                                  userId: int.parse(userid!),
-                                                  postReviewId: mReviews[index]
-                                                      .id
-                                                      ?.toInt(),
-                                                  mReviews: rev
-                                              );
-                                              print("dsfsdfsdfsdfsdfsdf00");
-                                            },
-                                            child: Row(
-
-                                              children: [
-                                                SvgPicture.asset(
-                                                    'assets/images/icons/comment_icon.svg',
-                                                    width: 14,
-                                                    height: 15),
-                                                SizedBox(width: 5,),
-                                                Obx(() {
-                                                  return MyString.reg(
-                                                    '${ rev.tcomment.value
-                                                        .toString()}',
-                                                    12,
-                                                    MyColor.commentCountColor,
-                                                    TextAlign.start,
-                                                  );
-                                                }),
-                                              ],
+                                        SizedBox(height: 10),
+                                        Row(
+                                          children: List.generate(
+                                            rev.overallRating!.toInt(),
+                                                (index) => Padding(
+                                              padding: const EdgeInsets.only(right: 4.0),
+                                              child: Image.asset(
+                                                'assets/images/icons/star.png',
+                                                height: 16,
+                                                width: 16,
+                                                semanticLabel: 'Star rating',
+                                              ),
                                             ),
                                           ),
-
-
-                                          Spacer(),
-
-                                          /// likes
-
-                                          GestureDetector(
-                                            onTap: () {
-                                              String? userid = sharedPref
-                                                  .getString(SharedKey.userId);
-                                              sendLikes(int.parse(userid!),
-                                                  mReviews[index].id!.toInt(),
-                                                  rev);
-                                            },
-                                            child: Obx(() {
-                                              return Row(
+                                        ),
+                                        SizedBox(height: 10),
+                                        Row(
+                                          children: [
+                                            if (rev.user?.firstName != null)
+                                              Flexible(
+                                                child: Text(
+                                                  rev.user!.firstName ?? "",
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: MyColor.title,
+                                                    fontFamily: 'poppins_bold',
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                                ),
+                                              ),
+                                            SizedBox(width: 8),
+                                            MyString.bold(
+                                              "reviews",
+                                              14,
+                                              Colors.grey.withOpacity(0.9),
+                                              TextAlign.start,
+                                            ),
+                                            SizedBox(width: 8),
+                                            if (rev.placeName != null && rev.placeName != "No Name")
+                                              Flexible(
+                                                child: Text(
+                                                  rev.placeName ?? "",
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: MyColor.title,
+                                                    fontFamily: 'poppins_bold',
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                        if (rev.description != null)
+                                          Text(
+                                            rev.description??"",
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: MyColor.black,
+                                              fontFamily: 'poppins_regular',
+                                            ),
+                                          ),
+                                        SizedBox(height: 10),
+                                        // Fixed spacing instead of Spacer
+                                        SizedBox(height: 20),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () async {
+                                                String? userid = sharedPref.getString(SharedKey.userId);
+                                                await showCommentBottomSheet(
+                                                  screenCheck: false,
+                                                  context: context,
+                                                  comments: rev.comments,
+                                                  userId: int.parse(userid!),
+                                                  postReviewId: rev.id!.toInt(),
+                                                  mReviews: rev,
+                                                );
+                                              },
+                                              child: Row(
                                                 children: [
-
-                                                  rev.isLiked.value == false ?
                                                   SvgPicture.asset(
-                                                    'assets/images/icons/heart_solid_icon.svg',
+                                                    'assets/images/icons/comment_icon.svg',
                                                     width: 14,
                                                     height: 15,
-                                                    colorFilter: ColorFilter
-                                                        .mode(
-                                                        Colors.grey.withOpacity(
-                                                            0.5),
-                                                        BlendMode.srcIn),
-                                                  ) :
-                                                  SvgPicture.asset(
-                                                      'assets/images/icons/heart_solid_icon.svg',
-                                                      width: 14, height: 15),
-                                                  SizedBox(width: 5,),
-                                                  MyString.reg(
-                                                    '${rev.tLikes.value
-                                                        .toString()
-                                                        .toString()}',
-                                                    12,
-                                                    MyColor.commentCountColor,
-                                                    TextAlign.start,
-                                                  )
+                                                  ),
+                                                  SizedBox(width: 5),
+                                                  Obx(() {
+                                                    return MyString.reg(
+                                                      '${rev.tcomment.value}',
+                                                      12,
+                                                      MyColor.commentCountColor,
+                                                      TextAlign.start,
+                                                    );
+                                                  }),
                                                 ],
-                                              );
-                                            }),
-                                          ),
+                                              ),
+                                            ),
+                                            Spacer(),
+                                            GestureDetector(
+                                              onTap: () {
+                                                String? userid = sharedPref.getString(SharedKey.userId);
+                                                sendLikes(int.parse(userid!), rev.id!.toInt(), rev);
+                                              },
+                                              child: Obx(() {
+                                                return Row(
+                                                  children: [
+                                                    rev.isLiked.value == false
+                                                        ? SvgPicture.asset(
+                                                      'assets/images/icons/heart_solid_icon.svg',
+                                                      width: 14,
+                                                      height: 15,
+                                                      colorFilter: ColorFilter.mode(
+                                                        Colors.grey.withOpacity(0.5),
+                                                        BlendMode.srcIn,
+                                                      ),
+                                                    )
+                                                        : SvgPicture.asset(
+                                                      'assets/images/icons/heart_solid_icon.svg',
+                                                      width: 14,
+                                                      height: 15,
+                                                    ),
+                                                    SizedBox(width: 5),
+                                                    MyString.reg(
+                                                      '${rev.tLikes.value}',
+                                                      12,
+                                                      MyColor.commentCountColor,
+                                                      TextAlign.start,
+                                                    )
+                                                  ],
+                                                );
+                                              }),
+                                            ),
+                                            Spacer(),
 
-                                          Spacer(),
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: 20,
-                                      )
-                                    ],
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
+                                );
+                              }).toList(),
+                            ),
                           ),
-                        ),
+                        )
+
+
+
+
+                        // Container(
+                        //   margin: EdgeInsets.only(top: 10),
+                        //   height: 330,
+                        //   child: ListView.builder(
+                        //     padding: EdgeInsets.zero,
+                        //     scrollDirection: Axis.horizontal,
+                        //     itemCount: mReviews.length,
+                        //     itemBuilder: (context, index) {
+                        //       var rev = mReviews[index];
+                        //       rev.tcomment.value = rev.totalComments!.toInt();
+                        //       rev.tLikes.value = rev.totalLikes!.toInt();
+                        //
+                        //       print("review rev.id  ${rev.id}");
+                        //       return GestureDetector(
+                        //         onTap: () async {
+                        //           // Handle tap here
+                        //         },
+                        //         child: Container(
+                        //           margin:
+                        //           EdgeInsets.only(right: 20),
+                        //           padding: EdgeInsets.symmetric(
+                        //               vertical: 30, horizontal: 15),
+                        //           width: 280,
+                        //           decoration: BoxDecoration(
+                        //             color: MyColor.card,
+                        //             border: Border.all(
+                        //                 color: MyColor.stroke),
+                        //             borderRadius: BorderRadius.circular(
+                        //                 8), // Optional: adds rounded corners
+                        //           ),
+                        //           child: Column(
+                        //             crossAxisAlignment:
+                        //             CrossAxisAlignment.start,
+                        //             mainAxisAlignment:
+                        //             MainAxisAlignment.center,
+                        //             children: [
+                        //               // Review header text
+                        //               MyString.reg(
+                        //                 'Review filed on ${BaseDateUtils
+                        //                     .formatToMMddyyyy(rev.createdAt!)}',
+                        //                 12,
+                        //                 MyColor.textBlack0,
+                        //                 TextAlign.start,
+                        //               ),
+                        //               SizedBox(
+                        //                   height:
+                        //                   10), // Spacing between elements
+                        //               // Stars
+                        //               Row(
+                        //                 children: List.generate(
+                        //                   rev.overallRating!
+                        //                       .toInt(),
+                        //                       (index) =>
+                        //                       Padding(
+                        //                         padding: const EdgeInsets
+                        //                             .only(
+                        //                             right:
+                        //                             4.0), // Space between stars
+                        //                         child: Image.asset(
+                        //                           'assets/images/icons/star.png',
+                        //                           height: 16,
+                        //                           width: 16,
+                        //                           semanticLabel:
+                        //                           'Star rating',
+                        //                         ),
+                        //                       ),
+                        //                 ),
+                        //               ),
+                        //               SizedBox(
+                        //                   height:
+                        //                   10), // Spacing between elements
+                        //
+                        //           Row(
+                        //             children: [
+                        //               if (rev.user?.firstName != null)
+                        //                 Flexible(
+                        //                   child: Text(
+                        //
+                        //                     rev.user!.firstName??"",
+                        //                     maxLines: 1,
+                        //                     overflow: TextOverflow.ellipsis,
+                        //                     style: TextStyle(
+                        //                       fontSize: 14,
+                        //                       color: MyColor.title,
+                        //                       fontFamily: 'poppins_bold',
+                        //                       fontWeight: FontWeight.w700,
+                        //                     ),
+                        //                   ),
+                        //                 ),
+                        //               // Add spacing so "reviews" text doesn't stick to the first name
+                        //               SizedBox(width: 8),
+                        //               MyString.bold(
+                        //                 "reviews",
+                        //                 14,
+                        //                 Colors.grey.withOpacity(0.9),
+                        //                 TextAlign.start,
+                        //               ),
+                        //               // Add spacing between "reviews" and place name
+                        //               SizedBox(width: 8),
+                        //               if (rev.placeName != null && rev.placeName != "No Name")
+                        //                 Flexible(
+                        //                   child: Text(
+                        //                     rev.placeName??"",
+                        //                     maxLines: 1,
+                        //                     overflow: TextOverflow.ellipsis,
+                        //                     style: TextStyle(
+                        //                       fontSize: 14,
+                        //                       color: MyColor.title,
+                        //                       fontFamily: 'poppins_bold',
+                        //                       fontWeight: FontWeight.w700,
+                        //                     ),
+                        //                   ),
+                        //                 ),
+                        //             ],
+                        //           ),
+                        //
+                        //
+                        //           if (rev.description != null)
+                        //
+                        //             Text(
+                        //               "Dappled light filtered through ancient trees as the forest whispered forgotten legends. Amid rustling leaves and murmuring streams, hidden paths revealed the secrets of time. Each step carried echoes of past lives, inviting curious souls to wander deeper into nature's enchanted realm. Mystic echoes call.",
+                        //               style: TextStyle(
+                        //                 fontSize: 12,
+                        //                 color: MyColor.black,
+                        //                 fontFamily:'poppins_regular',
+                        //
+                        //
+                        //               ),
+                        //             ),
+                        //
+                        //
+                        //
+                        //
+                        //
+                        //
+                        //               SizedBox(height: 10), //
+                        //
+                        //               Spacer(),
+                        //
+                        //
+                        //               Row(
+                        //                 mainAxisAlignment: MainAxisAlignment
+                        //                     .spaceBetween,
+                        //                 children: [
+                        //
+                        //                   /// comments
+                        //                   GestureDetector(
+                        //                     onTap: () async {
+                        //                       String? userid = sharedPref
+                        //                           .getString(SharedKey.userId);
+                        //                       await showCommentBottomSheet(
+                        //                           screenCheck: false,
+                        //                           context: context,
+                        //                           comments:
+                        //                           mReviews[index].comments,
+                        //                           userId: int.parse(userid!),
+                        //                           postReviewId: mReviews[index]
+                        //                               .id
+                        //                               ?.toInt(),
+                        //                           mReviews: rev
+                        //                       );
+                        //                       print("dsfsdfsdfsdfsdfsdf00");
+                        //                     },
+                        //                     child: Row(
+                        //
+                        //                       children: [
+                        //                         SvgPicture.asset(
+                        //                             'assets/images/icons/comment_icon.svg',
+                        //                             width: 14,
+                        //                             height: 15),
+                        //                         SizedBox(width: 5,),
+                        //                         Obx(() {
+                        //                           return MyString.reg(
+                        //                             '${ rev.tcomment.value
+                        //                                 .toString()}',
+                        //                             12,
+                        //                             MyColor.commentCountColor,
+                        //                             TextAlign.start,
+                        //                           );
+                        //                         }),
+                        //                       ],
+                        //                     ),
+                        //                   ),
+                        //
+                        //
+                        //                   Spacer(),
+                        //
+                        //                   /// likes
+                        //
+                        //                   GestureDetector(
+                        //                     onTap: () {
+                        //                       String? userid = sharedPref
+                        //                           .getString(SharedKey.userId);
+                        //                       sendLikes(int.parse(userid!),
+                        //                           mReviews[index].id!.toInt(),
+                        //                           rev);
+                        //                     },
+                        //                     child: Obx(() {
+                        //                       return Row(
+                        //                         children: [
+                        //
+                        //                           rev.isLiked.value == false ?
+                        //                           SvgPicture.asset(
+                        //                             'assets/images/icons/heart_solid_icon.svg',
+                        //                             width: 14,
+                        //                             height: 15,
+                        //                             colorFilter: ColorFilter.mode(
+                        //                                 Colors.grey.withOpacity(
+                        //                                     0.5),
+                        //                                 BlendMode.srcIn),
+                        //                           ) :
+                        //                           SvgPicture.asset(
+                        //                               'assets/images/icons/heart_solid_icon.svg',
+                        //                               width: 14, height: 15),
+                        //                           SizedBox(width: 5,),
+                        //                           MyString.reg(
+                        //                             '${rev.tLikes.value
+                        //                                 .toString()
+                        //                                 .toString()}',
+                        //                             12,
+                        //                             MyColor.commentCountColor,
+                        //                             TextAlign.start,
+                        //                           )
+                        //                         ],
+                        //                       );
+                        //                     }),
+                        //                   ),
+                        //
+                        //                   Spacer(),
+                        //                 ],
+                        //               ),
+                        //               SizedBox(
+                        //                 height: 20,
+                        //               )
+                        //             ],
+                        //           ),
+                        //         ),
+                        //       );
+                        //     },
+                        //   ),
+                        // ),
                       ],
                     )
                   ],
@@ -1252,6 +1554,11 @@ class _PostDetailState extends State<PostDetail> {
                               // Adds spacing between text and button
                               TextButton(
                                 onPressed: () {
+
+                                  sortingList.forEach((element) {
+                                    element.conditionCheck = false;
+                                  });
+
                                   Navigator.pop(context);
                                 },
                                 style: TextButton.styleFrom(
@@ -1368,14 +1675,15 @@ class _PostDetailState extends State<PostDetail> {
                               if (checkedIndex != -1) {
                                 suggestFeedBack(
                                     sortingList[checkedIndex].title);
+                                Get.back();
+                                toaster(context, "Feed back send Successfully");
                               } else {
                                 toaster(context,
                                     "Please select at least one option");
                               }
 
 
-                              Get.back();
-                              toaster(context, "Feed back send Successfully");
+
                               // Handle send action here
                             },
                             child: Container(
@@ -1433,21 +1741,27 @@ class _PostDetailState extends State<PostDetail> {
       var res = await AllApi.getMethodApi(
           "${ApiStrings.getPostReviewsByPostId}${post.id}");
       var result = jsonDecode(res.toString());
-      print(result);
+      print("result REVIEW  ${result}");
       if (result['status'] == 200) {
         isLoading = false;
         mReviews = (result['data'] as List)
             .map((reviewItem) => Reviews.fromJson(reviewItem))
             .toList();
 
-        mReviews.forEach((element) {
-          element.likes?.forEach((e) {
-            if (e.userId == int.parse(userid!)) {
-              print("asdasdasdasda idhr aya hai");
-              element.isLiked.value = true;
-            }
-          });
-        });
+
+
+        // mReviews.forEach((element) {
+        //
+        //   if(element.likes!.isNotEmpty){
+        //     element.likes?.forEach((e) {
+        //       if (e.userId == int.parse(userid!)) {
+        //         print("asdasdasdasda idhr aya hai");
+        //         element.isLiked.value = true;
+        //       }
+        //     });
+        //   }
+        //
+        // });
 
 
         if (this.mounted) {

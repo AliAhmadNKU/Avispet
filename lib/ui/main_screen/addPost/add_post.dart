@@ -1341,6 +1341,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                                       MyColor.title,
                                                       TextAlign.start),
                                                   TextField(
+                                                    maxLength: 300,
                                                     controller: additionalInfo,
                                                     style: TextStyle(
                                                         color: MyColor.black),
@@ -1929,7 +1930,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
     _postBloc.add(GetCreatePostEvent(
       userId: int.parse(sharedPref.getString(SharedKey.userId)!),
       placeId: currPos!['placeId'],
-      // currPos!['placeId']
+      websiteName: currPos?["website"],
+     // openingCloseHour:currPos?["openingHours"] ,
       email: currPos!['email'],
       phone: currPos!['phone'],
       images: imageUrlList,

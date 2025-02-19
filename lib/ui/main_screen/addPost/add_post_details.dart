@@ -294,7 +294,7 @@ class _AddPostDetailsState extends State<AddPostDetails> {
                 padding:
                     const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                 child: MyString.bold(
-                    '${'addPostTitle'.tr}', 27, MyColor.title, TextAlign.center),
+                    '${'addReviewTitle'.tr}', 27, MyColor.title, TextAlign.center),
               ),
               GestureDetector(
                 onTap: () async {
@@ -328,12 +328,35 @@ class _AddPostDetailsState extends State<AddPostDetails> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+
+                          addPost.data.placeName=="No Name"?
                           MyString.reg(
-                              addPost.data.placeName, 14, MyColor.orange2, TextAlign.start),
+                              'No place name', 14, MyColor.orange2, TextAlign.start):
                           Container(
                             width: 160,
-                            child: MyString.reg(addPost.data.address, 12, MyColor.textBlack0,
-                                TextAlign.start),
+                            child: Text(
+                              "${addPost.data.placeName}"??"",
+                              overflow: TextOverflow.ellipsis,
+                              textAlign:  TextAlign.start,
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: MyColor.orange2,
+                                fontFamily: 'poppins_regular',
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: 160,
+                            child: Text(
+                              "${addPost.data.address}"??"",
+                              overflow: TextOverflow.ellipsis,
+                              textAlign:  TextAlign.start,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: MyColor.textBlack0,
+                                fontFamily: 'poppins_regular',
+                              ),
+                            ),
                           ),
                           MyString.reg(addPost.data.category, 12, MyColor.textBlack0,
                               TextAlign.start),
@@ -627,6 +650,7 @@ class _AddPostDetailsState extends State<AddPostDetails> {
                   MyColor.title,
                   TextAlign.start),
               TextField(
+                maxLength: 300,
                 controller: additionalInfo,
                 style: TextStyle(
                     color: MyColor.black),
@@ -649,42 +673,55 @@ class _AddPostDetailsState extends State<AddPostDetails> {
                       horizontal: 10),
                 ),
               ),
-              Container(
-                height: addPost.data.images.length >= 3 ? 230 : 110,
-                width: double.infinity,
-                child: GridView.builder(
-                  itemCount: addPost.data.images.length,
-                  gridDelegate:
-                  SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount:
-                    3, // Number of items per row
-                    crossAxisSpacing: 8,
-                    mainAxisSpacing: 8,
-                  ),
-                  itemBuilder: (context, index) {
-
-                      // Display selected images
-                      return Stack(
-                        children: [
-                          ClipRRect(
-                            borderRadius:
-                            BorderRadius.circular(
-                                10),
-                            child: CachedImage(
-                              url:
-                              addPost.data.images[index],
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: double.infinity,
-                            ),
-                          ),
-
-                        ],
-                      );
-
-                  },
+              ClipRRect(
+                borderRadius:
+                BorderRadius.circular(
+                    10),
+                child: CachedImage(
+                  url:
+                  addPost.data.images[0],
+                  fit: BoxFit.cover,
+                  width: 120,
+                  height:120,
                 ),
               ),
+              // Container(
+              //   height:  110,
+              //   width: double.infinity,
+              //   child: GridView.builder(
+              //     itemCount: addPost.data.images.length,
+              //     gridDelegate:
+              //     SliverGridDelegateWithFixedCrossAxisCount(
+              //       crossAxisCount:
+              //       3, // Number of items per row
+              //       crossAxisSpacing: 8,
+              //       mainAxisSpacing: 8,
+              //     ),
+              //     itemBuilder: (context, index) {
+              //
+              //         // Display selected images
+              //         return Stack(
+              //           children: [
+              //             ClipRRect(
+              //               borderRadius:
+              //               BorderRadius.circular(
+              //                   10),
+              //               child: CachedImage(
+              //                 url:
+              //                 addPost.data.images[index],
+              //                 fit: BoxFit.cover,
+              //                 width: double.infinity,
+              //                 height: double.infinity,
+              //               ),
+              //             ),
+              //
+              //           ],
+              //         );
+              //
+              //     },
+              //   ),
+              // ),
+
               const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -790,7 +827,10 @@ class _AddPostDetailsState extends State<AddPostDetails> {
                         'publish'.tr, 18, MyColor.white, TextAlign.center),
                   ),
                 ),
-              )
+              ),
+              SizedBox(
+                height: 20,
+              ),
             ],
           ),
         ),

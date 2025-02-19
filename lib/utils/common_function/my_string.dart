@@ -15,7 +15,9 @@ class MyString {
             color: textColor,
             fontSize: size,
             fontFamily: 'poppins_bold',
-            fontWeight: FontWeight.w700));
+            fontWeight: FontWeight.w700
+
+        ));
   }
 
 

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -115,17 +116,34 @@ Future<void> showCommentBottomSheet({
                       controller: _scrollController,
                       itemCount: comments.length,
                       itemBuilder: (context, index) {
-                        return ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: Colors.grey[300],
-                            child: Icon(Icons.person, color: Colors.black54),
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: Colors.grey[300],
+                                  child: Icon(Icons.person, color: Colors.black54),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    comments[index]["comment"],
+                                    style: const TextStyle(fontSize: 16),
+                                    // The text widget will naturally wrap for long text.
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          title: Text(comments[index]["comment"]),
                         );
                       },
                     )
-                        : Center(child: Text("No comments yet.")),
+                        : const Center(child: Text("No comments yet.")),
                   ),
+
 
                   // Comment Input Field
                   Row(
@@ -140,7 +158,12 @@ Future<void> showCommentBottomSheet({
                             ),
                             contentPadding: EdgeInsets.symmetric(horizontal: 10),
                           ),
-                        ),
+                          maxLength: 300,
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(300),
+                          ],
+                        )
+
                       ),
                       SizedBox(width: 8),
                       IconButton(

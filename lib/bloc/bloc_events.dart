@@ -96,7 +96,9 @@ class GetCreateAnimalEvent extends CreateAnimalEvent {
 //  --createPost
 class GetCreatePostEvent extends CreatePost {
 
+  String? openingCloseHour;
  String address;
+ String? websiteName;
   num? location_distance;
   num ?location_rating;
  num ?user_rating_count;
@@ -152,6 +154,9 @@ class GetCreatePostEvent extends CreatePost {
     required this.location_rating,
     required this.user_rating_count,
     required this.address,
+    this.websiteName,
+    this.openingCloseHour,
+
 
   });
 }
