@@ -94,12 +94,11 @@ class Routes {
             builder: (BuildContext context) => const Thanks());
 
       case RoutesName.addReview:
-        List<Reviews> mReviews = [];
         int id = 0;
         int  userRecommendedPercentage =0;
         Post?post;
         return MaterialPageRoute(
-            builder: (BuildContext context) => AddReview(mReviews:mReviews,postID: id,userRecommendedPercentage: userRecommendedPercentage, post: post,));
+            builder: (BuildContext context) => AddReview(postID: id,userRecommendedPercentage: userRecommendedPercentage, post: post,));
 
       case RoutesName.selectAnimal:
         Map<String, dynamic> mapData =

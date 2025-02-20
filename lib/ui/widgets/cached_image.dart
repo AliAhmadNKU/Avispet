@@ -6,24 +6,26 @@ import 'package:flutter/material.dart';
 
 import '../../utils/my_color.dart';
 
+
 class CachedImage extends StatelessWidget {
   final String? url;
   final double? width;
   final double? height;
   final BoxFit? fit;
+  bool? check;
 
-  const CachedImage({
+   CachedImage({
     required this.url,
     this.width,
     this.height,
     this.fit,
+    this.check,
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
-
       imageUrl: '$url',
       width: width,
       height: height,
@@ -63,11 +65,21 @@ class CachedImage extends StatelessWidget {
     );
   }
   Widget _buildError(_, __, ___) {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      color: MyColor.orange2,
-      child: Center(child: Image.asset('assets/images/onboard/placeholder_image.png', width: 60, height: 60)),
-    );
+
+    return
+      check ==true?
+      Container(
+        child: Center(
+          child: CircleAvatar(
+            radius: 30,
+            backgroundImage: AssetImage('assets/images/onboard/placeholder_image.png'),
+          ),
+        ),
+      ) :  Container(
+        width: double.infinity,
+        height: double.infinity,
+        color: MyColor.orange2,
+        child: Center(child: Image.asset('assets/images/onboard/placeholder_image.png', width: 60, height: 60)),
+      );
   }
 }

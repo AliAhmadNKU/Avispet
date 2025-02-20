@@ -119,7 +119,7 @@ class _PostDetailState extends State<PostDetail> {
   // This is the data string you mentioned
  late final String dataString ;
 
-  late final String scheduleString;
+
 
 
 
@@ -150,105 +150,122 @@ class _PostDetailState extends State<PostDetail> {
 
   // Example: Use the current time as the user time.
   DateTime userTime = DateTime.now();
-  /// Determines if the shop is open at [userTime] using the provided [scheduleString].
-  bool isShopOpen(String scheduleString, DateTime userTime) {
-    // Remove the surrounding square brackets.
-    String trimmed = scheduleString.substring(1, scheduleString.length - 1).trim();
 
-    // Split by commas to get each day's token.
-    List<String> tokens = trimmed.split(',');
-
-    // Create a map for day -> time range string.
-    Map<String, String> scheduleMap = {};
-    for (String token in tokens) {
-      token = token.trim();
-      // Split at the first colon to separate day and time.
-      int colonIndex = token.indexOf(':');
-      if (colonIndex > -1) {
-        String day = token.substring(0, colonIndex).trim();
-        String times = token.substring(colonIndex + 1).trim();
-        scheduleMap[day] = times;
-      }
-    }
-
-    // Determine the current day name based on userTime.
-    // DateTime.weekday: 1=Monday, 2=Tuesday, ..., 7=Sunday.
-    List<String> dayNames = [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday"
-    ];
-    String currentDay = dayNames[userTime.weekday - 1];
-
-    // Get the time range for the current day.
-    String? timesString = scheduleMap[currentDay];
-    if (timesString == null || timesString.toLowerCase() == "closed") {
-      return false;
-    }
-
-    // Replace any special dash characters with a standard hyphen.
-    timesString = timesString.replaceAll('–', '-');
-
-    // Split into opening and closing times.
-    List<String> parts = timesString.split('-');
-    if (parts.length != 2) return false;
-
-    String openTimeString = parts[0].trim();
-    String closeTimeString = parts[1].trim();
-
-    // Use DateFormat to parse time strings like "9:00 AM".
-    DateFormat format = DateFormat("h:mm a");
-    try {
-      // Parse the times. These parsed DateTime objects have an arbitrary date.
-      DateTime openTime = format.parse(openTimeString);
-      DateTime closeTime = format.parse(closeTimeString);
-
-      // Build DateTime objects using the user's date.
-      DateTime openDateTime = DateTime(
-        userTime.year,
-        userTime.month,
-        userTime.day,
-        openTime.hour,
-        openTime.minute,
-      );
-      DateTime closeDateTime = DateTime(
-        userTime.year,
-        userTime.month,
-        userTime.day,
-        closeTime.hour,
-        closeTime.minute,
-      );
-
-      // Check if the userTime falls between openDateTime and closeDateTime.
-      return userTime.isAfter(openDateTime) && userTime.isBefore(closeDateTime);
-    } catch (e) {
-      print("Error parsing times: $e");
-      return false;
-    }
-  }
+  // bool isShopOpen(String scheduleString, DateTime userTime) {
+  //   // Remove the surrounding square brackets.
+  //   String trimmed = scheduleString.substring(1, scheduleString.length - 1).trim();
+  //
+  //   // Split by commas to get each day's token.
+  //   List<String> tokens = trimmed.split(',');
+  //
+  //   // Create a map for day -> time range string.
+  //   Map<String, String> scheduleMap = {};
+  //   for (String token in tokens) {
+  //     token = token.trim();
+  //     // Split at the first colon to separate day and time.
+  //     int colonIndex = token.indexOf(':');
+  //     if (colonIndex > -1) {
+  //       String day = token.substring(0, colonIndex).trim();
+  //       String times = token.substring(colonIndex + 1).trim();
+  //       scheduleMap[day] = times;
+  //     }
+  //   }
+  //
+  //   // Determine the current day name based on userTime.
+  //   // DateTime.weekday: 1=Monday, 2=Tuesday, ..., 7=Sunday.
+  //   List<String> dayNames = [
+  //     "Monday",
+  //     "Tuesday",
+  //     "Wednesday",
+  //     "Thursday",
+  //     "Friday",
+  //     "Saturday",
+  //     "Sunday"
+  //   ];
+  //   String currentDay = dayNames[userTime.weekday - 1];
+  //
+  //   // Get the time range for the current day.
+  //   String? timesString = scheduleMap[currentDay];
+  //   if (timesString == null || timesString.toLowerCase() == "closed") {
+  //     return false;
+  //   }
+  //
+  //   // Replace any special dash characters with a standard hyphen.
+  //   timesString = timesString.replaceAll('–', '-');
+  //
+  //   // Split into opening and closing times.
+  //   List<String> parts = timesString.split('-');
+  //   if (parts.length != 2) return false;
+  //
+  //   String openTimeString = parts[0].trim();
+  //   String closeTimeString = parts[1].trim();
+  //
+  //   // Use DateFormat to parse time strings like "9:00 AM".
+  //   DateFormat format = DateFormat("h:mm a");
+  //   try {
+  //     // Parse the times. These parsed DateTime objects have an arbitrary date.
+  //     DateTime openTime = format.parse(openTimeString);
+  //     DateTime closeTime = format.parse(closeTimeString);
+  //
+  //     // Build DateTime objects using the user's date.
+  //     DateTime openDateTime = DateTime(
+  //       userTime.year,
+  //       userTime.month,
+  //       userTime.day,
+  //       openTime.hour,
+  //       openTime.minute,
+  //     );
+  //     DateTime closeDateTime = DateTime(
+  //       userTime.year,
+  //       userTime.month,
+  //       userTime.day,
+  //       closeTime.hour,
+  //       closeTime.minute,
+  //     );
+  //
+  //     // Check if the userTime falls between openDateTime and closeDateTime.
+  //     return userTime.isAfter(openDateTime) && userTime.isBefore(closeDateTime);
+  //   } catch (e) {
+  //     print("Error parsing times: $e");
+  //     return false;
+  //   }
+  // }
 
   bool isLoading = true;
   late int userRecommendedPercentage;
+  Map<String, String> scheduleMap = {};
+  @override
 
-  @override
-  @override
-  void initState() {
+
+
+   initState()  {
     super.initState();
-
     print('Received arguments: ${widget.mapData}');
     post = widget.mapData!['post'];
-  //  dataString =  post.openingClosingHour.toString();
-
-    print("phone ${post.phone}");
     userRecommendedPercentage = post.userRecommendedPercentage?.toInt() ?? 0;
-    print("post.id asdasdasd  ${post.id}");
+     GetApi.getProfileApi(
+        context, sharedPref.getString(SharedKey.userId).toString());
 
-    scheduleString= post.openingClosingHour.toString();
+    String   scheduleString= post.openingClosingHour.toString();
+
+    // Remove the enclosing square brackets.
+    scheduleString = scheduleString.substring(1, scheduleString.length - 1);
+
+    List<String> entries = scheduleString.split(", ");
+    for (String entry in entries) {
+      int index = entry.indexOf(": ");
+      if (index != -1) {
+        String day = entry.substring(0, index).trim();
+        String hours = entry.substring(index + 2).trim();
+        scheduleMap[day] = hours;
+      }
+    }
+
+
+
     dataString = post.openingClosingHour.toString();
+
+
     getPostReviewsById();
 
     setState(() {
@@ -362,10 +379,54 @@ class _PostDetailState extends State<PostDetail> {
     return schedule;
   }
 
+  bool isShopOpen(Map<String, String> openingHours, DateTime currentTime) {
+    // Get the current day name (e.g., Monday)
+    String currentDay = DateFormat('EEEE').format(currentTime);
+
+    // Check if there is a schedule for the current day or if it's marked as closed.
+    if (!openingHours.containsKey(currentDay) ||
+        openingHours[currentDay] == null ||
+        openingHours[currentDay]!.toLowerCase() == 'closed') {
+      return false;
+    }
+
+    // Extract the schedule for the current day.
+    String daySchedule = openingHours[currentDay]!;
+
+    // Split the schedule string into opening and closing times.
+    List<String> parts = daySchedule.split(' – ');
+    if (parts.length != 2) {
+      // If the format isn't as expected, assume the shop is closed.
+      return false;
+    }
+
+    String openingTimeStr = parts[0].trim();
+    String closingTimeStr = parts[1].trim();
+
+    // Parse the opening and closing times.
+    DateTime parsedOpeningTime = DateFormat('h:mm a').parse(openingTimeStr);
+    DateTime parsedClosingTime = DateFormat('h:mm a').parse(closingTimeStr);
+
+    // Create DateTime objects for today with the parsed times.
+    DateTime openingTime = DateTime(
+        currentTime.year, currentTime.month, currentTime.day, parsedOpeningTime.hour, parsedOpeningTime.minute);
+    DateTime closingTime = DateTime(
+        currentTime.year, currentTime.month, currentTime.day, parsedClosingTime.hour, parsedClosingTime.minute);
+
+    // Check if the current time is within the shop's operating hours.
+    return currentTime.isAfter(openingTime) && currentTime.isBefore(closingTime);
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
+
+    print("post.openingClosingHour ${post.openingClosingHour}");
+
     final scheduleData = parseSchedule(dataString);
-    bool open = isShopOpen(scheduleString, userTime);
+    bool open = isShopOpen(scheduleMap, userTime);
+    print("open   ${open}");
 
     return NotificationListener(
       onNotification: (notification) {
@@ -563,7 +624,7 @@ class _PostDetailState extends State<PostDetail> {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  _launchURL(post.websiteName);
+                                  // _launchURL(post.websiteName);
                                 },
                                 child: Container(
                                     padding: EdgeInsets.symmetric(
@@ -585,7 +646,7 @@ class _PostDetailState extends State<PostDetail> {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  // _launchURL(post.websiteName.toString());
+                                   _launchURL(post.websiteName.toString());
                                 },
                                 child: Container(
                                     padding: EdgeInsets.symmetric(
@@ -689,6 +750,9 @@ class _PostDetailState extends State<PostDetail> {
                             });
                           },
                           children: [
+                            post.openingClosingHour ==null || post.openingClosingHour == "Not available"? MyString.bold(
+                                    '${"Data not available"}', 14,
+                                    MyColor.redd, TextAlign.start):
                             SizedBox(
                               height: 180, // Adjusted height for days with multiple time slots.
                               child: ListView.builder(
@@ -747,12 +811,6 @@ class _PostDetailState extends State<PostDetail> {
                                 },
                               ),
                             ),
-
-
-
-                            // MyString.bold(
-                            //     '[${post.openingClosingHour ?? "no data"}]', 14,
-                            //     MyColor.redd, TextAlign.start),
                           ],
                         ),
                       ),
@@ -1205,7 +1263,8 @@ class _PostDetailState extends State<PostDetail> {
                               MaterialPageRoute(builder: (context) =>
                                   AddReview(
                                     post: post,
-                                    mReviews: mReviews, postID: post.id,
+                                    // mReviews: mReviews,
+                                    postID: post.id,
                                     userRecommendedPercentage: userRecommendedPercentage,
 
 
@@ -1244,7 +1303,9 @@ class _PostDetailState extends State<PostDetail> {
                           ),
                         mReviews.isEmpty || isLoading == true
                             ? progressBar()
-                            : Container(
+                            :
+
+                        Container(
                           margin: EdgeInsets.only(top: 10),
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
@@ -1985,6 +2046,8 @@ class _PostDetailState extends State<PostDetail> {
       toaster(context, "An error occurred while fetching categories.");
     }
   }
+
+
 }
 
 class sortingItem {

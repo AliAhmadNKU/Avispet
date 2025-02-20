@@ -13,6 +13,7 @@ import '../../utils/apis/all_api.dart';
 import '../../utils/apis/api_strings.dart';
 import '../../utils/apis/get_api.dart';
 import '../../utils/common_function/my_string.dart';
+import '../../utils/common_function/toaster.dart';
 import '../../utils/my_color.dart';
 import '../../utils/shared_pref.dart';
 import 'comment_screen.dart';
@@ -38,9 +39,6 @@ class _PostCardState extends State<PostCard> {
   @override
   void initState() {
 
-    print("widget.post.user ${widget.post}");
-    // print("widget.post.user ${widget.post.user}");
-
     // TODO: implement initState
     super.initState();
   }
@@ -61,6 +59,37 @@ class _PostCardState extends State<PostCard> {
     }
   }
 
+
+
+  Future<void> sendLikes(int postId) async {
+    Map<String, dynamic> mapData = {
+      "postId": postId,
+    };
+    print("Sending  data: $mapData");
+    var res = await AllApi.postMethodApi(ApiStrings.postLike, mapData);
+    var result = jsonDecode(res.toString());
+    print("Likes response: $result");
+
+    if (result['status'] == 201) {
+
+      if (result['data']['likedStatus'] == false) {
+        setState(() {
+          widget.post.tLikes.value--;
+        });
+
+      }
+    else {
+      setState(() {
+        widget.post.tLikes.value++;
+      });
+
+    }
+
+
+
+
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,9 +119,7 @@ class _PostCardState extends State<PostCard> {
                         width: 2.0, // Adjust the width as needed
                       ),
                       image: DecorationImage(
-                        image:NetworkImage("https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png?20200919003010"),
-                            //:
-                         // NetworkImage(widget.post.user!.profilePicture??"https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png?20200919003010"),
+                        image: NetworkImage(widget.post.profilePicture??"https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png?20200919003010"),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -126,7 +153,8 @@ class _PostCardState extends State<PostCard> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
 
-                          MyString.bold('Mariane',
+                          MyString.bold(
+                              widget.post.firstName + widget.post.lastName,
                               16,
                               MyColor.black,
                               TextAlign.center),
@@ -168,15 +196,11 @@ class _PostCardState extends State<PostCard> {
                         ],
                       ),
                       SizedBox(height: 5), // Adds spacing
-                      Container(
-                        height: 40,
-                        width: double.infinity, // Allows full width usage
-                        child: MyString.reg(
-                            widget.post.description,
-                            14,
-                            MyColor.black,
-                            TextAlign.start
-                        ),
+                      MyString.reg(
+                          widget.post.description,
+                          14,
+                          MyColor.black,
+                          TextAlign.justify
                       ),
                       SizedBox(height: 5), // Adds spacing
                       ClipRRect(
@@ -236,26 +260,42 @@ class _PostCardState extends State<PostCard> {
 
                           /// likes
                           GestureDetector(
+                            behavior: HitTestBehavior.opaque,
                             onTap: () {
-                              // String? userid = sharedPref
-                              //     .getString(SharedKey.userId);
-                              // sendLikes(int.parse(userid!),mReviews[index].id!.toInt(), rev);
+                              sendLikes(widget.post.id);
+                              setState(() {
+                                widget.post.hasLiked = !widget.post.hasLiked;
+                              });
+
+
                             },
                             child: Row(
                               children: [
-                                SvgPicture.asset(
-                                    'assets/images/icons/heart_solid_icon.svg',
-                                    width: 14, height: 15),
+                                widget.post.hasLiked == false
+                                    ? SvgPicture.asset(
+                                  'assets/images/icons/heart_solid_icon.svg',
+                                  width: 14,
+                                  height: 15,
+                                  colorFilter: ColorFilter.mode(
+                                    Colors.grey.withOpacity(0.5),
+                                    BlendMode.srcIn,
+                                  ),
+                                )
+                                    : SvgPicture.asset(
+                                  'assets/images/icons/heart_solid_icon.svg',
+                                  width: 14,
+                                  height: 15,
+                                ),
                                 SizedBox(width: 5,),
-                                // Obx(() {
-                                //   return MyString.reg(
-                                //     '${rev.tLikes.value.toString()
-                                //         .toString()}',
-                                //     12,
-                                //     MyColor.commentCountColor,
-                                //     TextAlign.start,
-                                //   );
-                                // }),
+                                Obx(() {
+                                  return MyString.reg(
+                                    '${widget.post.tLikes.value.toString()
+                                        .toString()}',
+                                    12,
+                                    MyColor.commentCountColor,
+                                    TextAlign.start,
+                                  );
+                                }),
                               ],
                             ),
                           ),

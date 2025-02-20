@@ -93,11 +93,9 @@ class AllApi {
     try{
       var response = await http.post(url,
           headers: {
-            'Authorization':
-            "Bearer  ${sharedPref.getString(SharedKey.auth).toString()}",
+            'Authorization': "Bearer  ${sharedPref.getString(SharedKey.auth).toString()}",
             'Content-Type': 'application/json',
-            'Accept-Language':
-            sharedPref.getString(SharedKey.languageValue).toString(),
+            'Accept-Language': sharedPref.getString(SharedKey.languageValue).toString(),
             "x-access-token": sharedPref.getString(SharedKey.auth).toString()
           },
           body: jsonEncode(mapData)

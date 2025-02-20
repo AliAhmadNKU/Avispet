@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
+
 GetAllPostModel getAllPostModelFromJson(String str) =>
     GetAllPostModel.fromJson(json.decode(str));
 
@@ -129,6 +131,9 @@ class Post {
   DateTime createdAt;
   DateTime updatedAt;
 
+  bool hasLiked;
+  Rx<int> tLikes= 0.obs;
+
   Post({
     required this.id,
     required this.userId,
@@ -161,7 +166,10 @@ class Post {
     required this.userRecommendedPercentage,
     required this.firstName,
     required this.lastName,
+     required this.tLikes,
     this.profilePicture,
+    required this.hasLiked,
+
 
   });
 
@@ -197,7 +205,10 @@ class Post {
     updatedAt: DateTime.parse(json["updatedAt"]),
     firstName: json["first_name"],
     lastName: json["last_name"],
-  //  profilePicture: json["profile_picture"],
+    profilePicture: json["profile_picture"] ?? null,
+    tLikes: (json["like_count"] as int? ?? 0).obs,
+    hasLiked: json["has_liked"]??false,
+
 
   );
 
@@ -233,9 +244,11 @@ class Post {
     "updatedAt": updatedAt.toIso8601String(),
     "first_name": firstName,
     "last_name": lastName,
-    //"profile_picture": profilePicture,
-
+    "profile_picture": profilePicture,
+    "like_count": tLikes.value, // Access the underlying int value of tLikes
+    "has_liked" : hasLiked
   };
+
 }
 
 

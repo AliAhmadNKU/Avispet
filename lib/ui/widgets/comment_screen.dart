@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:avispets/ui/widgets/cached_image.dart';
+import 'package:avispets/utils/my_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,20 +11,23 @@ import 'package:get/get_core/src/get_main.dart';
 import '../../models/reviews/get_post_reviews_by_postid_model.dart';
 import '../../utils/apis/all_api.dart';
 import '../../utils/apis/api_strings.dart';
+import '../../utils/apis/get_api.dart';
 
 Future<void> showCommentBottomSheet({
   required BuildContext context,
   List<dynamic>? comments,
   int? userId,
+  String? userName, // Added parameter for the comment user's name
   int? postReviewId,
   Reviews? mReviews,
   int? postId,
-  required bool screenCheck
+  required bool screenCheck,
 }) async {
   final ScrollController _scrollController = ScrollController();
   TextEditingController commentController = TextEditingController();
 
-  Future<void> sendComment(String comment, int userId, int postReviewId, Function updateUI) async {
+  Future<void> sendComment(
+      String comment, int userId, int postReviewId, Function updateUI) async {
     Map<String, dynamic> mapData = {
       "userId": userId,
       "postReviewId": postReviewId,
@@ -40,16 +45,15 @@ Future<void> showCommentBottomSheet({
     }
   }
 
-
-
-  Future<void> sendCommentForPost(String comment, int postId, Function updateUI) async {
+  Future<void> sendCommentForPost(
+      String comment, int postId, Function updateUI) async {
     Map<String, dynamic> mapData = {
       "postId": postId,
       "commentText": comment
     };
 
     print("Sending comment data: $mapData");
-    var res = await AllApi.postMethodApi(ApiStrings.postComment , mapData);
+    var res = await AllApi.postMethodApi(ApiStrings.postComment, mapData);
     var result = jsonDecode(res.toString());
     print("Comment response: $result");
 
@@ -58,7 +62,6 @@ Future<void> showCommentBottomSheet({
       updateUI(); // Refresh UI after adding the comment
     }
   }
-
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -116,6 +119,8 @@ Future<void> showCommentBottomSheet({
                       controller: _scrollController,
                       itemCount: comments.length,
                       itemBuilder: (context, index) {
+                        // Use the "userName" key to display the comment author
+                        String displayName = comments[index]["userName"] ?? "Anonymous";
                         return Card(
                           margin: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
                           child: Padding(
@@ -125,14 +130,29 @@ Future<void> showCommentBottomSheet({
                               children: [
                                 CircleAvatar(
                                   backgroundColor: Colors.grey[300],
-                                  child: Icon(Icons.person, color: Colors.black54),
+
+                                  child: CachedImage(
+                                    check: true,
+                                    url: comments[index]["user"]["profile_picture"],),
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
-                                  child: Text(
-                                    comments[index]["comment"],
-                                    style: const TextStyle(fontSize: 16),
-                                    // The text widget will naturally wrap for long text.
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        comments[index]["user"]["name"],
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        comments[index]["comment"],
+                                        style: const TextStyle(fontSize: 16),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
@@ -143,7 +163,6 @@ Future<void> showCommentBottomSheet({
                     )
                         : const Center(child: Text("No comments yet.")),
                   ),
-
 
                   // Comment Input Field
                   Row(
@@ -162,32 +181,41 @@ Future<void> showCommentBottomSheet({
                           inputFormatters: [
                             LengthLimitingTextInputFormatter(300),
                           ],
-                        )
-
+                        ),
                       ),
                       SizedBox(width: 8),
                       IconButton(
-                        icon: Icon(Icons.send, color: Colors.blue),
+                        icon: Icon(Icons.send, color: MyColor.orange),
                         onPressed: () {
                           if (commentController.text.isNotEmpty) {
-
-
-                            if(screenCheck==false){
+                            // Add the comment along with the user's name for display
+                            if (screenCheck == false) {
+                              final String firstName = GetApi.getProfileModel.data?.firstName ?? "";
+                              final String lastName = GetApi.getProfileModel.data?.lastName ?? "";
+                              final String fullName = (firstName + " " + lastName).trim();
+                              final String displayName = fullName.isEmpty ? "Anonymous" : fullName;
                               setState(() {
-                                comments?.add({"comment": commentController.text});
-                                sendComment(commentController.text, userId ?? 0, postReviewId ?? 0, _scrollToBottom);
+                                comments?.add({
+                                  "user": {
+                                    "name": displayName  ?? "Anonymous",
+                                    "profile_picture": GetApi.getProfileModel.data?.profilePicture ?? "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png?20200919003010",
+                                  },
+                                  "comment": commentController.text,
+                                });
+                                sendComment(commentController.text, userId ?? 0,
+                                    postReviewId ?? 0, _scrollToBottom);
                               });
                               commentController.clear();
-
-                            }
-                            else{
+                            } else {
                               setState(() {
-                                comments?.add({"commentText": commentController.text});
-                                sendCommentForPost(commentController.text,postId??0, _scrollToBottom);
+                                comments?.add({
+                                  "userName": userName ?? "Anonymous",
+                                  "comment": commentController.text,
+                                });
+                                sendCommentForPost(commentController.text, postId ?? 0, _scrollToBottom);
                               });
                               commentController.clear();
                             }
-
                           }
                         },
                       ),

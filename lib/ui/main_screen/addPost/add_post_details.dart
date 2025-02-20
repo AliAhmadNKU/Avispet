@@ -13,6 +13,7 @@ import '../../../bloc/bloc_events.dart';
 import '../../../utils/apis/all_api.dart';
 import '../../../utils/apis/api_strings.dart';
 import '../../../utils/common_function/toaster.dart';
+import '../../../utils/shared_pref.dart';
 import '../home/home_screen.dart';
 import '../home/post_detail.dart';
 import 'add_post.dart';
@@ -232,7 +233,7 @@ class _AddPostDetailsState extends State<AddPostDetails> {
 
     Map<String, dynamic> mapData = {
       "postId": addPost.data.id,
-      'userId': addPost.data.userId,
+      'userId': int.parse(sharedPref.getString(SharedKey.userId)!),
       'placeId': addPost.data.placeId,
       'images': addPost.data.images,
       'place_name': addPost.data.placeName,
